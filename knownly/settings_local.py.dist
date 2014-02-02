@@ -1,0 +1,15 @@
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+DEBUG = False
+TEMPLATE_DEBUG = False
+
+DROPBOX_APP_KEY = ''
+DROPBOX_APP_SECRET = ''
+
+DATABASES = {
+    'default': {
+        'ENGINE': '',
+        'NAME': '',
+    }
+}
