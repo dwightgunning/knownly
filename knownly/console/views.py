@@ -13,7 +13,6 @@ from dropbox.client import DropboxClient, DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
 
 from knownly.console.forms import WebsiteForm
-from knownly.console.mixins import AjaxableResponseMixin
 from knownly.console.models import DropboxUser, DropboxSite
 
 class IndexView(TemplateView):
