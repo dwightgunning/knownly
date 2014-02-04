@@ -1,4 +1,4 @@
-import urlparse
+import urlparse, logging
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -6,6 +6,10 @@ from django.shortcuts import get_object_or_404
 from dropbox import client 
 
 from knownly.console.models import DropboxUser, DropboxSite
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 class SubdomainToDropboxMiddleware(object):
 	"""Middleware class that routes non "www" subdomain requests.
@@ -17,10 +21,11 @@ class SubdomainToDropboxMiddleware(object):
 		"""
 		domain = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME')
 		domain_to_match = domain.split(':')[0]
-		
 		if domain_to_match in ('to.knownly.net', 'knownly.net'):
+			logger.debug('Serving: %s' % request.path)
 			return None
 		else:
+			logger.debug('Redirecting to dropbox: %s' % request.path)
 			# Find the dropbox user that owns the domain
 			website = get_object_or_404(DropboxSite, domain=domain_to_match)
 

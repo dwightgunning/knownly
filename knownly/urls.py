@@ -16,7 +16,7 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^robots.txt$', TemplateView.as_view(template_name="static/robots.txt", content_type='text/plain')),
     )
-    import debug_toolbar
-    urlpatterns += patterns('',
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    )
+    # import debug_toolbar
+    # urlpatterns += patterns('',
+    #     url(r'^__debug__/', include(debug_toolbar.urls)),
+    # )
