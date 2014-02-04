@@ -1,0 +1,7 @@
+Django==1.6.1
+South==0.8.4
+django-debug-toolbar==1.0.1
+dropbox==2.0.0
+sqlparse==0.1.10
+urllib3==1.7.1
+wsgiref==0.1.2
