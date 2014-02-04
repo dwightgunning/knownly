@@ -33,15 +33,15 @@ LOGGING = {
             'level':'ERROR',
         },
         'django.request': {
-            'handlers':['null','console', 'mail_admins'],
+            'handlers':['console', 'mail_admins'],
             'level':'INFO',
         },
         'django': {
-            'handlers':['null','console', 'mail_admins'],
+            'handlers':['console', 'mail_admins'],
             'level':'INFO',
         },
         'south': {
-            'handlers':['null'],
+            'handlers':['console'],
             'level': 'ERROR',
         },
     },
