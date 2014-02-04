@@ -101,12 +101,10 @@ class DropboxAuthCompleteView(RedirectView):
 			message = 'Account authentication error.'
 			if 'dropbox-auth-csrf-token' in e.args:
 				message = '%s This is potentially a browser session error. Please refresh the page and try again.' % message
-			print e
 			messages.add_message(self.request, messages.ERROR, message)
 		except Exception, e:
 			# Present a useful error to the user
 			message = 'Account authentication error.'
-			print e
 			messages.add_message(self.request, messages.ERROR, message)
 
 		# Check and if needed, create a placeholder website
@@ -136,12 +134,10 @@ class DropboxAuthCompleteView(RedirectView):
 						message = 'We attempted to create you a placeholder website but encountered problems.'
 						if e.user_error_message:
 							message = '%s %s' % (messages, e.user_error_message)
-						print e
 						messages.add_message(self.request, messages.ERROR, message)
 				else:
 					# Present a useful error to the user
 					message = 'We attempted to create you a placeholder website but encountered problems.'
-					print e
 					messages.add_message(self.request, messages.ERROR, message)
 
 
@@ -210,7 +206,7 @@ class CreateWebsiteView(BaseFormView):
 
 def get_redirect_uri(request):
 	if not settings.DEBUG and request.is_secure:
-		protocol = 'https://' 
+		protocol = 'https://'
 	else:
 		protocol = 'http://'
 
