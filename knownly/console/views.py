@@ -35,7 +35,7 @@ class IndexView(TemplateView):
 					self.dropbox_user.save()
 					self.dropbox_user = None
 
-					del self.request.session['dropbox_user']
+					request.session.flush()
 
 					# Present a useful error to the user
 					message = 'Account authentication error.'
@@ -149,10 +149,7 @@ class DropboxAuthCompleteView(RedirectView):
 class LogoutDropboxUserView(RedirectView):
 
 	def get_redirect_url(self, **kwargs):
-		try:
-			del self.request.session['dropbox_user']
-		except KeyError:
-			pass
+		self.request.session.flush()
 
 		message = "Thanks for spending some time with us. Hope to see you soon!"
 		messages.add_message(self.request, messages.INFO, message)
@@ -189,7 +186,7 @@ class CreateWebsiteView(BaseFormView):
 				client.put_file('%s/index.html' % self.object.domain, output)
 
 		if self.object.domain.endswith('knownly.net'):
-			message = 'Your website is created and immediately active. <a href="%s">Check it out</a>.'
+			message = 'Your website is created and immediately active. <a href="%s">Check it out</a>.' % self.object.domain
 		else:
 			message = 'Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % reverse('support')
 
