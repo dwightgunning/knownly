@@ -6,7 +6,7 @@ SECRET_KEY = '&r$=!+FDIOSJVPSOIDVJ_*-wvf!tyf$asdfadfdfa(*_()*24132r1u'
 DEBUG = False
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'knownly.net', '.knownly.net']
+ALLOWED_HOSTS = ['127.0.0.1', '.knownly.net']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -15,18 +15,20 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'south',
     'knownly.console',
 )
 
 MIDDLEWARE_CLASSES = (
+    'knownly.console.middleware.SubdomainToDropboxMiddleware',    
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'knownly.console.middleware.SubdomainToDropboxMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',    
 )
 
 ROOT_URLCONF = 'knownly.urls'
@@ -45,6 +47,14 @@ USE_L10N = True
 USE_TZ = True
 
 INTERNAL_REDIRECT_DIRECTORY = 'dropbox_redirect'
+
+from django.contrib.messages import constants as message_constants
+MESSAGE_TAGS = {
+    message_constants.SUCCESS: 'alert-success',
+    message_constants.INFO: 'alert-info',
+    message_constants.WARNING: 'alert-warning',
+    message_constants.ERROR: 'alert-danger',
+}
 
 try:
     from settings_local import *

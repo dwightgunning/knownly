@@ -37,3 +37,5 @@ nosetests.xml
 *.sqlite3
 settings_local.py
 logs/
+.DS_Store
+collected_static/

@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="shortcut icon" href="img/favicon.ico">
 
-    <title>Knownly</title>
+    <title>Page not found | Knownly</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'vendor/bootstrap_3.1.0/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="vendor/bootstrap_3.1.0/css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="{% static 'css/cover.css' %}" rel="stylesheet">
+    <link href="css/cover.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -28,22 +27,13 @@
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
         <div class="cover-container">
-          <div class="masthead">
-            {% if messages %}
-              {% for message in messages %}
-                <div class="alert alert-public {{ message.tags }}">{{ message }}</div>
-              {% endfor %}
-            {% endif %}
-          </div>
-
           <div class="inner cover">
-            <h1 class="cover-heading">Knownly</h1>
-            <p class="lead">Turn a Dropbox folder into a website; make your ideas known.</p>
+            <h1 class="cover-heading">Dang! That page seems to be missing.</h1>
+            <p class="lead">404.</p>
             <p class="lead">
-              <a href="{% url 'dropbox_auth_start' %}" class="btn btn-lg btn-default">Start here</a>
+              <a href="{% url 'index' %}" class="btn btn-lg btn-default">Visit our home</a>
             </p>
           </div>
-
           <div class="mastfoot">
             <div class="inner">
               <p>Handmade in Amsterdam by <a href="https://twitter.com/dwightgunning">@dwightgunning</a>.</p>
@@ -54,7 +44,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap_3.1.0/js/docs.min.js' %}"></script>
+    <script src="vendor/bootstrap_3.1.0/js/bootstrap.js"></script>
+    <script src="vendor/bootstrap_3.1.0/js/docs.min.js"></script>
   </body>
 </html>

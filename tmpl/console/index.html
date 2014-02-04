@@ -1,14 +1,148 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-<html>
-<body>
-	Hey {{ real_name }}, You're in!!!
-	<div>
+    <title>Website console | Knownly</title>
 
-		{% if dropbox_user %}
-			<a href="{% url 'logout' %}">Logout</a>
-		{% else %}
-			<a href="{% url 'dropbox_auth_start' %}">Link with Dropbox</a>
-		{% endif %}
-</body>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap_3.1.0/css/bootstrap.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar-static-top.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div id="wrap">
+      <!-- Static navbar -->
+      <div class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Knownly</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+            	<li><a href="{% url 'support' %}">Support</a></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+      <div class="container">
+      	<h1>Knownly website console</h1>
+      {% if messages %}        
+  		  <div class="masthead">      
+          {% for message in messages %}
+          	<div class="alert alert-public {{ message.tags }}">{{ message|safe }}</div>
+        	{% endfor %}
+    		</div>
+      {% endif %}
+
+  		<h2>Your websites</h2>    	
+      	<div class="row">
+  		    <div class="col-md-8">
+            <ul id="website_list" class="list-group">
+  				    {% for website in websites %}
+                <li class="list-group-item">{{ website.domain }}</span><span class="badge website-link-badge" data-toggle="tooltip" data-placement="left" title="Visit {{ website.domain }}"><a href="http://{{ website.domain }}" target="_blank"><span class="glyphicon glyphicon-share-alt"></span></a></span></li>
+  				    {% empty %}
+  				      <p>No websites created.</p>
+  				    {% endfor %}
+  			    </ul>
+              <h3>Create a new website</h3>
+              <div id="create_website">
+              <div class="row">  
+              <div class="col-md-4">
+              <form id="create_website_form" class="form-inline">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input id="{{ create_website_form.domain.name }}_id" name="{{ create_website_form.domain.name }}" type="text" class="form-control" placeholder="mysite.knownly.net">
+                    <span class="input-group-btn"><button id="create_website_form_btn" class="btn btn-default" type="button">Go!</button></span>
+                </div>
+              </form>
+            </div>
+            </div>
+            </div>
+  		    </div>
+
+  		  	<div class="col-md-4">
+            <div class="panel panel-default">
+              <div class="panel-heading">Account</div>
+      			  <div class="panel-body">
+      			  	<ul>
+      			  		<li>Bandwidth usage coming soon!</li>
+      			  		{% if free_days_left %}<li>Free trial: {{ free_days_left }} remaining. <a href="#">Upgrade now.</a></li>{% endif %}
+      			  	</ul>
+      			  </div>
+            </div>
+  			  </div>
+  		  </div>
+      </div> <!-- /container -->
+    </div> <!-- /wrap -->
+
+    <div id="footer">
+      <div class="container">
+        <p>Handmade in Amsterdam by <a href="https://twitter.com/dwightgunning">@dwightgunning</a>.</p>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
+    <script>
+      $('.badge').tooltip();
+      $('#create_website_form_btn').click(function () {
+        var btn = $(this);
+        btn.button('loading');
+        $.ajax({url: '{% url 'create_website' %}', 
+                  type: 'POST', 
+                  data: $("#create_website_form").serializeArray(),
+                  success: function(response, textStatus, XMLHttpRequest) {
+                    create_websites = $('#create_website');
+                    alert = create_websites.append('<div class="alert alert-success create-website-alert"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Success!</strong> ' + $.trim(response['message']) + '</div>');
+                    alert.bind('closed.bs.alert', function () {
+                      website_list = $('#website_list');
+                      website_list.append('<li class="list-group-item">' + response['domain'] + '</span><span class="badge website-link-badge" data-toggle="tooltip" data-placement="left" title="Visit ' + response['domain'] + '"><a href="http://' + response['domain'] + '" target="_blank"><span class="glyphicon glyphicon-share-alt"></span></a></span></li>');
+                    });
+                    domain_field = $('#{{ create_website_form.domain.name }}');
+                    domain_field.val('');
+                    domain_field.attr("placeholder","mysite.knownly.net");
+                  },
+                  error: function(response, textStatus, XMLHttpRequest) {  
+                    create_websites = $('#create_website');
+                    message = $.trim(response.responseJSON.domain[0]);
+                    if (!message) {
+                      message = "An error occured. Please try again with a valid domain.";
+                    }
+                    create_websites.append('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + message + '</div>');
+
+                  }                  
+              }).always(function () {
+                  window.setTimeout(3000);
+                  btn.button('reset');
+        });
+      });
+    </script>    
+  </body>
 </html>

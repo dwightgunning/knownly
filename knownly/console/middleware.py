@@ -16,12 +16,13 @@ class SubdomainToDropboxMiddleware(object):
 		subdomains.
 		"""
 		domain = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME')
-
-		if domain.split(':')[0] in settings.ALLOWED_HOSTS:
+		domain_to_match = domain.split(':')[0]
+		
+		if domain_to_match in ('to.knownly.net', 'knownly.net'):
 			return None
 		else:
 			# Find the dropbox user that owns the domain
-			website = get_object_or_404(DropboxSite, domain=domain)
+			website = get_object_or_404(DropboxSite, domain=domain_to_match)
 
 			# Build up the dropbox request
 			from_path = '/%s/%s' % (website.domain, request.path.strip("/"))
