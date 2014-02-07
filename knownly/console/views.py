@@ -1,4 +1,4 @@
-import json, StringIO
+import json, logging, StringIO
 from datetime import timedelta
 
 from django.conf import settings
@@ -12,8 +12,12 @@ from django.views.generic.edit import BaseFormView, FormMixin
 from dropbox.client import DropboxClient, DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
 
+from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
 from knownly.console.models import DropboxUser, DropboxSite
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class IndexView(TemplateView):
 	dropbox_user = None
@@ -30,6 +34,7 @@ class IndexView(TemplateView):
 					self.dropbox_user.email = account_info["email"]
 					self.dropbox_user.save()
 				except ErrorResponse, e:
+					logger.exception("Account authentication problem.")
 					# Remove the dead user_access token
 					self.dropbox_user.access_token = ''
 					self.dropbox_user.save()
@@ -94,15 +99,18 @@ class DropboxAuthCompleteView(RedirectView):
 				self.dropbox_user.save()
 		except DropboxOAuth2Flow.NotApprovedException, e:
 			# Present a useful error to the user
+			logger.warn("Dropbox OAuth error - app not approved")
 			message = 'Dropbox indicated that the request for access was not approved. If this was a mistake just hit the button below to try again.'
 			messages.add_message(self.request, messages.WARNING, message)
 		except KeyError, e:
+			logger.exception("Dropbox OAuth error")
 			# Present a useful error to the user
 			message = 'Account authentication error.'
 			if 'dropbox-auth-csrf-token' in e.args:
 				message = '%s This is potentially a browser session error. Please refresh the page and try again.' % message
 			messages.add_message(self.request, messages.ERROR, message)
 		except Exception, e:
+			logger.exception("Dropbox OAuth error")
 			# Present a useful error to the user
 			message = 'Account authentication error.'
 			messages.add_message(self.request, messages.ERROR, message)
@@ -114,32 +122,21 @@ class DropboxAuthCompleteView(RedirectView):
 			if not knownly_dir.get('contents'):
 				output = StringIO.StringIO()
 				output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
-				site = None
-				for i in range(3):
-					try:
-						website_domain = '%s.knownly.net' % haiku.haiku()
-						site = DropboxSite(dropbox_user=self.dropbox_user, domain=website_domain)
-						continue
-					except:
-						pass
+				website_domain = '%s.knownly.net' % haiku.haiku()
+				site = DropboxSite(dropbox_user=self.dropbox_user, domain=website_domain)
 
-				if site:
-					try:
-						response = client.put_file('%s/index.html' % website_domain, output)
-						site.save()
-						message = 'We\'ve created you a placeholder website at <a href="%s">%s</a>.' % (site.domain, site.domain)
-						messages.add_message(self.request, messages.SUCCESS, message, extra_tags='safe')					
-					except ErrorResponse, e:
-						# Present a useful error to the user
-						message = 'We attempted to create you a placeholder website but encountered problems.'
-						if e.user_error_message:
-							message = '%s %s' % (messages, e.user_error_message)
-						messages.add_message(self.request, messages.ERROR, message)
-				else:
+				try:
+					response = client.put_file('%s/index.html' % website_domain, output)
+					site.save()
+					message = 'We\'ve created you a placeholder website at <a href="%s">%s</a>.' % (site.domain, site.domain)
+					messages.add_message(self.request, messages.SUCCESS, message, extra_tags='safe')					
+				except ErrorResponse, e:
 					# Present a useful error to the user
+					logger.exception("Error setting up user's initial website")
 					message = 'We attempted to create you a placeholder website but encountered problems.'
+					if e.user_error_message:
+						message = '%s %s' % (messages, e.user_error_message)
 					messages.add_message(self.request, messages.ERROR, message)
-
 
 			self.request.session['dropbox_user'] = self.dropbox_user.pk
 
