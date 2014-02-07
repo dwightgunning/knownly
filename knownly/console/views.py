@@ -178,16 +178,26 @@ class CreateWebsiteView(BaseFormView):
 		client = DropboxClient(self.dropbox_user.dropbox_token)
 		try:
 			client.metadata(self.object.domain, file_limit=2)
+			message = 'A website folder with the same name already exists in your Dropbox so we\'ve left that alone.'
 		except ErrorResponse, e:
 			if e.status == 404:
 				output = StringIO.StringIO()
 				output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
-				client.put_file('%s/index.html' % self.object.domain, output)
+				try:
+					client.put_file('%s/index.html' % self.object.domain, output)
+					message = 'A website folder has been created in your dropbox.'
+				except Exception, e:
+					logger.exception("Error creating website folder.")
+					message = "An error occurred and we could not create a website folder in your dropbox. Please try creating it manually."
+					logger.exception('Unexpected response from Dropbox when checking for existing folder')					
+			else:
+				message = "An error occurred and we could not create a website folder in your dropbox. Please try creating it manually."
+				logger.exception('Unexpected response from Dropbox when checking for existing folder')
 
 		if self.object.domain.endswith('knownly.net'):
-			message = 'Your website is created and immediately active. <a href="%s">Check it out</a>.' % self.object.domain
+			message = '%s Your website is created and immediately active. <a href="%s">Check it out</a>.' % (message, self.object.domain)
 		else:
-			message = 'Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % reverse('support')
+			message = '%s Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % (message, reverse('support'))
 
 		return self.render_to_json_response({'domain': self.object.domain, 'message': message})
 
