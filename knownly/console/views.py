@@ -40,7 +40,8 @@ class IndexView(TemplateView):
 					self.dropbox_user.save()
 					self.dropbox_user = None
 
-					request.session.flush()
+					self.request.session.flush()
+					self.request.session.cycle_key()
 
 					# Present a useful error to the user
 					message = 'Account authentication error.'
@@ -147,6 +148,7 @@ class LogoutDropboxUserView(RedirectView):
 
 	def get_redirect_url(self, **kwargs):
 		self.request.session.flush()
+		self.request.session.cycle_key()
 
 		message = "Thanks for spending some time with us. Hope to see you soon!"
 		messages.add_message(self.request, messages.INFO, message)
