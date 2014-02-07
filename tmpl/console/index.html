@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Website console | Knownly</title>
+    <title>My websites | Knownly</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap_3.1.0/css/bootstrap.css' %}" rel="stylesheet">
@@ -32,16 +32,11 @@
       <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="/">Knownly</a>
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
+              <li><span>{{ dropbox_user.display_name }}</span></li>
             	<li><a href="{% url 'support' %}">Support</a></li>
               <li><a href="{% url 'logout' %}">Logout</a></li>
             </ul>
@@ -49,7 +44,7 @@
         </div>
       </div>
       <div class="container">
-      	<h1>Knownly website console</h1>
+      	<h1>My websites</h1>
       {% if messages %}        
   		  <div class="masthead">      
           {% for message in messages %}
@@ -57,19 +52,22 @@
         	{% endfor %}
     		</div>
       {% endif %}
-
-  		<h2>Your websites</h2>    	
       	<div class="row">
   		    <div class="col-md-8">
             <ul id="website_list" class="list-group">
   				    {% for website in websites %}
                 <li class="list-group-item">{{ website.domain }}</span><span class="badge website-link-badge" data-toggle="tooltip" data-placement="left" title="Visit {{ website.domain }}"><a href="http://{{ website.domain }}" target="_blank"><span class="glyphicon glyphicon-share-alt"></span></a></span></li>
   				    {% empty %}
-  				      <p>No websites created.</p>
+  				      <p>No websites yet.</p>
   				    {% endfor %}
   			    </ul>
-              <h3>Create a new website</h3>
               <div id="create_website">
+              <h3>Create another website:</h3>
+              <p>To create a website simply type a domain name into the form below. Choose either: </p>
+              <ul>
+                <li>a Knownly sub-domain (e.g. mysite.knownly.net)</li>
+                <li>a personal domain that you own (e.g. http://launchsteps.com)</li>
+              </ul>
               <div class="row">  
               <div class="col-md-4">
               <form id="create_website_form" class="form-inline">
@@ -78,20 +76,26 @@
                     <input id="{{ create_website_form.domain.name }}_id" name="{{ create_website_form.domain.name }}" type="text" class="form-control" placeholder="mysite.knownly.net">
                     <span class="input-group-btn"><button id="create_website_form_btn" class="btn btn-default" type="button">Go!</button></span>
                 </div>
-              </form>
+              </form>              
             </div>
             </div>
+              <p>Knownly sub-domains work immediately. Personal domains need some additional <a href="{% url 'support' %}#custom-domain-dns">DNS setup</a>.</p>            
             </div>
   		    </div>
 
   		  	<div class="col-md-4">
             <div class="panel panel-default">
-              <div class="panel-heading">Account</div>
+              <div class="panel-heading">Account Overview</div>
       			  <div class="panel-body">
+                <p><strong>Thanks for being part of the beta!</strong></p>
+                <p>Coming soon:</p>
       			  	<ul>
-      			  		<li>Bandwidth usage coming soon!</li>
-      			  		{% if free_days_left %}<li>Free trial: {{ free_days_left }} days remaining. <a href="#">Upgrade now.</a></li>{% endif %}
+                  <li>Amazing HTML5/CSS3 site templates.</li>
+                  <li>Plugins for interactive functionality (forms, e-commerce, comments, feedback etc.)</li>
+                  <li>Visitor metrics</li>
+      			  		<!-- {% if free_days_left %}<li>Free trial: {{ free_days_left }} days remaining. <a href="#">Upgrade now.</a></li>{% endif %} -->
       			  	</ul>
+                <p><em>Pricing information will be announced shortly.</em></p>
       			  </div>
             </div>
   			  </div>

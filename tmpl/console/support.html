@@ -32,16 +32,11 @@
       <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="/">Knownly</a>
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
+                <li><span>{{ dropbox_user.display_name }}</span></li>
                 <li><a href="{% url 'support' %}">Support</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
             </ul>
@@ -58,7 +53,78 @@
         </div>
       {% endif %}
 
-        <h2>Coming soon...</h2>      
+        <div id="getting-started" class="panel-group" id="accordion">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#getting-started-panel">
+                  Getting started
+                </a>
+              </h4>
+            </div>
+            <div id="getting-started-panel" class="panel-collapse collapse">
+              <div class="panel-body">
+                Getting started with Knownly is a piece of cake. In fact, now that you've linked Knownly with your Dropbox account an initial placeholder website has already been created for you.
+              </div>
+            </div>
+          </div>
+          <div id="custom-domain-dns" class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#custom-domain-dns-panel">
+                  Custom Domains - DNS Setup
+                </a>
+              </h4>
+            </div>
+            <div id="custom-domain-dns-panel" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>At your DNS provider, add the following:</p>
+                <div class="container">
+                  <p class="well col-md-6">
+                    www 1800 IN CNAME to.knownly.net.
+                  </p>
+                </div>
+                <p>Additionally, you may wish to redirect the 'naked' domain (e.g. 'knownly.net') to ('www.knownly.net') in order to have all visitors arrive at your website:</p>
+                <div class="container">
+                  <p class="well col-md-6">
+                    @ 1800 IN A 174.129.25.170</br>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="removing-website-folders" class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#removing-website-folders-panel">
+                  Removing website folders
+                </a>
+              </h4>
+            </div>
+            <div id="removing-website-folders-panel" class="panel-collapse collapse">
+              <div class="panel-body">
+                When you remove a Dropbox website using the Knownly website, we stop hosting the website but we don't remove the associated dropbox folder. This way there's no chance we'd remove any files you might want to keep. That said, as soon as you no longer need Knownly folder you can go ahead and delete it. As you wish.
+              </div>
+            </div>
+          </div>
+          <div id="knownly-dropbox-access" class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#knownly-dropbox-access">
+                  Can Knownly access all my dropbox files?
+                </a>
+              </h4>
+            </div>
+            <div id="knownly-dropbox-access-panel" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>Knownly integrates with Dropbox as an "app" which means we only have access to our app directory ('/Apps/Knownly.net/...').</p>
+                <p>
+                  Dropbox allows us only to access files within that folder and we're quite happy with that. In fact we really don't want to be messing with your files at all, so aside from creating new folders and placeholder websites when you ask us to, we'll never add anything to your dropbox. We'll never change or delete any files either.
+                </p>
+              </div>
+            </div>
+          </div>          
+        </div>
       </div> <!-- /container -->
     </div> <!-- /wrap -->
 
@@ -72,6 +138,14 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>   
+    <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+          var anchor = window.location.hash.replace("#", "");
+          // $(".collapse").collapse('hide');
+          console.log(anchor + '-panel');
+          $("#" + anchor + '-panel').collapse('show');
+      });
+    </script>
   </body>
 </html>
