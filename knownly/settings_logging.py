@@ -24,9 +24,13 @@ LOGGING = {
         },
     },
     'loggers': {
+        'knownly.console.views': {
+            'handlers':['console', 'mail_admins'],
+            'level':'INFO',       
+        },
         'knownly.console.middleware': {
             'handlers':['console', 'mail_admins'],
-            'level':'DEBUG',       
+            'level':'WARN',       
         },
         'django.db.backends': {
             'handlers':['console', 'mail_admins'],
