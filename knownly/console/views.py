@@ -5,16 +5,16 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.utils import timezone
 from django.views.generic import View, TemplateView, RedirectView
-from django.views.generic.edit import BaseFormView, FormMixin
+from django.views.generic.edit import BaseFormView, FormMixin, DeleteView
 from dropbox.client import DropboxClient, DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
 
 from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
-from knownly.console.models import DropboxUser, DropboxSite
+from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -172,19 +172,20 @@ class CreateWebsiteView(BaseFormView):
 
 	def form_valid(self, form):
 		form.dropbox_user = self.dropbox_user
-		self.object = form.save()
 		super(CreateWebsiteView, self).form_valid(form)
+		self.dropbox_website = form.save()
+
 
 		client = DropboxClient(self.dropbox_user.dropbox_token)
 		try:
-			client.metadata(self.object.domain, file_limit=2)
+			client.metadata(self.dropbox_website.domain, file_limit=2)
 			message = 'A website folder with the same name already exists in your Dropbox so we\'ve left that alone.'
 		except ErrorResponse, e:
 			if e.status == 404:
 				output = StringIO.StringIO()
 				output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
 				try:
-					client.put_file('%s/index.html' % self.object.domain, output)
+					client.put_file('%s/index.html' % self.dropbox_website.domain, output)
 					message = 'A website folder has been created in your dropbox.'
 				except Exception, e:
 					logger.exception("Error creating website folder.")
@@ -194,15 +195,59 @@ class CreateWebsiteView(BaseFormView):
 				message = "An error occurred and we could not create a website folder in your dropbox. Please try creating it manually."
 				logger.exception('Unexpected response from Dropbox when checking for existing folder')
 
-		if self.object.domain.endswith('knownly.net'):
-			message = '%s Your website is created and immediately active. <a href="%s">Check it out</a>.' % (message, self.object.domain)
+		if self.dropbox_website.domain.endswith('knownly.net'):
+			message = '%s Your website is created and immediately active. <a href="%s">Check it out</a>.' % (message, self.dropbox_website.domain)
 		else:
 			message = '%s Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % (message, reverse('support'))
 
-		return self.render_to_json_response({'domain': self.object.domain, 'message': message})
+		return self.render_to_json_response({'domain': self.dropbox_website.domain, 'message': message})
 
 	def form_invalid(self, form):
 		return self.render_to_json_response(form.errors, status=400)
+
+	def render_to_json_response(self, context, **response_kwargs):
+		data = json.dumps(context)
+		response_kwargs['content_type'] = 'application/json'
+		return HttpResponse(data, **response_kwargs)
+
+class RemoveWebsiteView(DeleteView):
+	success_url = '/'
+	model = DropboxSite
+	http_method_names = ['post', 'put', 'delete', 'options', 'trace']
+
+	def dispatch(self, request, *args, **kwargs):
+		try:
+			self.dropbox_user = DropboxUser.objects.get(pk=self.request.session['dropbox_user'])
+		except DropboxUser.DoesNotExist:
+			return HttpResponse('Unauthorized', status=401)
+
+		if not request.is_ajax():
+			return HttpResponseBadRequest("Only accepts XHR.")
+
+		return super(RemoveWebsiteView, self).dispatch(request, *args, **kwargs)
+
+	def delete(self, request, *args, **kwargs):
+		try:
+			dropbox_website = DropboxSite.objects.get(domain=self.request.POST['domain'])
+		except DropboxSite.DoesNotExist:
+			logger.exception("Attempt to delete site that doesn't exist. Domain: %s" % self.request.POST['domain'])
+			context = {'message': 'Website not known at Knonwly.'}
+			return self.render_to_json_response(context, status=400)
+		
+		if dropbox_website.dropbox_user != self.dropbox_user:
+			logger.error("Attempt to delete site that doesn't belong to user making request")
+			context = {'message': 'Permission denied. Our team are looking into this.'}
+			return self.render_to_json_response(context, status=400)
+
+		archived_site = ArchivedDropboxSite(dropbox_user=dropbox_website.dropbox_user, 
+												domain= dropbox_website.domain, 
+												date_created=dropbox_website.date_created)
+		archived_site.save()
+		dropbox_website.delete()
+
+		context = {'domain': dropbox_website.domain, 
+					'message': 'Website %s removed.' % dropbox_website.domain}
+		return self.render_to_json_response(context, status=200)
 
 	def render_to_json_response(self, context, **response_kwargs):
 		data = json.dumps(context)

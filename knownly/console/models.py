@@ -20,3 +20,9 @@ class DropboxSite(models.Model):
 	
 	def __unicode__(self):
 		return u'%s' % self.domain
+
+class ArchivedDropboxSite(models.Model):
+	dropbox_user = models.ForeignKey(DropboxUser)
+	domain = models.CharField(max_length=63)
+	date_created = models.DateTimeField()
+	date_archived = models.DateTimeField(auto_now_add=True)
