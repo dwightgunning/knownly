@@ -186,13 +186,13 @@ class CreateWebsiteView(BaseFormView):
 				output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
 				try:
 					client.put_file('%s/index.html' % self.dropbox_website.domain, output)
-					message = 'A website folder has been created in your dropbox.'
+					message = 'A website folder (<em>/Apps/Knownly.net/%s</em>) has been created in your Dropbox.' % self.dropbox_website.domain
 				except Exception, e:
 					logger.exception("Error creating website folder.")
-					message = "An error occurred and we could not create a website folder in your dropbox. Please try creating it manually."
+					message = "An error occurred and we could not create a website folder in your Dropbox. Please try creating it manually."
 					logger.exception('Unexpected response from Dropbox when checking for existing folder')					
 			else:
-				message = "An error occurred and we could not create a website folder in your dropbox. Please try creating it manually."
+				message = "An error occurred and we could not create a website folder in your Dropbox. Please try creating it manually."
 				logger.exception('Unexpected response from Dropbox when checking for existing folder')
 
 		if self.dropbox_website.domain.endswith('knownly.net'):
