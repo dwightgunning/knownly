@@ -1,6 +1,6 @@
 import urlparse
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 
 from dropbox import client 
@@ -30,7 +30,11 @@ class SubdomainToDropboxMiddleware(object):
 			#logger.debug('Redirecting to dropbox: %s via website: %s' % (request.path, domain_to_match))
 
 			# Find the dropbox user that owns the domain
-			website = get_object_or_404(DropboxSite, domain=domain_to_match)
+			try:
+				website = DropboxSite.objects.get(domain=domain_to_match)
+			except DropboxSite.DoesNotExist:
+				return HttpResponsePermanentRedirect('https://www.knownly.net')
+			
 			#logger.debug('website recognised as being from user: %s' % website.dropbox_user)
 
 			# Build up the dropbox request
