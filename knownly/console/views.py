@@ -45,8 +45,12 @@ class IndexView(TemplateView):
 
 					# Present a useful error to the user
 					message = 'Account authentication error.'
-					if e.user_error_message:
+					try:
 						message = '%s %s' % (messages, e.user_error_message)
+					except AttributeError, e:
+						logger.exception(e)
+						pass
+
 					messages.add_message(request, messages.ERROR, message)
 
 		return super(IndexView, self).get(request, *args, **kwargs)
@@ -256,7 +260,7 @@ class RemoveWebsiteView(DeleteView):
 
 
 def get_redirect_uri(request):
-	if not settings.DEBUG and request.is_secure:
+	if not settings.DEBUG and request.is_secure():
 		protocol = 'https://'
 	else:
 		protocol = 'http://'
