@@ -18,7 +18,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'WARNING',
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'verbose'
         },
@@ -26,27 +26,27 @@ LOGGING = {
     'loggers': {
         'knownly.console.views': {
             'handlers':['console', 'mail_admins'],
-            'level':'INFO',       
+            'level':'WARNING',       
         },
         'knownly.console.middleware': {
             'handlers':['console', 'mail_admins'],
-            'level':'WARN',       
+            'level':'WARNING',       
         },
         'django.db.backends': {
             'handlers':['console', 'mail_admins'],
-            'level':'ERROR',
+            'level':'WARNING',
         },
         'django.request': {
             'handlers':['console', 'mail_admins'],
-            'level':'INFO',
+            'level':'WARNING',
         },
         'django': {
             'handlers':['console', 'mail_admins'],
-            'level':'INFO',
+            'level':'WARNING',
         },
         'south': {
             'handlers':['console'],
-            'level': 'ERROR',
+            'level': 'INFO',
         },
     },
 }
