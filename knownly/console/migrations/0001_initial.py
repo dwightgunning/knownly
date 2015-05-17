@@ -1,53 +1,52 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'DropboxUser'
-        db.create_table(u'console_dropboxuser', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=30)),
-            ('display_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('dropbox_token', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal(u'console', ['DropboxUser'])
+    dependencies = [
+    ]
 
-        # Adding model 'DropboxSite'
-        db.create_table(u'console_dropboxsite', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('dropbox_user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['console.DropboxUser'])),
-            ('domain', self.gf('django.db.models.fields.CharField')(unique=True, max_length=63)),
-        ))
-        db.send_create_signal(u'console', ['DropboxSite'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'DropboxUser'
-        db.delete_table(u'console_dropboxuser')
-
-        # Deleting model 'DropboxSite'
-        db.delete_table(u'console_dropboxsite')
-
-
-    models = {
-        u'console.dropboxsite': {
-            'Meta': {'object_name': 'DropboxSite'},
-            'domain': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '63'}),
-            'dropbox_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['console.DropboxUser']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        u'console.dropboxuser': {
-            'Meta': {'object_name': 'DropboxUser'},
-            'display_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'dropbox_token': ('django.db.models.fields.TextField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        }
-    }
-
-    complete_apps = ['console']
+    operations = [
+        migrations.CreateModel(
+            name='ArchivedDropboxSite',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('domain', models.CharField(max_length=63)),
+                ('date_created', models.DateTimeField()),
+                ('date_archived', models.DateTimeField(auto_now_add=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='DropboxSite',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('domain', models.CharField(unique=True, max_length=63)),
+                ('date_created', models.DateTimeField(auto_now_add=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='DropboxUser',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('user_id', models.CharField(unique=True, max_length=30, verbose_name='user id')),
+                ('display_name', models.CharField(max_length=30, verbose_name='display name')),
+                ('dropbox_token', models.TextField()),
+                ('email', models.EmailField(max_length=254)),
+                ('account_created', models.DateTimeField(auto_now_add=True)),
+                ('subscription_active', models.BooleanField(default=False)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='dropboxsite',
+            name='dropbox_user',
+            field=models.ForeignKey(to='console.DropboxUser'),
+        ),
+        migrations.AddField(
+            model_name='archiveddropboxsite',
+            name='dropbox_user',
+            field=models.ForeignKey(to='console.DropboxUser'),
+        ),
+    ]
