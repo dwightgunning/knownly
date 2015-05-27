@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.core import validators
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 class DropboxUser(models.Model):
+	django_user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True)
 	user_id = models.CharField(_('user id'), max_length=30, unique=True)
 	display_name = models.CharField(_('display name'), max_length=30)
 	dropbox_token = models.TextField()
