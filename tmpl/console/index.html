@@ -1,29 +1,9 @@
+{% extends 'console/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
 
-    <title>My websites | Knownly</title>
+{% block title %}My websites | Knownly{% endblock %}
 
-    <link href="{% static 'vendor/bootstrap_3.1.0/css/bootstrap.css' %}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
+{% block content %}
     <div id="wrap">
       <!-- Remove website modal -->
       <div id="confirm-remove-website" class="modal fade">
@@ -46,21 +26,7 @@
         </div><!-- /.modal-dialog -->
       </div><!-- /.modal -->
 
-      <!-- Static navbar -->
-      <div class="navbar navbar-default navbar-static-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="/">Knownly</a>
-          </div>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-              <li><span>{{ dropbox_user.display_name }}</span></li>
-            	<li><a href="{% url 'support' %}">Support</a></li>
-              <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
+      {% include 'console/navbar.html' %}
       <div class="container">
       	<h1>My websites</h1>
       {% if messages %}        
@@ -76,7 +42,7 @@
   				    {% for website in websites %}
                 <li data-domain="{{ website.domain }}" class="list-group-item">{{ website.domain }}
                   <span class="badge website-link-badge" title="Visit {{ website.domain }}">
-                    <a href="http://{{ website.domain }}" target="_blank">
+                    <a class="visit_website_link" href="http://{{ website.domain }}" target="_blank">
                       <span class="glyphicon glyphicon-share-alt"></span>
                     </a>
                   </span>
@@ -138,75 +104,86 @@
         <p>Handmade in Amsterdam by <a href="https://twitter.com/dwightgunning">@dwightgunning</a>.</p>
       </div>
     </div>
+{% endblock %}
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
-    <script>
-      $('#create_website_form_btn').click(function () {
-        var btn = $(this);
-        btn.button('loading');
-        $.ajax({url: '{% url 'create_website' %}', 
-                  type: 'POST', 
-                  data: $("#create_website_form").serializeArray(),
-                  success: function(response, textStatus, XMLHttpRequest) {
-                    status_bar = $('#status-bar');
-                    alert = status_bar.append('<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Success!</strong> ' + $.trim(response['message']) + '</div>');
-                    website_list = $('#website_list');
-                    new_list_item = website_list.append('<li data-domain="' + response['domain'] + '" class="list-group-item">' + response['domain'] + '</span><span class="badge website-link-badge" data-toggle="tooltip" data-placement="left" title="Visit ' + response['domain'] + '"><a href="http://' + response['domain'] + '" target="_blank"><span class="glyphicon glyphicon-share-alt"></span></a></span><span class="badge website-link-badge" title="Remove {{ website.domain }}"><a class="remove_website_link" href="#"><span class="glyphicon glyphicon-remove-circle"></span></a></span></li>');
-                    new_list_item.find('.remove_website_link').click(show_remove_website_model);
-                    domain_field = $('#{{ create_website_form.domain.name }}');
-                    domain_field.val('');
-                    domain_field.attr("placeholder","mysite.knownly.net");
-                  },
-                  error: function(response, textStatus, XMLHttpRequest) {  
-                    status_bar = $('#create_website');
-                    message = $.trim(response.responseJSON.domain[0]);
-                    if (!message) {
-                      message = "An error occured. Please try again with a valid domain.";
-                    }
-                    status_bar.append('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + message + '</div>');
+{% block javascript_footer %}
+  {{ block.super }}
 
-                  }                  
-              }).always(function () {
-                  window.setTimeout(3000);
-                  btn.button('reset');
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
+  <script>
+    $('#create_website_form_btn').click(function () {
+      var btn = $(this);
+      btn.button('loading');
+      $.ajax({url: '{% url 'create_website' %}',
+                type: 'POST',
+                data: $("#create_website_form").serializeArray(),
+                success: function(response, textStatus, XMLHttpRequest) {
+                  status_bar = $('#status-bar');
+                  alert = status_bar.append('<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Success!</strong> ' + $.trim(response['message']) + '</div>');
+                  website_list = $('#website_list');
+                  new_list_item = website_list.append('<li data-domain="' + response['domain'] + '" class="list-group-item">' + response['domain'] + '</span><span class="badge website-link-badge" data-toggle="tooltip" data-placement="left" title="Visit ' + response['domain'] + '"><a class="visit_website_link" href="http://' + response['domain'] + '" target="_blank"><span class="glyphicon glyphicon-share-alt"></span></a></span><span class="badge website-link-badge" title="Remove {{ website.domain }}"><a class="remove_website_link" href="#"><span class="glyphicon glyphicon-remove-circle"></span></a></span></li>');
+                  new_list_item.find('.remove_website_link').click(show_remove_website_model);
+                  domain_field = $('#{{ create_website_form.domain.name }}');
+                  domain_field.val('');
+                  domain_field.attr("placeholder","mysite.knownly.net");
+                },
+                error: function(response, textStatus, XMLHttpRequest) {
+                  status_bar = $('#create_website');
+                  message = $.trim(response.responseJSON.domain[0]);
+                  if (!message) {
+                    message = "An error occured. Please try again with a valid domain.";
+                  }
+                  status_bar.append('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + message + '</div>');
+
+                }
+            }).always(function () {
+                window.setTimeout(3000);
+                btn.button('reset');
+      });
+    });
+
+    show_remove_website_model = function (eventObject) {
+      domain_name = $(eventObject.currentTarget).closest('li').data('domain');
+
+      $('#remove-website-domain').html(domain_name);
+      $('#remove-website-domain').data('domain', domain_name)
+      $('#confirm-remove-website').modal({});
+    }
+
+    $('.remove_website_link').click(show_remove_website_model);
+
+    $('#confirm-remove-website').on('hidden.bs.modal', function (e) {
+      $('#remove-website-domain').html("");
+    })
+    $('#website-remove-confirmed').click(function (eventObject) {
+      domain_name = $('#remove-website-domain').data('domain');
+      $('#confirm-remove-website').modal('hide').on('hidden.bs.modal', function (e) {
+        $.ajax({url: '{% url 'remove_website' %}',
+                        type: 'POST',
+                        data: {'domain': domain_name, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                        success: function(response, textStatus, XMLHttpRequest) {
+                          $('#website_list').find('[data-domain="' + response['domain'] + '"]').remove();
+                          status_bar = $('#status-bar');
+                          alert = status_bar.append('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Done.</strong> ' + $.trim(response['message']) + '</div>');
+                        },
+                        error: function(response, textStatus, XMLHttpRequest) {
+                          status_bar = $('#status-bar');
+                          alert = status_bar.append('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh oh.</strong> ' + $.trim(response['message']) + '</div>');
+                      }
+              });
         });
-      });
-  
-      show_remove_website_model = function (eventObject) {
-        domain_name = $(eventObject.currentTarget).closest('li').data('domain');
-        
-        $('#remove-website-domain').html(domain_name);
-        $('#remove-website-domain').data('domain', domain_name)
-        $('#confirm-remove-website').modal({});
-      }
+    });
 
-      $('.remove_website_link').click(show_remove_website_model);
+    mixpanel.register({'email': '{{ dropbox_user.email }}'});
+    mixpanel.identify('{{ dropbox_user.email }}');
+    mixpanel.people.set({'$email': '{{ dropbox_user.email }}'})
+    mixpanel.people.set({'$name': '{{ dropbox_user.display_name }}'})
 
-      $('#confirm-remove-website').on('hidden.bs.modal', function (e) {
-        $('#remove-website-domain').html("");
-      })
-      $('#website-remove-confirmed').click(function (eventObject) {
-        domain_name = $('#remove-website-domain').data('domain');
-        $('#confirm-remove-website').modal('hide').on('hidden.bs.modal', function (e) {
-          $.ajax({url: '{% url 'remove_website' %}', 
-                          type: 'POST', 
-                          data: {'domain': domain_name, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                          success: function(response, textStatus, XMLHttpRequest) {
-                            $('#website_list').find('[data-domain="' + response['domain'] + '"]').remove();
-                            status_bar = $('#status-bar');
-                            alert = status_bar.append('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Done.</strong> ' + $.trim(response['message']) + '</div>');
-                          },
-                          error: function(response, textStatus, XMLHttpRequest) { 
-                            status_bar = $('#status-bar');
-                            alert = status_bar.append('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh oh.</strong> ' + $.trim(response['message']) + '</div>');
-                        }
-                });
-          });
-      });
-    </script>    
-  </body>
-</html>
+    mixpanel.track("Page View", {'template': 'index'});
+    mixpanel.track_links('#support-link', "Support button clicked");
+    mixpanel.track_links('.visit_website_link', "View Site button clicked");
+    mixpanel.track_links('.remove_website_link', "Delete Site button clicked");
+    mixpanel.track_forms('#create_website_form', "Create Site button clicked");
+  </script>
+{% endblock %}

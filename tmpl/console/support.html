@@ -1,47 +1,11 @@
+{% extends 'console/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
 
-    <title>Support | Knownly</title>
+{% block title %}Support | Knownly{% endblock %}
 
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'vendor/bootstrap_3.1.0/css/bootstrap.css' %}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{% static 'css/sticky-footer-navbar.css' %}" rel="stylesheet">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
+{% block content %}
     <div id="wrap">
-      <!-- Static navbar -->
-      <div class="navbar navbar-default navbar-static-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="/">Knownly</a>
-          </div>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><span>{{ dropbox_user.display_name }}</span></li>
-                <li><a href="{% url 'support' %}">Support</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
+      {% include 'console/navbar.html' %}
       <div class="container">
         <h1>Support</h1>
       {% if messages %}        
@@ -156,19 +120,19 @@
         <p>Handmade in Amsterdam by <a href="https://twitter.com/dwightgunning">@dwightgunning</a>.</p>
       </div>
     </div>
+{% endblock %}
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
-    <script>
-        $(document).ready(function() {
-          var anchor = window.location.hash.replace("#", "");
-          // $(".collapse").collapse('hide');
-          console.log(anchor + '-panel');
-          $("#" + anchor + '-panel').collapse('show');
-      });
-    </script>
-  </body>
-</html>
+{% block javascript_footer %}
+  {{ block.super }}
+
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
+  <script>
+      $(document).ready(function() {
+        var anchor = window.location.hash.replace("#", "");
+        $("#" + anchor + '-panel').collapse('show');
+    });
+
+    mixpanel.track("Page View", {'template': 'support'});
+  </script>
+{% endblock %}
