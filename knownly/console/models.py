@@ -10,7 +10,6 @@ class DropboxUser(models.Model):
 	dropbox_token = models.TextField()
 	email = models.EmailField()
 	account_created = models.DateTimeField(auto_now_add=True)
-	subscription_active = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return u'%s' % self.display_name

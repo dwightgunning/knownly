@@ -1,16 +1,23 @@
-import json, logging, StringIO
+import json
+import logging
+import StringIO
+
 from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.utils import timezone
 from django.views.generic import View, TemplateView, RedirectView
 from django.views.generic.edit import BaseFormView, FormMixin, DeleteView
+
 from dropbox.client import DropboxClient, DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
+
+import plans
 
 from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
@@ -60,12 +67,6 @@ class IndexView(TemplateView):
 
 		if self.dropbox_user:
 			context['dropbox_user'] = self.dropbox_user
-
-			if not self.dropbox_user.subscription_active:
-				trial_end = self.dropbox_user.account_created + timedelta(days=14)
-				time_left = trial_end - timezone.now()
-				context['free_days_left'] = time_left.days
-
 			context['websites'] = DropboxSite.objects.filter(dropbox_user=self.dropbox_user)
 			context['create_website_form'] = WebsiteForm({'dropboxy_user': self.dropbox_user})
 			self.template_name = 'console/index.html'
@@ -91,17 +92,18 @@ class DropboxAuthCompleteView(RedirectView):
 	dropbox_user = None
 
 	def get_redirect_url(self, **kwargs):
+		created = False
+
 		try:
+			# Complete the Dropbox OAuth2 Flow
 			token, user_id, url_state = DropboxOAuth2Flow(settings.DROPBOX_APP_KEY, 
 												settings.DROPBOX_APP_SECRET, 
 												get_redirect_uri(self.request),
                                        			self.request.session, 
                                        			'dropbox-auth-csrf-token').finish(self.request.GET)
-			
+
+			# Create our DropboxUser
 			self.dropbox_user, created = DropboxUser.objects.get_or_create(user_id=user_id, defaults={'dropbox_token': token})
-			if not created:
-				self.dropbox_user.dropbox_token = token
-				self.dropbox_user.save()
 		except DropboxOAuth2Flow.NotApprovedException, e:
 			# Present a useful error to the user
 			logger.warn("Dropbox OAuth error - app not approved")
@@ -119,6 +121,29 @@ class DropboxAuthCompleteView(RedirectView):
 			# Present a useful error to the user
 			message = 'Account authentication error.'
 			messages.add_message(self.request, messages.ERROR, message)
+
+		if created:
+			# Fetch the Dropbox user's account info
+			client = DropboxClient(self.dropbox_user.dropbox_token)
+			try:
+				account_info = client.account_info()
+				self.dropbox_user.display_name = account_info["display_name"]
+				self.dropbox_user.email = account_info["email"]
+
+				django_user = User.objects.create_user(self.dropbox_user.email, self.dropbox_user.email, User.objects.make_random_password())
+
+				self.dropbox_user.django_user = django_user
+				self.dropbox_user.save()
+				plans.signals.activate_user_plan.send(sender=self.__class__, user=django_user)
+			except ErrorResponse, e:
+				logger.exception("Account authentication problem.")
+				# Remove the dead user_access token
+				self.dropbox_user.access_token = ''
+				self.dropbox_user.save()
+				self.dropbox_user = None
+		else:
+			self.dropbox_user.dropbox_token = token
+			self.dropbox_user.save()
 
 		# Check and if needed, create a placeholder website
 		if self.dropbox_user:
