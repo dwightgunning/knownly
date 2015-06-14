@@ -1,5 +1,4 @@
-/* Sticky footer styles
--------------------------------------------------- */
+@import 'base';
 
 html,
 body {
@@ -21,4 +20,25 @@ body {
 #footer {
   height: 60px;
   background-color: #f5f5f5;
+}
+
+#create_website_form {
+    margin-bottom: 15px;
+}
+
+.create-website-alert {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.nav {
+
+	> li > span {
+    position: relative;
+    display: block;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-right: 15px;
+    line-height: 20px;
+	}
 }

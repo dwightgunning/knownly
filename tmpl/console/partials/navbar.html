@@ -1,0 +1,15 @@
+<!-- Static navbar -->
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+<div class="container">
+  <div class="navbar-header">
+    <a class="navbar-brand" href="/">Knownly</a>
+  </div>
+  <div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav navbar-right">
+      <li><span>{{ dropbox_user.display_name }}</span></li>
+      <li><a id='support-link' href="{% url 'support' %}">Support</a></li>
+      <li><a id='logout-link' href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+  </div><!--/.nav-collapse -->
+</div>
+</div>
