@@ -1,11 +1,16 @@
-{% extends 'console/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Support | Knownly{% endblock %}
 
+{% block css_head %}
+  {{ block.super}}
+  <link href="{% static 'css/console.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
   <div id="wrap">
-    {% include 'console/navbar.html' %}
+    {% include 'partials/navbar.html' %}
     <div class="container">
       <h1>Support</h1>
     {% if messages %}        
@@ -123,9 +128,7 @@
 {% endblock %}
 
 {% block js_footer %}
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
-  <script src="{% static 'vendor/bootstrap_3.1.0/js/docs.min.js' %}"></script>
+  <script src="{% static 'js/app.js' %}"></script>
   <script>
     $(document).ready(function() {
       var anchor = window.location.hash.replace("#", "");

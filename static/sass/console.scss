@@ -1,7 +1,6 @@
-@import 'base';
+@import "base";
 
-html,
-body {
+html, body {
   height: 100%;
   /* The html and body elements cannot have any padding or margin. */
 }
@@ -31,14 +30,11 @@ body {
     padding-bottom: 9px;
 }
 
-.nav {
-
-	> li > span {
-    position: relative;
-    display: block;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-right: 15px;
-    line-height: 20px;
-	}
+.nav > li > span {
+  position: relative;
+  display: block;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  line-height: 20px;
 }
