@@ -16,9 +16,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_nose',
     'ordered_model',
     'plans',
     'knownly.console',
+    'knownly.billing',
     'knownly.landingpages',
 )
 
@@ -69,6 +71,8 @@ MESSAGE_TAGS = {
     message_constants.WARNING: 'alert-warning',
     message_constants.ERROR: 'alert-danger',
 }
+
+CELERY_ACCEPT_CONTENT = ['json', ]
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
