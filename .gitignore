@@ -39,3 +39,6 @@ settings_local.py
 logs/
 .DS_Store
 collected_static/
+.sass-cache/
+bower_components/
+node_modules/
