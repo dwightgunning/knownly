@@ -39,11 +39,10 @@
 </div>
 {% endblock %}
 
-{% block javascript_footer %}
+{% block mixpanel_footer %}
   {{ block.super }}
   <script type="text/javascript">
-    mixpanel.track("Page View", {'template': 'public'});
+    mixpanel.track("Page View", {'template': 'public.html'});
     mixpanel.track_links('#btn-signup', "Signup Button Clicked", {'position': 'CTA'});
   </script>
-
 {% endblock %}

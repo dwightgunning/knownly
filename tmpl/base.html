@@ -25,7 +25,10 @@
 
   <body {% block body_attrs %}{% endblock %}>
     {% block content %}{% endblock %}
-    {% block js_footer %}{% endblock %}
+    {% block js_footer %}
+      <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+      <script src="{% static 'js/bootstrap.min' %}"></script>
+    {% endblock %}
 
     {% block mixpanel_footer %}
       <script type="text/javascript">
