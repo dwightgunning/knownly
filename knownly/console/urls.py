@@ -7,6 +7,7 @@ from knownly.console import views
 
 urlpatterns = patterns('',
 	url(r'^$', views.IndexView.as_view(), name='index'),
+	url(r'^login/$', views.DropboxAuthStartView.as_view(), name='login'),
 	url(r'^signup/$', views.DropboxAuthStartView.as_view(), name='dropbox_auth_start'),
 	url(r'^signup_complete/$', views.DropboxAuthCompleteView.as_view(), name='dropbox_auth_finish'),
 	url(r'^create/$', views.CreateWebsiteView.as_view(), name='create_website'),

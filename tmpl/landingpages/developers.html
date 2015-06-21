@@ -1,112 +1,32 @@
-{% extends 'console/landing_pages/base.html' %}
+{% extends 'landingpages/base.html' %}
 {% load static %}
 
-{% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
+{% block tagline %}Knownly{% endblock %}
 
-{% block content %}
-  {{ block.super }}
-
-  <!-- Intro Header -->
-  <header class="intro">
-      <div class="intro-body">
-          <div class="container">
-              <div class="row">
-                  <div class="col-md-8 col-md-offset-2">
-                      <h1 class="brand-heading">Grayscale</h1>
-                      <p class="intro-text">A free, responsive, one page Bootstrap theme.<br>Created originally by Start Bootstrap.</p>
-                      <a href="#about" class="btn btn-circle page-scroll pulse">
-                          <i class="fa fa-angle-double-down"></i>
-                      </a>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </header>
-
-  <!-- About Section -->
-  <section id="about" class="container content-section text-center">
-      <div class="row">
-          <div class="col-lg-8 col-lg-offset-2">
-              <h2>About Grayscale</h2>
-              <p>Grayscale is a free Bootstrap 3 theme created by Start Bootstrap. It can be yours right now, simply download the template on <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.</p>
-              <p>This theme features stock photos by <a href="http://gratisography.com/">Gratisography</a> along with a custom Google Maps skin courtesy of <a href="http://snazzymaps.com/">Snazzy Maps</a>.</p>
-              <p>This version of Grayscale includes full HTML, CSS, and custom JavaScript files along with SASS files and bower for an even easier customization.</p>
-          </div>
-      </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact" class="container content-section text-center">
-      <div class="row">
-          <div class="col-lg-8 col-lg-offset-2">
-              <h2>Contact Start Bootstrap</h2>
-              <p>Feel free to email us to provide some feedback on our templates, give us suggestions for new templates and themes, or to just say hello!</p>
-              <p><a href="mailto:feedback@startbootstrap.com">feedback@startbootstrap.com</a>
-              </p>
-              <ul class="list-inline banner-social-buttons">
-                  <li>
-                      <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
-                  </li>
-                  <li>
-                      <a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
-                  </li>
-                  <li>
-                      <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
-                  </li>
-              </ul>
-          </div>
-      </div>
-  </section>
-
-  <!-- Download SASS Section -->
-  <section id="download2" class="content-section text-center">
-      <div class="download-section">
-          <div class="container">
-              <div class="col-lg-8 col-lg-offset-2">
-                  <h2>Download Grayscale</h2>
-                  <p>You can download the SASS version of Grayscale for free on the GITHUB page.</p>
-                  <a href="https://github.com/blackfyre/grayscale-sass/" class="btn btn-default btn-lg">Visit the Download Page</a>
-              </div>
-          </div>
-      </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact2" class="container content-section text-center">
-      <div class="row">
-          <div class="col-lg-8 col-lg-offset-2">
-              <h2>Contact Blackfyre</h2>
-              <p>If you have problems with the <b>SASS version</b> of the original template, please report it at the</p>
-              <p><a href="https://github.com/blackfyre/grayscale-sass/issues">GITHUB Issues page</a>
-              </p>
-              <ul class="list-inline banner-social-buttons">
-                  <li>
-                      <a href="https://twitter.com/gnick666" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
-                  </li>
-                  <li>
-                      <a href="https://github.com/blackfyre" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
-                  </li>
-              </ul>
-          </div>
-      </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-      <div class="container text-center">
-          <p>Copyright &copy; Your Website 2014</p>
-      </div>
-  </footer>
+{% block lead_info %}
+  <p>Host websites direct from Dropbox.</p>  
+  <p>10 websites at custom domains for only $3.99 per month after a free 14 day trial.</p>
+  <p>Knownly sub-domains: forever free.</p>
 {% endblock %}
 
-{% block mixpanel_footer %}
-  <!-- Custom Theme JavaScript -->
-  <script src="js/main.min.js"></script>
-{% endblock %}
+{% block primary_cta_btn %}Choose a plan{% endblock %}
+
+{% block cta_well %}The perfect place to host your personal bio webpage, a static weblog, or a landing page for your latest idea.{% endblock %}
+
+{% block uvp_1_heading %}Pure Web Development{% endblock %}
+{% block uvp_1_para %}Design and implement websites any way you like with HTML, CSS, and Javascript. No advertising or WYSIWIG site-builders that never turn out right.{% endblock %}
+
+{% block uvp_2_heading %}Instant Deployment{% endblock %}
+{% block uvp_2_para %}Your updates are live as soon as the files sync with Dropbox. Working offline? Your changes will be released whenever you re-connect.{% endblock %}
+
+{% block uvp_3_heading %}No Server Headaches{% endblock %}
+{% block uvp_3_para %}Let us handle the hosting. Sure it's easy to spin up a cheap and powerful VM these days but who needs the hassle of backups and security patches?{% endblock %}
+
+{% block start_now_well %}<a href="{% url 'dropbox_auth_start' %}">Start now</a>{% endblock %}
 
 {% block mixpanel_footer %}
   {{ block.super }}
   <script type="text/javascript">
-    mixpanel.track("Page View", {'template': 'landing_pages/develoers.html'});
+    mixpanel.track("Page View", {'template': 'landing_pages/developers.html'});
   </script>
 {% endblock %}
