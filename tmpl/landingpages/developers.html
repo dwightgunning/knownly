@@ -1,0 +1,32 @@
+{% extends 'landingpages/base.html' %}
+{% load static %}
+
+{% block tagline %}Knownly{% endblock %}
+
+{% block lead_info %}
+  <p>Host websites direct from Dropbox.</p>  
+  <p>10 websites at custom domains for only $3.99 per month after a free 14 day trial.</p>
+  <p>Knownly sub-domains: forever free.</p>
+{% endblock %}
+
+{% block primary_cta_btn %}Choose a plan{% endblock %}
+
+{% block cta_well %}The perfect place to host your personal bio webpage, a static weblog, or a landing page for your latest idea.{% endblock %}
+
+{% block uvp_1_heading %}Pure Web Development{% endblock %}
+{% block uvp_1_para %}Design and implement websites any way you like with HTML, CSS, and Javascript. No advertising or WYSIWIG site-builders that never turn out right.{% endblock %}
+
+{% block uvp_2_heading %}Instant Deployment{% endblock %}
+{% block uvp_2_para %}Your updates are live as soon as the files sync with Dropbox. Working offline? Your changes will be released whenever you re-connect.{% endblock %}
+
+{% block uvp_3_heading %}No Server Headaches{% endblock %}
+{% block uvp_3_para %}Let us handle the hosting. Sure it's easy to spin up a cheap and powerful VM these days but who needs the hassle of backups and security patches?{% endblock %}
+
+{% block start_now_well %}<a href="{% url 'dropbox_auth_start' %}">Start now</a>{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'landing_pages/developers.html'});
+  </script>
+{% endblock %}

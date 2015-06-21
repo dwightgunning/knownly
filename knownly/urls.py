@@ -8,7 +8,8 @@ from knownly import console
 admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^', include('knownly.console.urls')),
+    url(r'^', include('knownly.console.urls')),
+    url(r'^welcome/', include('knownly.landingpages.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

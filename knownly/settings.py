@@ -16,6 +16,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'knownly.console',
+    'knownly.landingpages',
 )
 
 MIDDLEWARE_CLASSES = (

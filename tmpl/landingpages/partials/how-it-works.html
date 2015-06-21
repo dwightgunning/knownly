@@ -1,0 +1,63 @@
+{% load static %}
+<div class="how-it-works-section">
+	<div class="container">
+	  <div class="col-md-8 col-md-offset-2">
+	    <h2>How Knownly Works</h2>
+	    <div class="media" style="padding: 20px; background-color: #AAA">
+	    	<div class="media-left">
+	    			<a onclick="load_modal('#dropboxAuthModal')"><img class="media-object img-rounded" src="{% static 'img/dropbox_auth_250_250.png' %}" alt=""></a>
+					<div id="dropboxAuthModal" class="modal fade" tabindex="-1" role="dialog">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					        <div class="modal-body">
+					            	<img src="{% static 'img/dropbox_auth_416_416.png' %}" class="img img-rounded img-responsive center-block">
+					            </div>
+					    </div>
+					  </div>
+					</div>
+	    	</div>
+	    	<div class="media-body text-left">
+	    		<h4 class="media-heading">1: Link your Dropbox</h4>
+	    		<p>During signup you will be directed to Dropbox. Log in and give Knownly permissions to create and access a new folder where your website will live. We don't access any other files.</p>
+	    	</div>
+	    </div>
+	    <div class="media" style="padding: 20px; background-color: #AAA">
+	    	<div class="media-left">
+    			<a onclick="load_modal('#claimDomainModal')"><img class="media-object img-rounded" src="{% static 'img/claim_domain_250_250.png' %}" alt=""></a>
+				<div id="claimDomainModal" class="modal fade" tabindex="-1" role="dialog">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				        <div class="modal-body">
+				            <img src="{% static 'img/claim_domain_416_416.png' %}" class="img img-rounded img-responsive center-block">
+				        </div>
+				    </div>
+				  </div>
+				</div>
+	    	</div>
+	    	<div class="media-body text-left">
+	    		<h4 class="media-heading">2: Claim your domain</h4>
+	    		<p>A free Knownly.net sub-domain will be created automatically so you can try things out straight away. You can also claim a domain you already own and after a quick DNS change you're all set.</p>
+	    	</div>
+	    </div>
+	    <div class="media" style="padding: 20px; background-color: #AAA">
+	    	<div class="media-left">
+	    			<img class="media-object img-rounded" src="http://placehold.it/250x250" alt="">
+	    	</div>
+	    	<div class="media-body text-left">
+	    		<h4 class="media-heading">3: Drop in your files and you're live</h4>
+	    		<p>Now it's time to design and build your site. Work with one of our templates or create something of your very own.</p>
+	    	</div>
+	    </div>
+	    <div style="margin-top: 20px">
+		    <p>If you need any assistance along the way we're more than happy to help.</p>
+		    <p>For bigger projects or if you need assistance with frontend design and development, that's an option too.</p>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+<script>
+	function load_modal(modal){
+		$(modal).modal('show');
+	}
+</script>

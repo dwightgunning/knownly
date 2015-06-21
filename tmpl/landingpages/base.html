@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Knownly{% endblock %}
+
+{% block css_head %}
+  <link href="{% static 'css/landingpages/landing_page.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+        <i class="fa fa-bars"></i>
+      </button>
+      <a class="navbar-brand page-scroll" href="#page-top">
+        <span class="light"><img src="{% static 'img/logo_small.png' %}" height="22px"> Knownly</span>
+      </a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+      <ul class="nav navbar-nav">
+        <li class="hidden">
+          <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
+        </li>
+        <li>
+          <a class="page-scroll" href="#how-it-works">How it works</a>
+        </li>
+        <li>
+          <a class="page-scroll" href="#pricing">Pricing</a>
+        </li>
+        <li>
+          <a class="page-scroll" href="#about">About</a>
+        </li>
+        <li>
+          <a class="page-scroll" href="{% url 'dropbox_auth_start' %}">Signup</a>
+        </li>
+        <li>
+          <a class="page-scroll" href="{% url 'login' %}">Login</a>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+  <!-- /.container -->
+</nav>
+
+  <!-- Intro Header -->
+  <header class="intro">
+    <div class="intro-body">
+        <div class="container">
+          <div class="row">
+              <div class="col-md-8">
+                <img class="img-responsive img-rounded" src="http://placehold.it/900x350" alt="">
+              </div>
+              <div class="col-md-4">
+                  <h1>{% block tagline %}{% endblock %}</h1>
+                  <div class="lead-info">{% block lead_info %}{% endblock %}</div>
+                  <a class="btn btn-primary btn-lg page-scroll" href="#gallery">{% block primary_cta_btn %}{% endblock %}</a>
+              </div>
+          </div>
+          <hr>
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="well text-center">
+                      <span class="lead">{% block cta_well %}{% endblock %}</span>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-4">
+                  <h2>{% block uvp_1_heading %}{% endblock %}</h2>
+                  <p>{% block uvp_1_para %}{% endblock %}</p>
+              </div>
+              <div class="col-md-4">
+                  <h2>{% block uvp_2_heading %}{% endblock %}</h2>
+                  <p>{% block uvp_2_para %}{% endblock %}</p>
+              </div>
+              <div class="col-md-4">
+                  <h2>{% block uvp_3_heading %}{% endblock %}</h2>
+                  <p>{% block uvp_3_para %}{% endblock %}</p>
+              </div>
+          </div>
+      </div>
+    </div>
+  </header>
+
+<section id="how-it-works" class="content-section text-center">
+  {% include "landingpages/partials/how-it-works.html" %}
+</section>
+
+<section id="pricing" class="content-section text-center">
+  {% include "landingpages/partials/pricing.html" %}
+</section>
+
+<section id="start-now" class="container content-section text-center">
+  <div class="container">
+    <div class="col-lg-8 col-lg-offset-2">
+      <span class="lead">{% block start_now_well %}{% endblock %}</span>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
+      <h2>About the site</h2>
+      <img class="img img-circle img-about" src="{% static 'img/dwight_amsterdam_tcr_square.png' %}">
+      <div>
+        <p>Hi, my name is Dwight and I'm the guy behind Knownly.</p>
+        <p>I first conceived the idea to host websites straight from Dropbox back in January 2014. I was reading through the Dropbox API docs for an unrelated project and the light bulb went on...</p>
+        <p>It would be a great way to quickly put up landing pages for my new ideas. I got excited about doing away with all the Wordpress blogs I'd been sucked in to managing over the years and was sick of maintaining. I also figured it might be useful to other creatives, designers and developers (plus anybody wanting to learn these skills) who don't want to worry about servers and systems admin.</p>
+        <p>After diving in, the service came together quite quickly. I'd built just enough to scratch my own itch and let in some friends and family to try it out. As happens, other projects came up and I've had Knownly on the shelf until now (June 2015).</p>
+        <p>So it's time to launch properly - to make it known. As I said, I hope it's useful to you and I'd love your feedback :)</p>
+        <ul class="list-inline banner-social-buttons">
+          <li>
+            <a href="mailto:info@knownly.net" class="btn btn-default btn-lg"><i class="fa fa-send-o fa-fw"></i> <span class="network-name">Email</span></a>
+          </li>
+          <li>
+            <a href="https://twitter.com/knownly_net" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
+          </li>
+          <li>
+            <a href="https://facebook.com/knownly" class="btn btn-default btn-lg"><i class="fa fa-facebook-official fa-fw"></i> <span class="network-name">Facebook</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container text-center">
+    <p class="small">Handmade in Amsterdam. Copyright &copy; Knownly 2015.</p>
+  </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,23 @@
+{
+  "name": "knownly",
+  "version": "0.0.1",
+  "authors": [
+    "Dwight Gunning <dwight@dwightgunning.com>"
+  ],
+  "description": "Host your website from dropbox.",
+  "license": "MIT",
+  "homepage": "https://knownly.net",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "bootstrap-sass-official": "~3.3.4",
+    "fontawesome": "~4.3.0",
+    "hover": "~2.0.2"
+  }
+}

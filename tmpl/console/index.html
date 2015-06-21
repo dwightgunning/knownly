@@ -1,7 +1,12 @@
-{% extends 'console/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}My websites | Knownly{% endblock %}
+
+{% block css_head %}
+  {{ block.super}}
+  <link href="{% static 'css/console.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
     <div id="wrap">
@@ -26,7 +31,7 @@
         </div><!-- /.modal-dialog -->
       </div><!-- /.modal -->
 
-      {% include 'console/navbar.html' %}
+      {% include 'partials/navbar.html' %}
       <div class="container">
       	<h1>My websites</h1>
       {% if messages %}        
@@ -106,11 +111,8 @@
     </div>
 {% endblock %}
 
-{% block javascript_footer %}
+{% block js_footer %}
   {{ block.super }}
-
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="{% static 'vendor/bootstrap_3.1.0/js/bootstrap.js' %}"></script>
   <script>
     $('#create_website_form_btn').click(function () {
       var btn = $(this);
@@ -174,13 +176,18 @@
               });
         });
     });
+  </script>
+{% endblock %}
 
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script>
     mixpanel.register({'email': '{{ dropbox_user.email }}'});
     mixpanel.identify('{{ dropbox_user.email }}');
     mixpanel.people.set({'$email': '{{ dropbox_user.email }}'})
     mixpanel.people.set({'$name': '{{ dropbox_user.display_name }}'})
 
-    mixpanel.track("Page View", {'template': 'index'});
+    mixpanel.track("Page View", {'template': 'index.html'});
     mixpanel.track_links('#support-link', "Support button clicked");
     mixpanel.track_links('.visit_website_link', "View Site button clicked");
     mixpanel.track_links('.remove_website_link', "Delete Site button clicked");
