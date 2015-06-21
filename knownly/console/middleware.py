@@ -23,7 +23,7 @@ class SubdomainToDropboxMiddleware(object):
 		domain = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME')
 		domain_to_match = domain.split(':')[0]
 
-		if domain_to_match in ('www.knownly.net', '127.0.0.1'): #, '127.0.0.1'
+		if domain_to_match in ('www.knownly.net', '127.0.0.1', 'localhost'):
 			#logger.debug('Serving: %s' % request.path)
 			return None
 		else:
