@@ -66,6 +66,8 @@ MESSAGE_TAGS = {
     message_constants.ERROR: 'alert-danger',
 }
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
 try:
     from settings_local import *
 except:
