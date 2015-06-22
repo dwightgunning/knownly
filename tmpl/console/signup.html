@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Knownly{% endblock %}
+{% block description %}Knownly{% endblock %}
+
+{% block css_head %}
+  {{ block.super }}
+  <link href="{% static 'css/console.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-8 offset-4">
+    <ol>
+      <li><button id="btn-auth" class="btn btn-primary">Authorise Knownly</button></li>
+      <li><a href="">Choose your plan</a></li>
+      <li>Create your website</li>
+    </ol>
+  <div>
+  <div id="plan-chooser" class="col-md-8 offset-4">
+    <h1>Choose your plan</h1>
+  </div>
+{% endblock content %}
+
+{% block js_footer %}
+  {{ block.super }}
+  <script>
+    var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
+
+    $('#btn-auth').prop('disabled', {{ request.user.is_authenticated|lower }});
+    if ({{ request.user.is_authenticated|lower }}) {
+      $('#plan-chooser').show();
+    } else {
+      $('#plan-chooser').hide();
+    }   
+
+    $('#btn-auth').click(function () {
+      mixpanel.track('#btn-auth', "Signup Button Clicked");
+      window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
+    });
+  </script>
+{% endblock %}
+
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'console/signup.html'});
+  </script>
+{% endblock %}

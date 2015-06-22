@@ -92,6 +92,7 @@ class DropboxAuthCompleteView(RedirectView):
 	dropbox_user = None
 
 	def get_redirect_url(self, **kwargs):
+		self.dropbox_user = None
 		created = False
 
 		try:
@@ -122,55 +123,59 @@ class DropboxAuthCompleteView(RedirectView):
 			message = 'Account authentication error.'
 			messages.add_message(self.request, messages.ERROR, message)
 
-		if created:
-			# Fetch the Dropbox user's account info
-			client = DropboxClient(self.dropbox_user.dropbox_token)
-			try:
-				account_info = client.account_info()
-				self.dropbox_user.display_name = account_info["display_name"]
-				self.dropbox_user.email = account_info["email"]
-
-				django_user = User.objects.create_user(self.dropbox_user.email, self.dropbox_user.email, User.objects.make_random_password())
-
-				self.dropbox_user.django_user = django_user
-				self.dropbox_user.save()
-				plans.signals.activate_user_plan.send(sender=self.__class__, user=django_user)
-			except ErrorResponse, e:
-				logger.exception("Account authentication problem.")
-				# Remove the dead user_access token
-				self.dropbox_user.access_token = ''
-				self.dropbox_user.save()
-				self.dropbox_user = None
-		else:
-			self.dropbox_user.dropbox_token = token
-			self.dropbox_user.save()
-
-		# Check and if needed, create a placeholder website
 		if self.dropbox_user:
-			client = DropboxClient(self.dropbox_user.dropbox_token)
-			knownly_dir = client.metadata('/')
-			if not knownly_dir.get('contents'):
-				output = StringIO.StringIO()
-				output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
-				website_domain = '%s.knownly.net' % haiku.haiku()
-				site = DropboxSite(dropbox_user=self.dropbox_user, domain=website_domain)
-
+			if created:
+				# Fetch the Dropbox user's account info
+				client = DropboxClient(self.dropbox_user.dropbox_token)
 				try:
-					response = client.put_file('%s/index.html' % website_domain, output)
-					site.save()
-					message = 'We\'ve created you a placeholder website at <a href="%s">%s</a>.' % (site.domain, site.domain)
-					messages.add_message(self.request, messages.SUCCESS, message, extra_tags='safe')					
+					account_info = client.account_info()
+					self.dropbox_user.display_name = account_info["display_name"]
+					self.dropbox_user.email = account_info["email"]
+
+					django_user = User.objects.create_user(self.dropbox_user.email, self.dropbox_user.email, User.objects.make_random_password())
+
+					self.dropbox_user.django_user = django_user
+					self.dropbox_user.save()
+					plans.signals.activate_user_plan.send(sender=self.__class__, user=django_user)
 				except ErrorResponse, e:
-					# Present a useful error to the user
-					logger.exception("Error setting up user's initial website")
-					message = 'We attempted to create you a placeholder website but encountered problems.'
-					if e.user_error_message:
-						message = '%s %s' % (messages, e.user_error_message)
-					messages.add_message(self.request, messages.ERROR, message)
+					logger.exception("Account authentication problem.")
+					# Remove the dead user_access token
+					self.dropbox_user.access_token = ''
+					self.dropbox_user.save()
+					self.dropbox_user = None
+			else:
+				self.dropbox_user.dropbox_token = token
+				self.dropbox_user.save()
 
+			self._check_and_create_sample_website()
 			self.request.session['dropbox_user'] = self.dropbox_user.pk
+			message = 'Knownly successfully authorised.'
+			messages.add_message(self.request, messages.SUCCESS, message)
 
-		return reverse('index')
+		return reverse('post_auth_reloader')
+
+
+	def _check_and_create_sample_website():
+		client = DropboxClient(self.dropbox_user.dropbox_token)
+		knownly_dir = client.metadata('/')
+		if not knownly_dir.get('contents'):
+			output = StringIO.StringIO()
+			output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
+			website_domain = '%s.knownly.net' % haiku.haiku()
+			site = DropboxSite(dropbox_user=self.dropbox_user, domain=website_domain)
+
+			try:
+				response = client.put_file('%s/index.html' % website_domain, output)
+				site.save()
+				message = 'We\'ve created you a placeholder website at <a href="%s">%s</a>.' % (site.domain, site.domain)
+				messages.add_message(self.request, messages.SUCCESS, message, extra_tags='safe')					
+			except ErrorResponse, e:
+				# Present a useful error to the user
+				logger.exception("Error setting up user's initial website")
+				message = 'We attempted to create you a placeholder website but encountered problems.'
+				if e.user_error_message:
+					message = '%s %s' % (messages, e.user_error_message)
+				messages.add_message(self.request, messages.ERROR, message)
 
 
 class LogoutDropboxUserView(RedirectView):
