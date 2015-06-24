@@ -6,6 +6,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
@@ -133,29 +134,34 @@ class DropboxAuthCompleteView(RedirectView):
 					self.dropbox_user.email = account_info["email"]
 
 					django_user = User.objects.create_user(self.dropbox_user.email, self.dropbox_user.email, User.objects.make_random_password())
+					django_user.save()
 
 					self.dropbox_user.django_user = django_user
 					self.dropbox_user.save()
 					plans.signals.activate_user_plan.send(sender=self.__class__, user=django_user)
+
+					message = 'Knownly successfully authorised.'
+					messages.add_message(self.request, messages.SUCCESS, message)
 				except ErrorResponse, e:
 					logger.exception("Account authentication problem.")
 					# Remove the dead user_access token
 					self.dropbox_user.access_token = ''
 					self.dropbox_user.save()
 					self.dropbox_user = None
+
 			else:
 				self.dropbox_user.dropbox_token = token
 				self.dropbox_user.save()
 
 			self._check_and_create_sample_website()
 			self.request.session['dropbox_user'] = self.dropbox_user.pk
-			message = 'Knownly successfully authorised.'
-			messages.add_message(self.request, messages.SUCCESS, message)
+			self.dropbox_user.django_user.backend = 'django.contrib.auth.backends.ModelBackend'
+			login(self.request, self.dropbox_user.django_user)
 
 		return reverse('post_auth_reloader')
 
 
-	def _check_and_create_sample_website():
+	def _check_and_create_sample_website(self):
 		client = DropboxClient(self.dropbox_user.dropbox_token)
 		knownly_dir = client.metadata('/')
 		if not knownly_dir.get('contents'):

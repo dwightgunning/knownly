@@ -9,6 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^', include('knownly.console.urls')),
+    url(r'^plans/', include('knownly.billing.urls')),
     url(r'^welcome/', include('knownly.landingpages.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

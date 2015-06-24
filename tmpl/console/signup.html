@@ -1,43 +1,289 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load settings_value %}
 
 {% block title %}Knownly{% endblock %}
-{% block description %}Knownly{% endblock %}
 
 {% block css_head %}
-  {{ block.super }}
-  <link href="{% static 'css/console.css' %}" rel="stylesheet">
+  <link href="{% static 'css/simple.css' %}" rel="stylesheet">
 {% endblock %}
 
+{% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
+
 {% block content %}
-<div class="container">
-  <div class="col-md-8 offset-4">
-    <ol>
-      <li><button id="btn-auth" class="btn btn-primary">Authorise Knownly</button></li>
-      <li><a href="">Choose your plan</a></li>
-      <li>Create your website</li>
-    </ol>
-  <div>
-  <div id="plan-chooser" class="col-md-8 offset-4">
-    <h1>Choose your plan</h1>
+<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand page-scroll" href="#page-top">
+        <span class="light"><img src="{% static 'img/logo_small.png' %}" height="22px"> Knownly</span>
+      </a>
+    </div>
   </div>
+  <!-- /.container -->
+</nav>
+
+<div class="container content">
+
+  <div class="row">
+    <div class="col-md-9 col-md-offset-3">
+      <div class="col-md-3">1. Authorize Knownly</div>
+      <div class="col-md-3">2. Choose Your Plan</div>
+      <div class="col-md-3">3. Create Your Website</div>
+    </div>
+  </div>
+
+  <div class="row">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div id="begin-auth" class="col-md-9 col-md-offset-3" style="display: none">
+      <button id="btn-auth" class="btn btn-primary">Click here to authorise Knownly.</button>
+    </div>
+
+    <div id="plan-chooser" class="col-md-9 col-lg-offset-3" style="display: none">
+      <h1>Choose your plan</h1>
+      <form id="paid-form" action="{% url 'paid_plan_registration' %}" accept-charset="UTF-8" class="require-validation" method="POST" data-stripe-publishable-key="{% settings_value 'STRIPE_PUBLISHABLE_KEY' %}">
+        {% csrf_token %}
+        <div class="col-md-5">
+          <div class="table-responsive">
+            <table id="plans" class="table text-left btn-group" data-toggle="buttons">
+              <thead>
+                <th>Plan</th>
+                <th>Price</th>
+                <th>Custom Domains</th>
+                <th></th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Premium</td>
+                  <td>$9.99 per month</td>
+                  <td>100</td>
+                  <th>
+                    <label class="btn btn-primary">
+                      <input type="radio" name="plan" value="premium" id="premium" autocomplete="off"><span class="input-label">Choose</span></label>
+                  </th>
+                </tr>
+                <tr>
+                  <td>Professional</td>
+                  <td>$3.99 per month</td>
+                  <td>3</td>
+                  <th>
+                    <label class="btn btn-primary">
+                      <input type="radio" name="plan" value="professional" id="professional" autocomplete="off"><span class="input-label">Choose</span></label>
+                  </th>
+                </tr>
+                <tr>
+                  <td>Free</td>
+                  <td>$0.00 per month</td>
+                  <td>0</td>
+                  <th>
+                    <label class="btn btn-primary active">
+                      <input type="radio" name="plan" value="free" id="free" checked><span class="input-label">Chosen</span></label>
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+            <p class="small">All paid plans include a 14 day free trial. You can cancel or upgrade at any time.</p>
+            <div class="form-group required">
+              <label class="control-label" for="id_email">Confirm your email address:</label>
+              <input id="id_email" name="email" class="form-control" type="text" size="30" value="{{ request.user.email }}">
+            </div>
+          </div>
+          <div id="payment-details" style="display: none">
+            <h2>Payment Details</h2>
+            <span class="payment-errors"></span>
+            <div class="form-row">
+              <div class="col-xs-12 form-group required">
+                <label class='control-label' for="id_name_on_card">Name on Card</label>
+                <input id="id_name_on_card" class="form-control" size="4" type="text">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-xs-12 form-group card required">
+                <label class="control-label" for="id_card_number">Card Number</label>
+                <input id="id_card_number" autocomplete="off" class="form-control card-number" size="20" type="text">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-xs-4 form-group expiration required">
+                <label class="control-label" for="id_expiry_month">Expiration</label>
+                <input id="id_expiry_month" class="form-control card-expiry-month" placeholder="MM" size="2" type="text">
+              </div>
+              <div class="col-xs-4 form-group expiration required">
+                <label class="control-label" for="id_expiry_year"> </label>
+                <input id="id_expiry_year" class="form-control card-expiry-year" placeholder="YYYY" size="4" type="text">
+              </div>
+              <div class="col-xs-4 form-group cvc required">
+                <label class="control-label" for="id_cvc">CVC</label>
+                <input id="id_cvc" autocomplete="off" class="form-control card-cvc" placeholder="ex. 311" size="4" type="text">
+              </div>
+            </div>
+
+            <hr/>
+            <a class="btn" role="button" data-toggle="collapse" href="#billingDetails" aria-expanded="false" aria-controls="billingDetails">Billing details »</a>
+
+            <div class="collapse" id="billingDetails">
+              <div>
+                <div class="form-row">
+                  <div class="col-xs-12 form-group">
+                    <label class="control-label" for="id_name">Name</label>
+                    <input id="id_name" class="form-control" name="firstname" type="text" size="40">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-xs-12 form-group">
+                    <label class="control-label" for="id_streetaddress">Street Address</label>
+                    <input id="id_streetaddress" class="form-control" name="streetaddress" type="text" size="30">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-xs-12 form-group">
+                    <label class="control-label" for="id_city">City</label>
+                    <input id="id_city" class="form-control" name="city" type="text" size="30">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-xs-12 form-group">
+                    <label class="control-label" for="id_country">Country</label>
+                    <input id="id_country" class="form-control" name="country" type="text" size="30">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-xs-12 form-group">
+                    <label class="control-label" for="vatnumber">VAT Number</label>
+                    <input id="vatnumber" class="form-control" type="text" size="30">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <button class="form-control btn btn-primary submit-button" type="submit">Continue</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-3">
+        <p>All our plans include:</p>
+        <ul>
+          <li>Unlimited Knownly sub-domains</li>
+          <li>Knownly website templates</li>
+          <li>Online support</li>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer">
+    <div class="container text-center">
+      <p class="small">Handmade in Amsterdam. Copyright &copy; Knownly 2015.</p>
+    </div>
+  </div>
+</footer>
 {% endblock content %}
 
 {% block js_footer %}
   {{ block.super }}
-  <script>
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+  <script type="text/javascript">
     var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
 
     $('#btn-auth').prop('disabled', {{ request.user.is_authenticated|lower }});
     if ({{ request.user.is_authenticated|lower }}) {
+      $('#begin-auth').hide();
       $('#plan-chooser').show();
     } else {
+      $('#begin-auth').show();
       $('#plan-chooser').hide();
     }   
 
     $('#btn-auth').click(function () {
       mixpanel.track('#btn-auth', "Signup Button Clicked");
       window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
+    });
+
+    $(function() {
+      var planButtons = $("label.btn");
+      $(planButtons).on("click", function() {
+        planButtons.children('span').text("Choose");
+        planButtons.children('input').prop("checked", false);
+        $(this).children('span').text("Chosen");
+        $(this).children('input[type=radio]').prop("checked", true);
+        if ($(this).children('input[type=radio]').attr('id') == 'free') {
+          $('#payment-details').hide();
+        } else {
+          $('#payment-details').show();
+        }
+      });
+    });
+
+    $(function() {
+      $('form.require-validation').bind('submit', function(e) {
+        var $form         = $(e.target).closest('form'),
+            inputSelector = ['input[type=email]', 'input[type=password]',
+                             'input[type=text]', 'input[type=file]',
+                             'textarea'].join(', '),
+            $inputs       = $form.find('.required').find(inputSelector),
+            $errorMessage = $form.find('div.error'),
+            valid         = true;
+
+        $errorMessage.addClass('hide');
+        $('.has-error').removeClass('has-error');
+        $inputs.each(function(i, el) {
+          var $input = $(el);
+          if ($input.val() === '') {
+            $input.parent().addClass('has-error');
+            $errorMessage.removeClass('hide');
+            e.preventDefault(); // cancel on first error
+          }
+        });
+      });
+    });
+
+    $(function() {
+      var $form = $("#paid-form");
+
+      $form.on("submit", function(e) {
+        console.log($form.find("input[name=plan]"));
+        if ($form.find("input[name=plan]:checked").attr("id") == "free") {
+          $form.get(0).submit();
+        } else {
+          e.preventDefault();
+          Stripe.setPublishableKey($form.data('stripe-publishable-key'));
+          Stripe.createToken({
+            number: $('.card-number').val(),
+            cvc: $('.card-cvc').val(),
+            exp_month: $('.card-expiry-month').val(),
+            exp_year: $('.card-expiry-year').val()
+          }, stripeResponseHandler);
+        }
+      });
+
+      function stripeResponseHandler(status, response) {
+        if (response.error) {
+          $('.error')
+            .removeClass('hide')
+            .find('.alert')
+            .text(response.error.message);
+        } else {
+          // token contains id, last4, and card type
+          var token = response['id'];
+          // insert the token into the form so it gets submitted to the server
+          $form.find('input[type=text]').empty();
+          $form.append("<input type='hidden' name='stripe_token' value='" + token + "'/>");
+          $form.get(0).submit();
+        }
+      }
     });
   </script>
 {% endblock %}
