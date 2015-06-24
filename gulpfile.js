@@ -26,6 +26,7 @@ sass = require('gulp-ruby-sass');
         config.bowerDir + '/bootstrap-sass-official/assets/javascripts/bootstrap.min.js',
         config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
         config.jsDir + '/**/*.js',
+        '!' + config.jsDir + '/app.js',
         ])
       .pipe(concat('app.js'))
       .pipe(gulp.dest('static/js/')); 
