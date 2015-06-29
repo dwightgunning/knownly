@@ -1,31 +1,123 @@
 import logging
-import stripe
+from datetime import datetime
 
 from django.conf import settings
 
-from knownly.billing.models import StripeCustomer
+import stripe
+
+from knownly.billing.exceptions import PaymentProviderError
+from knownly.billing.models import \
+    CustomerBillingDetails, StripeCustomer, StripeEvent
+
+from knownly import plans
 
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+class CustomerBillingService(object):
+
+    def __init__(self, user):
+        self.user = user
+
+    def has_billing_details(self):
+        return CustomerBillingDetails.objects.filter(user=user).exists()
+
+    def get_billing_details(self):
+        billing_details = CustomerBillingDetails.objects.filter(user=self.user)
+        if billing_details:
+            return billing_details.latest()
+        else:
+            raise CustomerBillingDetails.DoesNotExist()
+
+    def update_billing_details(self, details):
+        billing_details = CustomerBillingDetails(
+            user=self.user,
+            billing_currency=details['currency'],
+            customer_type=details['customer_type'],
+            name=details['name'],
+            street_address=details['street_address'],
+            city=details['city'],
+            post_code=details['post_code'],
+            country=details['country'],
+            vat_id=details.get('vat_id', ''),
+            ip_address=details['ip_address'],
+            cc_bin=details['cc_bin'])
+        billing_details.save()
+
+        stripe_customer_service = StripeCustomerService(self.user)
+        stripe_customer_service.create_or_update_customer(
+            currency=details['currency'],
+            stripe_token=details['stripe_token'])
+
+        return billing_details
+
+    def update_subscription(self, selected_plan, period):
+        # Delegates straight to StripeCustomerService as 
+        # we don't need to do anything with the billing periods
+        billing_details = self.get_billing_details()
+
+        stripe_customer_service = StripeCustomerService(self.user)
+        stripe_customer_service.update_subscription(
+            selected_plan, period, billing_details.billing_currency)
+
 
 class StripeCustomerService(object):
 
-    def create_stripe_customer(self, user, stripe_token):        
+    def __init__(self, user):
+        self.user = user
+
+    def create_or_update_customer(self, currency, stripe_token):
         try:
-            resp = stripe.Customer.create(card=stripe_token,
-            							  email=user.email)
+            customer = StripeCustomer.objects.get( \
+                user=self.user, currency=currency)
+        except StripeCustomer.DoesNotExist:
+            customer = StripeCustomer(user=self.user, currency=currency)
 
-            customer, created = StripeCustomer.objects.get_or_create(
-            	user=user, customer_id=resp['id'])
-            customer.save()
+        try:
+            if customer.stripe_customer_id:
+                stripe_customer = \
+                    stripe.Customer.retrieve(customer.stripe_customer_id)
+                stripe_customer.email = self.user.email
+                stripe_customer.source = stripe_token
+                stripe_customer.save()
+            else:
+                stripe_customer = stripe.Customer.create( \
+                    source=stripe_token, email=self.user.email)
+                customer.stripe_customer_id=stripe_customer['id']
+                customer.save()
+
         except stripe.error.StripeError as se:
-            errors = self._errors.setdefault(NON_FIELD_ERRORS, ErrorList())
-            errors.append(se.message)
-            logger.exception("Could not create stripe customer: %s" % se)
-            return None
+            logger.exception('Could not create stripe customer', se)
+            raise PaymentProviderError('Error registering customer with payment provider', se)
 
-        return customer
+        return stripe_customer
 
-    def register_customer_for_plan(self, customer, plan):
-    	pass
+    def update_subscription(self, selected_plan, period, currency):
+        stripe_customer = StripeCustomer.objects.get(user=self.user)
+
+        plan_id = '%s-%s-%s' % (selected_plan, period, currency)
+
+        customer = stripe.Customer.retrieve(stripe_customer.stripe_customer_id)
+        if customer['subscriptions']['data']:
+            current_subscription = customer['subscriptions']['data'][0]
+            current_plan
+            if current_plan != plan_id:
+                subscription = customer.subscriptions.retrieve(current_subscription['id'])
+                subscription.plan = plan_id
+                subscription.save()
+        else:
+            customer.subscriptions.create(plan=plan_id)
+
+
+class StripeEventHandler(object):
+
+    def handle_event(self, event_id):
+        event = StripeEvent(stripe_id=event_id)
+
+        try:
+            resp = stripe.Event.retrieve(event_id)
+            event.event_type = resp['type']
+            event.timestamp = datetime.utcfromtimestamp(resp['created'])
+        except stripe.error.StripeError as se:
+            logger.exception("Stripe API Error")
+        event.save()

@@ -1,16 +1,17 @@
-Django==1.8.1
+Django==1.8.2
 amqp==1.4.6
 anyjson==0.3.3
 billiard==3.3.0.20
 celery==3.1.18
 django-countries==3.3
+django-currencies==0.3.3
 django-debug-toolbar==1.0.1
+django-ipware==1.1.0
 django-nose==1.4
-django-ordered-model==0.4.1
--e git://github.com/cypreess/django-plans.git@79dc0088b5b316a71a31e52a45244d6fd8ef6c82#egg=django_plans-master
 dropbox==2.2.0
 gunicorn==19.1.0
 kombu==3.0.26
+money==1.2.2
 nose==1.3.6
 psycopg2==2.5.3
 python-stdnum==1.1
@@ -22,5 +23,6 @@ sqlparse==0.1.10
 stripe==1.22.3
 suds-jurko==0.6
 urllib3==1.10.4
+vat-moss==0.11.0
 vatnumber==1.2
 wsgiref==0.1.2

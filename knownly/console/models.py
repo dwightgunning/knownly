@@ -9,7 +9,7 @@ class DropboxUser(models.Model):
 	display_name = models.CharField(_('display name'), max_length=30)
 	dropbox_token = models.TextField()
 	email = models.EmailField()
-	account_created = models.DateTimeField(auto_now_add=True)
+	account_created = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
 
 	def __unicode__(self):
 		return u'%s' % self.display_name
@@ -17,7 +17,7 @@ class DropboxUser(models.Model):
 class DropboxSite(models.Model):
 	dropbox_user = models.ForeignKey(DropboxUser)
 	domain = models.CharField(max_length=63, unique=True)
-	date_created = models.DateTimeField(auto_now_add=True)
+	date_created = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
 	
 	def __unicode__(self):
 		return u'%s' % self.domain
@@ -26,4 +26,4 @@ class ArchivedDropboxSite(models.Model):
 	dropbox_user = models.ForeignKey(DropboxUser)
 	domain = models.CharField(max_length=63)
 	date_created = models.DateTimeField()
-	date_archived = models.DateTimeField(auto_now_add=True)
+	date_archived = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now

@@ -3,7 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <script type="text/javascript">
-            window.opener.location.reload();
+            var new_customer = {{ new_customer|lower }};
+            if (new_customer) {
+                window.opener.location.reload();
+            } else {
+                window.opener.location.href = "{% url 'console' %}";
+            }
             window.close();
         </script>
         <title>Registration - Next steps</title>

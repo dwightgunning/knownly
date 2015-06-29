@@ -17,21 +17,22 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
-    'ordered_model',
-    'plans',
+    'django_countries',
     'knownly.console',
     'knownly.billing',
     'knownly.landingpages',
+    'knownly.plans',
 )
 
 MIDDLEWARE_CLASSES = (
-    'knownly.console.middleware.SubdomainToDropboxMiddleware',    
+    'knownly.console.middleware.SubdomainToDropboxMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'knownly.plans.middleware.CustomerPlanMiddleware'
 )
 
 ROOT_URLCONF = 'knownly.urls'
@@ -52,7 +53,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'plans.context_processors.account_status',
             ],
         },
     },

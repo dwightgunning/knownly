@@ -4,13 +4,14 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from knownly import console
-
+from knownly.billing.views import stripe_webhook
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^', include('knownly.console.urls')),
-    url(r'^plans/', include('knownly.billing.urls')),
-    url(r'^welcome/', include('knownly.landingpages.urls')),
+    url(r'^', include('knownly.landingpages.urls')),
+    url(r'^', include('knownly.plans.urls')),
+    url(r'^billing/hook/$', stripe_webhook, name='stripe-webhook'),
     url(r'^admin/', include(admin.site.urls)),
 )
 
