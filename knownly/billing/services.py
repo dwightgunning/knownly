@@ -1,11 +1,12 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.utils import timezone
 
 import stripe
 
-from knownly.billing.exceptions import PaymentProviderError
+from knownly.billing.errors import PaymentProviderError
 from knownly.billing.models import \
     CustomerBillingDetails, StripeCustomer, StripeEvent
 
@@ -13,6 +14,8 @@ from knownly import plans
 
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+TRIAL_DAYS_ON_FIRST_PAID_PLAN = 14
 
 class CustomerBillingService(object):
 
@@ -102,22 +105,45 @@ class StripeCustomerService(object):
             current_subscription = customer['subscriptions']['data'][0]
             current_plan
             if current_plan != plan_id:
-                subscription = customer.subscriptions.retrieve(current_subscription['id'])
-                subscription.plan = plan_id
-                subscription.save()
+                try:
+                    subscription = customer.subscriptions.retrieve(
+                        current_subscription['id'])
+                    subscription.plan = plan_id
+                    subscription.save()
+                except stripe.error.StripeError as se:
+                    logger.exception('Stripe API Error while updating stripe '
+                                     'customer (%s) subscription to: %s',
+                                     stripe_customer.user, plan_id)
+                    raise PaymentProviderError('Error updating customer '
+                                               'subscription', se)
+            else:
+                logger.error('Invalid state: cannot update subscription to '
+                             'the same plan')
+
         else:
-            customer.subscriptions.create(plan=plan_id)
+            try:
+                trial_end = timezone.now() + \
+                    timedelta(days=TRIAL_DAYS_ON_FIRST_PAID_PLAN)
+                customer.subscriptions.create(
+                    plan=plan_id,trial_end=trial_end.strftime('%s'))
+            except:
+                logger.exception('Stripe API Error while creating stripe '
+                                 'customer (%s) subscription to: %s',
+                                 stripe_customer.user, plan_id)
+                raise PaymentProviderError('Error updating customer '
+                                           'subscription', se)
 
 
 class StripeEventHandler(object):
 
+    # TODO: Wrap in a celery task
     def handle_event(self, event_id):
         event = StripeEvent(stripe_id=event_id)
-
         try:
             resp = stripe.Event.retrieve(event_id)
             event.event_type = resp['type']
             event.timestamp = datetime.utcfromtimestamp(resp['created'])
+            event.data = resp
         except stripe.error.StripeError as se:
             logger.exception("Stripe API Error")
         event.save()

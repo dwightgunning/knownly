@@ -1,11 +1,16 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import datetime
 import unittest
 
-from django.test import LiveServerTestCase
+from django.test import Client, LiveServerTestCase, override_settings
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from selenium.webdriver.firefox.webdriver import WebDriver
+
+from knownly import plans
+from knownly.plans.models import CustomerSubscription
 
 User = get_user_model()
 
@@ -54,3 +59,95 @@ class LandingPageTests(LiveServerTestCase):
         self.selenium.get('%s%s' % (self.live_server_url, '/welcome/creatives'))
         # Expect to see the primary cta
         self.selenium.find_element_by_id('primary-cta')
+
+
+@override_settings(SESSION_COOKIE_SECURE=False)
+class FreePlanSelectionTests(LiveServerTestCase):
+    fixtures = ['knownly/fixtures/users.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super(FreePlanSelectionTests, cls).setUpClass()
+        cls.selenium = WebDriver()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super(FreePlanSelectionTests, cls).tearDownClass()
+
+    def setUp(self):
+        client = Client()
+        client.get(self.live_server_url)
+        self.assertTrue(client.login(username='test@knownly.net', password='test'))
+        cookie = client.cookies[settings.SESSION_COOKIE_NAME]
+        self.selenium.get(self.live_server_url + '/admin/')
+        self.selenium.add_cookie({'name': 'sessionid', 
+                                 'value': cookie.value,
+                                 'secure': False,
+                                 'path': '/'})
+        self.selenium.refresh()
+
+    def test_free_plan(self):
+        self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
+        # Expect to see the primary cta
+        self.selenium.find_element_by_id('plan-form-submit').click()
+
+        # Expect the following view to be the Console page
+        self.selenium.implicitly_wait(2)
+        self.selenium.find_element_by_id('console')
+
+        CustomerSubscription.objects.get(
+            user=User.objects.get(username='test@knownly.net'),
+            current_plan=plans.FREE)
+
+
+@override_settings(SESSION_COOKIE_SECURE=False)
+class LitePlanSelectionTests(LiveServerTestCase):
+    fixtures = ['knownly/fixtures/users.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super(LitePlanSelectionTests, cls).setUpClass()
+        cls.selenium = WebDriver()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super(LitePlanSelectionTests, cls).tearDownClass()
+
+    def setUp(self):
+        client = Client()
+        client.get(self.live_server_url)
+        self.assertTrue(client.login(username='test@knownly.net', password='test'))
+        cookie = client.cookies[settings.SESSION_COOKIE_NAME]
+        self.selenium.get(self.live_server_url + '/admin/')
+        self.selenium.add_cookie({'name': 'sessionid', 
+                                 'value': cookie.value,
+                                 'secure': False,
+                                 'path': '/'})
+        self.selenium.refresh()
+
+    def test_lite_plan(self):
+        self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
+        # Find and select the Lite Plan button
+        self.selenium.find_element_by_xpath("//input[@type='radio'][@value='lite']").click()
+        
+        # Find and populate the billing details form
+        payment_details = self.selenium.find_element_by_id('payment-details')
+        self.assertNotEqual(payment_details.value_of_css_property('display'), 'none')
+
+        self.selenium.find_element_by_id('id_card_number').send_keys('5555555555554444')
+        self.selenium.find_element_by_id('id_expiry_month').send_keys('11')
+        self.selenium.find_element_by_id('id_expiry_year').send_keys('2020')
+        self.selenium.find_element_by_id('id_cvc').send_keys('111')
+
+        # Expect to see the primary cta
+        self.selenium.find_element_by_id('plan-form-submit').click()
+
+        # Expect the following view to be the Console page
+        self.selenium.implicitly_wait(2)
+        self.selenium.find_element_by_id('console')
+
+        CustomerSubscription.objects.get(
+            user=User.objects.get(username='test@knownly.net'),
+            current_plan=plans.LITE)

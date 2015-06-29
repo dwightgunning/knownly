@@ -13,7 +13,7 @@ LOGGING = {
     },
     'handlers': {
         'console':{
-            'level':'WARNING',
+            'level':'DEBUG',
             'class':'logging.StreamHandler',
             'formatter': 'verbose'
         },
@@ -31,7 +31,7 @@ LOGGING = {
         },
         'knownly': {
             'handlers':['console', 'mail_admins'],
-            'level':'WARNING',
+            'level':'DEBUG',
         },
         'django.db.backends': {
             'handlers':['console', 'mail_admins'],

@@ -116,3 +116,4 @@ class StripeEvent(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     event_type = models.CharField(max_length=64)
     timestamp = models.DateTimeField()
+    data = models.TextField(blank=True)

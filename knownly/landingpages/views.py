@@ -14,8 +14,6 @@ from knownly.console.forms import WebsiteForm
 from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
 from knownly.console.services import DropboxUserService
 
-
-# Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
@@ -81,20 +79,19 @@ class DropboxAuthCompleteView(RedirectView):
             messages.add_message(self.request,
                                  messages.ERROR,
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
-            self.request.session.flush()
+            logout(self.request)
         except Exception, e:
             logger.exception("Unexpected error occured during Dropbox auth")
             messages.add_message(self.request,
                                  messages.ERROR,
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
-            self.request.session.flush()
+            logout(self.request)
         else:
             # Create DropboxUser
             user_service = DropboxUserService()
             dropbox_user, created = user_service.get_or_create(user_id, dropbox_token)
 
             # Login the dropbox user and setup session token
-            self.request.session['dropbox_user'] = dropbox_user.pk
             dropbox_user.django_user.backend = \
                 'django.contrib.auth.backends.ModelBackend'
             login(self.request, dropbox_user.django_user)

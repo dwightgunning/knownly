@@ -63,7 +63,7 @@
                   <td>100</td>
                   <th>
                     <label class="btn btn-primary plan-type">
-                      <input type="radio" name="knownly_plan" value="premium" autocomplete="off"><span class="input-label">Choose</span></label>
+                      <input type="radio" name="knownly_plan" value="premium" autocomplete="off"{% if form.fields.knownly_plan.value == 'premium' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'premium' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
                 <tr>
@@ -72,16 +72,16 @@
                   <td>3</td>
                   <th>
                     <label class="btn btn-primary plan-type">
-                      <input type="radio" name="knownly_plan" value="lite" autocomplete="off"><span class="input-label">Choose</span></label>
+                      <input type="radio" name="knownly_plan" value="lite" autocomplete="off" {% if form.fields.knownly_plan.value == 'lite' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'lite' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
                 <tr>
                   <td>Free</td>
                   <td><span id="free-plan-price">$0.00 per month</span></td>
-                  <td>0</td>
+                  <td>0 {{ form.fields.knownly_plan.value }}</td>
                   <th>
                     <label class="btn btn-primary plan-type active">
-                      <input type="radio" name="knownly_plan" value="free" checked><span class="input-label">Chosen</span></label>
+                      <input type="radio" name="knownly_plan" value="free" autocomplete="off" {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}checked{% endif %}><span class="input-label">{% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
               </tbody>
@@ -101,9 +101,11 @@
             </div>
             <p class="small">All paid plans include a 14 day free trial. You can cancel or upgrade at any time.</p>
           </div>
-          <div id="payment-details" style="display: none">
+          <div id="payment-details" {% if not form.errors %}style="display: none"{% endif %}>
             <h2>Billing Details</h2>
-            <span class="payment-errors"></span>
+            <div class="payment-errors text-danger">
+              {{ form.non_field_errors }}
+            </div>
             <div class="form-row">
               <div class="col-xs-12 form-group card required">
                 <label class="control-label" for="id_card_number">Card Number</label>
@@ -130,24 +132,27 @@
                 <div class="form-row">
                   <div class="col-xs-12 form-group required">
                     <label class="radio-inline">
-                      <input type="radio" id="customer_type_personal" name="customer_type" value="ppl" checked>Personal
+                      <input type="radio" id="customer_type_personal" name="customer_type" value="ppl" {% if form.fields.customer_type.value != 'biz' %}checked{% endif %}>Personal
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" id="customer_type_business" name="customer_type" value="biz" role="button" data-toggle="#vat_field">Business
+                      <input type="radio" id="customer_type_business" name="customer_type" value="biz" role="button" data-toggle="#vat_field" {% if form.fields.customer_type.value == 'biz' %}checked{% endif %}>Business
                     </label>
                   </div>
+                  <p class="help-block"><span class="text-danger">{{ form.customer_type.errors.0 }}</span></p>
                 </div>
                 <div class="form-row">
                   <div class="col-xs-12 form-group required">
-                    <label id="lbl_customer_name" class="control-label" for="id_name">Customer Name</label>
+                    <label id="lbl_customer_name" class="control-label" for="id_name">{% if form.fields.customer_type.value == 'biz' %}Business Name{% else %}Customer Name{% endif %}</label>
                     <input id="id_name" class="form-control" name="name" type="text" size="40">
                   </div>
+                  <p class="help-block"><span class="text-danger">{{ form.name.errors.0 }}</span></p>
                 </div>
                 <div class="form-row">
                   <div class="col-xs-12 form-group required">
                     <label class="control-label" for="id_street_address">Street Address</label>
                     <input id="id_street_address" class="form-control" name="street_address" type="text" size="30">
                   </div>
+                  <p class="help-block"><span class="text-danger">{{ form.street_address.errors.0 }}</span></p>
                 </div>
 
                 <div class="form-row">
@@ -155,6 +160,7 @@
                     <label class="control-label" for="id_city">City</label>
                     <input id="id_city" class="form-control" name="city" type="text" size="30">
                   </div>
+                  <p class="help-block"><span class="text-danger">{{ form.city.errors.0 }}</span></p>
                 </div>
 
                 <div class="form-row">
@@ -162,31 +168,34 @@
                     <label class="control-label" for="id_post_code">Post code</label>
                     <input id="id_post_code" class="form-control" name="post_code" type="text" size="15">
                   </div>
+                  <p class="help-block"><span class="text-danger">{{ form.post_code.errors.0 }}</span></p>
                 </div>
 
                 <div class="form-row">
                   <div class="col-xs-12 form-group required">
                     <label class="control-label" for="id_country">Country</label>
-                      <select id="id_country" name="country">
+                      <select id="id_country" name="country" class="form-control">
                         <option value="" selected>Choose country</option>
                         {% for value, label in form.fields.country.choices %}
                           <option value="{{ value}}"{% if form.fields.country.value == value %} selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                       </select>
+                      <p class="help-block"><span class="text-danger">{{ form.country.errors.0 }}</span></p>
                   </div>
                 </div>
 
-                <div id="vat_field" class="form-row" style="display: none">
+                <div id="vat_field" class="form-row" {% if form.fields.customer_type.value == 'ppl' %}style="display: none"{% endif %}>
                   <div class="col-xs-12 form-group">
-                    <label class="control-label" for="vatnumber">VAT ID</label>
-                    <input id="vatnumber" class="form-control" type="text" size="30">
+                    <label class="control-label" for="id_vat_id">VAT ID</label>
+                    <input id="id_vat_id" name="vat_id" class="form-control" type="text" size="30">
+                    <p class="help-block"><span class="text-danger">{{ form.vat_id.errors.0 }}</span></p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="form-row">
-            <button class="form-control btn btn-primary submit-button" type="submit">Finish sign up</button>
+            <button id="plan-form-submit" class="form-control btn btn-primary submit-button" type="submit">Finish sign up</button>
           </div>
         </form>
       </div>
@@ -322,6 +331,7 @@
         var $form         = $(e.target).closest('form'),
             inputSelector = ['input[type=email]', 'input[type=password]',
                              'input[type=text]', 'input[type=file]',
+                             'input[type=radio]', 'select',
                              'textarea'].join(', '),
             $inputs       = $form.find('.required').find(inputSelector),
             $errorMessage = $form.find('div.error'),
@@ -342,12 +352,14 @@
 
     $(function() {
       var $form = $("#paid-form");
+      var cc_bin = '';
 
       $form.on("submit", function(e) {
         if ($form.find("input[name=knownly_plan]:checked").attr("value") == "free") {
           $form.get(0).submit();
         } else {
-          $form.append("<input type='hidden' name='cc_bin' value='" + $('.card-number').val().substring(0, 6) + "'/>");
+          cc_bin = $('.card-number').val().substring(0, 6);
+          
           e.preventDefault();
           Stripe.setPublishableKey($form.data('stripe-publishable-key'));
           Stripe.createToken({
@@ -370,6 +382,7 @@
           var token = response['id'];
           // insert the token into the form so it gets submitted to the server
           $form.find('input[type=text]').empty();
+          $form.append("<input type='hidden' name='cc_bin' value='" + cc_bin + "'/>");
           $form.append("<input type='hidden' name='stripe_token' value='" + token + "'/>");
           $form.get(0).submit();
         }

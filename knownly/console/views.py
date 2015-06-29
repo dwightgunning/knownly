@@ -6,7 +6,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
@@ -22,15 +22,15 @@ from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
 from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
 
-# Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 class IndexView(TemplateView):
 	dropbox_user = None
 
 	def get(self, request, *args, **kwargs):
-		if 'dropbox_user' in self.request.session:
-			self.dropbox_user = DropboxUser.objects.get(pk=self.request.session['dropbox_user'])
+		if self.request.user.is_authenticated():
+			self.dropbox_user = DropboxUser.objects.get(
+				django_user=request.user)
 
 			if self.dropbox_user.dropbox_token:
 				client = DropboxClient(self.dropbox_user.dropbox_token)
@@ -46,9 +46,7 @@ class IndexView(TemplateView):
 					self.dropbox_user.save()
 					self.dropbox_user = None
 
-					self.request.session.flush()
-					self.request.session.cycle_key()
-
+					logout(self.request)
 					# Present a useful error to the user
 					message = 'Account authentication error.'
 					try:
@@ -77,8 +75,7 @@ class IndexView(TemplateView):
 class LogoutDropboxUserView(RedirectView):
 
 	def get_redirect_url(self, **kwargs):
-		self.request.session.flush()
-		self.request.session.cycle_key()
+		logout(self.request)
 
 		message = "Thanks for spending some time with us. Hope to see you soon!"
 		messages.add_message(self.request, messages.INFO, message)
@@ -91,7 +88,7 @@ class CreateWebsiteView(BaseFormView):
 
 	def dispatch(self, request, *args, **kwargs):
 		try:
-			self.dropbox_user = DropboxUser.objects.get(pk=self.request.session['dropbox_user'])
+			self.dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
 		except DropboxUser.DoesNotExist:
 			return HttpResponse('Unauthorized', status=401)
 
@@ -147,7 +144,7 @@ class RemoveWebsiteView(DeleteView):
 
 	def dispatch(self, request, *args, **kwargs):
 		try:
-			self.dropbox_user = DropboxUser.objects.get(pk=self.request.session['dropbox_user'])
+			self.dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
 		except DropboxUser.DoesNotExist:
 			return HttpResponse('Unauthorized', status=401)
 

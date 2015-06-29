@@ -90,6 +90,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('event_type', models.CharField(max_length=64)),
                 ('timestamp', models.DateTimeField()),
+                ('data', models.TextField(blank=True)),
             ],
         ),
         migrations.AlterUniqueTogether(
