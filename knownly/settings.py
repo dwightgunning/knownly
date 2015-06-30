@@ -1,4 +1,5 @@
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = '&r$=!+FDIOSJVPSOIDVJ_*-wvf!tyf$asdfadfdfa(*_()*24132r1u'
@@ -15,18 +16,23 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_nose',
+    'django_countries',
     'knownly.console',
+    'knownly.billing',
     'knownly.landingpages',
+    'knownly.plans',
 )
 
 MIDDLEWARE_CLASSES = (
-    'knownly.console.middleware.SubdomainToDropboxMiddleware',    
+    'knownly.console.middleware.SubdomainToDropboxMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'knownly.plans.middleware.CustomerPlanMiddleware'
 )
 
 ROOT_URLCONF = 'knownly.urls'
@@ -65,6 +71,8 @@ MESSAGE_TAGS = {
     message_constants.WARNING: 'alert-warning',
     message_constants.ERROR: 'alert-danger',
 }
+
+CELERY_ACCEPT_CONTENT = ['json', ]
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 

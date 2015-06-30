@@ -36,7 +36,7 @@
           <a class="page-scroll" href="#about">About</a>
         </li>
         <li>
-          <a class="page-scroll" href="{% url 'dropbox_auth_start' %}">Signup</a>
+          <a class="page-scroll" href="{% url 'signup' %}">Signup</a>
         </li>
         <li>
           <a class="page-scroll" href="{% url 'login' %}">Login</a>
@@ -59,7 +59,7 @@
               <div class="col-md-4">
                   <h1>{% block tagline %}{% endblock %}</h1>
                   <div class="lead-info">{% block lead_info %}{% endblock %}</div>
-                  <a id="primary-cta" class="btn btn-primary btn-lg page-scroll" href="#gallery">{% block primary_cta_btn %}{% endblock %}</a>
+                  <a id="primary-cta" class="btn btn-primary btn-lg page-scroll" href="{% url 'signup' %}">{% block primary_cta_btn %}{% endblock %}</a>
               </div>
           </div>
           <hr>
@@ -93,7 +93,14 @@
 </section>
 
 <section id="pricing" class="content-section text-center">
-  {% include "landingpages/partials/pricing.html" %}
+  <div class="download-section">
+    <div class="container">
+      <div class="col-lg-8 col-lg-offset-2">
+        <h2>Pricing</h2>
+        {% include "billing/partials/pricing.html" %}
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="start-now" class="container content-section text-center">

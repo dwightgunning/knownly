@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript">
+            var new_customer = {{ new_customer|lower }};
+            if (new_customer) {
+                window.opener.location.reload();
+            } else {
+                window.opener.location.href = "{% url 'console' %}";
+            }
+            window.close();
+        </script>
+        <title>Registration - Next steps</title>
+    </head>
+    <body>
+        <p>Thanks...</p>
+    </body>
+</html>

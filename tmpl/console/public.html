@@ -25,7 +25,8 @@
         <h1 class="cover-heading">Knownly</h1>
         <p class="lead">Turn a Dropbox folder into a website. Make it known.</p>
         <p class="lead">
-          <a id="btn-signup" href="{% url 'dropbox_auth_start' %}" class="btn btn-lg btn-default">Start here</a>
+          <a id="btn-signup" href="{% url 'signup' %}" class="btn btn-lg btn-success">Sign up</a>
+          <button id="btn-login" class="btn btn-lg btn-default">Log in</button>
         </p>
       </div>
 
@@ -44,5 +45,14 @@
   <script type="text/javascript">
     mixpanel.track("Page View", {'template': 'public.html'});
     mixpanel.track_links('#btn-signup', "Signup Button Clicked", {'position': 'CTA'});
+  </script>
+
+  <script type="text/javascript">
+    var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
+
+    $('#btn-login').click(function () {
+      mixpanel.track('#btn-login', "Login Button Clicked");
+      window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
+    });
   </script>
 {% endblock %}

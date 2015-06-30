@@ -38,7 +38,7 @@ sass = require('gulp-ruby-sass');
                      loadPath: [
                          config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
                          config.bowerDir + '/fontawesome/scss',
-        config.bowerDir + '/Hover/scss',
+        config.bowerDir + '/hover/scss',
                      ]
                }) 
       .on('error', notify.onError(function (error) {
