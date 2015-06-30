@@ -112,7 +112,7 @@ class LitePlanSelectionTests(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.selenium.quit()
+        # cls.selenium.quit()
         super(LitePlanSelectionTests, cls).tearDownClass()
 
     def setUp(self):
@@ -129,9 +129,12 @@ class LitePlanSelectionTests(LiveServerTestCase):
 
     def test_lite_plan(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
+        # import time
+        # time.sleep(10)
         # Find and select the Lite Plan button
-        self.selenium.find_element_by_xpath("//input[@type='radio'][@value='lite']").click()
-        
+        self.selenium.find_element_by_xpath("//input[@type='radio' and @value='lite']").click()
+        self.selenium.find_element_by_xpath("//input[@type='radio' and @value='lite']").click()
+
         # Find and populate the billing details form
         payment_details = self.selenium.find_element_by_id('payment-details')
         self.assertNotEqual(payment_details.value_of_css_property('display'), 'none')
@@ -141,12 +144,21 @@ class LitePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('id_expiry_year').send_keys('2020')
         self.selenium.find_element_by_id('id_cvc').send_keys('111')
 
+        self.selenium.find_element_by_id('id_name').send_keys('111')
+        self.selenium.find_element_by_id('id_street_address').send_keys('111')
+        self.selenium.find_element_by_id('id_city').send_keys('111')
+        self.selenium.find_element_by_id('id_post_code').send_keys('111')
+        self.selenium.find_element_by_id('id_country').send_keys('111')
+
         # Expect to see the primary cta
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
         self.selenium.implicitly_wait(2)
         self.selenium.find_element_by_id('console')
+
+        print CustomerSubscription.objects.all()[0].user
+        print CustomerSubscription.objects.all()[0].current_plan
 
         CustomerSubscription.objects.get(
             user=User.objects.get(username='test@knownly.net'),
