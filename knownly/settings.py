@@ -1,11 +1,8 @@
 import os
 
+import dj_database_url
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-SECRET_KEY = '&r$=!+FDIOSJVPSOIDVJ_*-wvf!tyf$asdfadfdfa(*_()*24132r1u'
-
-DEBUG = False
-TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -24,6 +21,8 @@ INSTALLED_APPS = (
     'knownly.plans',
 )
 
+INTERNAL_REDIRECT_DIRECTORY = 'dropbox_redirect'
+
 MIDDLEWARE_CLASSES = (
     'knownly.console.middleware.SubdomainToDropboxMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -35,12 +34,17 @@ MIDDLEWARE_CLASSES = (
     'knownly.plans.middleware.CustomerPlanMiddleware'
 )
 
+LANGUAGE_CODE = 'en-us'
+
 ROOT_URLCONF = 'knownly.urls'
 
-WSGI_APPLICATION = 'knownly.wsgi.application'
+SECRET_KEY = '&r$=!+FDIOSJVPSOIDVJ_*-wvf!tyf$asdfadfdfa(*_()*24132r1u'
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Amsterdam'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static/"),
+)
+
+STATIC_URL = '/static/'
 
 TEMPLATES = [
     {
@@ -58,11 +62,11 @@ TEMPLATES = [
     },
 ]
 
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-INTERNAL_REDIRECT_DIRECTORY = 'dropbox_redirect'
 
 from django.contrib.messages import constants as message_constants
 MESSAGE_TAGS = {
@@ -80,11 +84,19 @@ try:
     from settings_local import *
 except:
     print 'No settings_local.py available.'
-    raise
+    DATABASES = \
+        {'default': dj_database_url.config(default=os.environ['DATABASE_URL'])}
+    DEBUG = os.environ['DEBUG']
+    DROPBOX_APP_KEY = os.environ['DROPBOX_APP_KEY']
+    DROPBOX_APP_SECRET = os.environ['DROPBOX_APP_SECRET']
+    SECRET_KEY = os.environ['SECRET_KEY']
+    STATIC_ROOT = os.environ['STATIC_ROOT']
+    STRIPE_SECRET_KEY = os.environ['STRIPE_SECRET_KEY']
+    STRIPE_PUBLISHABLE_KEY = os.environ['STRIPE_PUBLISHABLE_KEY']
+    TEMPLATE_DEBUG = os.environ['SECRET_KEY']
 
 try:
     from settings_logging import *
 except:
     print 'Error loading logging configuration'
     raise
-
