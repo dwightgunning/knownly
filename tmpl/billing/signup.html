@@ -30,6 +30,7 @@
       <div class="col-md-3">2. Choose Your Plan</div>
       <div class="col-md-3">3. Create Your Website</div>
     </div>
+  </div>
   <div class="row">
     {% if messages %}
     <ul class="messages">
@@ -53,55 +54,55 @@
               <thead>
                 <th>Level</th>
                 <th>Price</th>
-                <th>Custom Domains</th>
-                <th></th>
+                <th colspan="2">Custom Domains</th>
               </thead>
               <tbody>
                 <tr>
                   <td>Premium</td>
-                  <td><span id="premium-plan-price">$14.99 per month</span></td>
+                  <td style="min-width: 110px"><span id="premium-plan-price">$14.99/month</span></td>
                   <td>100</td>
-                  <th>
-                    <label class="btn btn-primary plan-type">
+                  <th class="text-right">
+                    <label class="btn {% if form.fields.knownly_plan.value == 'premium' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
                       <input type="radio" name="knownly_plan" value="premium" autocomplete="off"{% if form.fields.knownly_plan.value == 'premium' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'premium' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
                 <tr>
                   <td>Lite</td>
-                  <td><span id="lite-plan-price">$4.99 per month</span></td>
+                  <td style="min-width: 110px"><span id="lite-plan-price">$4.99/month</span></td>
                   <td>3</td>
-                  <th>
-                    <label class="btn btn-primary plan-type">
+                  <th class="text-right">
+                    <label class="btn {% if form.fields.knownly_plan.value == 'lite' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
                       <input type="radio" name="knownly_plan" value="lite" autocomplete="off" {% if form.fields.knownly_plan.value == 'lite' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'lite' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
                 <tr>
                   <td>Free</td>
-                  <td><span id="free-plan-price">$0.00 per month</span></td>
+                  <td style="min-width: 110px"><span id="free-plan-price">$0.00/month</span></td>
                   <td>0 {{ form.fields.knownly_plan.value }}</td>
-                  <th>
-                    <label class="btn btn-primary plan-type active">
+                  <th class="text-right">
+                    <label class="btn {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type active">
                       <input type="radio" name="knownly_plan" value="free" autocomplete="off" {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}checked{% endif %}><span class="input-label">{% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div class="currency-period-pickers text-center">
             <div class="btn-group btn-xs" data-toggle="buttons">
-                <label class="btn btn-primary  btn-primary btn-xs currency active">
+                <label class="btn btn-primary btn-xs currency active">
                     <input type="radio" name="currency" value="usd" checked>US$</label>
-                <label class="btn btn-primary btn-primary btn-xs currency">
+                <label class="btn btn-default btn-xs currency">
                     <input type="radio" name="currency" value="eur">€ </label>
             </div>
 
             <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-primary btn-xs period active">
                     <input type="radio" name="period" id="period" value="monthly" checked>Monthly</label>
-                <label class="btn btn-primary btn-xs period">
+                <label class="btn btn-default btn-xs period">
                     <input type="radio" name="period" id="period" value="yearly">Yearly</label>
             </div>
-            <p class="small">All paid plans include a 14 day free trial. You can cancel or upgrade at any time.</p>
           </div>
-          <div id="payment-details" {% if not form.errors %}style="display: none"{% endif %}>
+          <div id="payment-details" class="collapse">
             <h2>Billing Details</h2>
             <div class="payment-errors text-danger">
               {{ form.non_field_errors }}
@@ -184,7 +185,7 @@
                   </div>
                 </div>
 
-                <div id="vat_field" class="form-row" {% if form.fields.customer_type.value == 'ppl' %}style="display: none"{% endif %}>
+                <div id="vat_field" class="form-row" {% if not form.fields.customer_type.value or form.fields.customer_type.value == 'ppl' %}style="display: none"{% endif %}>
                   <div class="col-xs-12 form-group">
                     <label class="control-label" for="id_vat_id">VAT ID</label>
                     <input id="id_vat_id" name="vat_id" class="form-control" type="text" size="30">
@@ -194,8 +195,9 @@
               </div>
             </div>
           </div>
-          <div class="form-row">
+          <div>
             <button id="plan-form-submit" class="form-control btn btn-primary submit-button" type="submit">Finish sign up</button>
+            <p class="small text-center">All paid plans include a 14 day free trial. You can cancel or upgrade at any time.</p>
           </div>
         </form>
       </div>
@@ -206,6 +208,7 @@
           <li>Unlimited Knownly sub-domains</li>
           <li>Knownly website templates</li>
           <li>Online support</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -244,14 +247,19 @@
     $(function() {
       var planButtons = $("label.plan-type");
       $(planButtons).on("click", function() {
+        planButtons.toggleClass("btn-primary");
+        planButtons.addClass("btn-default");
         planButtons.children('span').text("Choose");
         planButtons.children('input').prop("checked", false);
         $(this).children('span').text("Chosen");
+        $(this).removeClass("btn-default").addClass("btn-primary");
         $(this).children('input[type=radio]').prop("checked", true);
         if ($(this).children('input[type=radio]').attr("value") == 'free') {
-          $('#payment-details').hide();
+          // $('#payment-details').hide();
+          $('#payment-details').collapse('hide');
         } else {
-          $('#payment-details').show();
+          // $('#payment-details').show();
+          $('#payment-details').collapse('show');
         }
       });
     });
@@ -260,8 +268,11 @@
     $(function() {
       var currencyButtons = $("label.currency");
       $(currencyButtons).on("click", function() {
+        currencyButtons.toggleClass("btn-primary");
+        currencyButtons.addClass("btn-default");
         currencyButtons.children('input').prop("checked", false);
         $(this).children('input[type=radio]').prop("checked", true);
+        $(this).removeClass("btn-default").addClass("btn-primary");
         update_pricing_table();
       });
     });
@@ -270,8 +281,11 @@
     $(function() {
       var billingButtons = $("label.period");
       $(billingButtons).on("click", function() {
+        billingButtons.toggleClass("btn-primary");
+        billingButtons.addClass("btn-default");
         billingButtons.children('input').prop("checked", false);
         $(this).children('input[type=radio]').prop("checked", true);
+        $(this).removeClass("btn-default").addClass("btn-primary");
         update_pricing_table();
       });
     });
@@ -287,13 +301,13 @@
       }
 
       if (period == "monthly") {
-        lite_plan_price = currency_label + "4.99 per month";
-        premium_plan_price = currency_label + "14.99 per month";
-        free_plan_price = currency_label + "0.00 per month";
+        lite_plan_price = currency_label + "4.99/month";
+        premium_plan_price = currency_label + "14.99/month";
+        free_plan_price = currency_label + "0.00/month";
       } else {
-        lite_plan_price = currency_label + "49.99 per year";
-        premium_plan_price = currency_label + "149.99 per year";
-        free_plan_price = currency_label + "0.00 per year";
+        lite_plan_price = currency_label + "49.99/year";
+        premium_plan_price = currency_label + "149.99/year";
+        free_plan_price = currency_label + "0.00/year";
       }
 
       $("#premium-plan-price").text(lite_plan_price);

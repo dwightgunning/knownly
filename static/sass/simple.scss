@@ -23,6 +23,7 @@ body {
   color: $grayscale-light;
   background-color: $grayscale-dark;
   -webkit-tap-highlight-color: transparentize($grayscale-light, 0.8);
+  overflow-y: scroll;
 }
 
 h1, .h1,
@@ -211,4 +212,17 @@ img {
 
 .help-block {
   font-size: 12px;
+}
+
+#premium-plan-price {
+  width: 80px;
+}
+
+.table {
+  margin-bottom: 0px;
+}
+
+.currency-period-pickers {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
