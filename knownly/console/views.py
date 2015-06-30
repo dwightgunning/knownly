@@ -123,7 +123,7 @@ class CreateWebsiteView(BaseFormView):
 				logger.exception('Unexpected response from Dropbox when checking for existing folder')
 
 		if self.dropbox_website.domain.endswith('knownly.net'):
-			message = '%s Your website is created and immediately active. <a href="%s">Check it out</a>.' % (message, self.dropbox_website.domain)
+			message = '%s Your website is created and immediately active. <a href="http://%s">Check it out</a>.' % (message, self.dropbox_website.domain)
 		else:
 			message = '%s Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % (message, reverse('support'))
 
