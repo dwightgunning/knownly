@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.support.ui import Select
 
 from knownly import plans
 from knownly.plans.models import CustomerSubscription
@@ -112,7 +113,7 @@ class LitePlanSelectionTests(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # cls.selenium.quit()
+        cls.selenium.quit()
         super(LitePlanSelectionTests, cls).tearDownClass()
 
     def setUp(self):
@@ -129,11 +130,10 @@ class LitePlanSelectionTests(LiveServerTestCase):
 
     def test_lite_plan(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
-        # import time
-        # time.sleep(10)
-        # Find and select the Lite Plan button
+        self.selenium.implicitly_wait(2)
         self.selenium.find_element_by_xpath("//input[@type='radio' and @value='lite']").click()
-        self.selenium.find_element_by_xpath("//input[@type='radio' and @value='lite']").click()
+        self.selenium.find_element_by_id("lite-plan-btn").click()
+        self.selenium.implicitly_wait(2)
 
         # Find and populate the billing details form
         payment_details = self.selenium.find_element_by_id('payment-details')
@@ -148,13 +148,13 @@ class LitePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('id_street_address').send_keys('111')
         self.selenium.find_element_by_id('id_city').send_keys('111')
         self.selenium.find_element_by_id('id_post_code').send_keys('111')
-        self.selenium.find_element_by_id('id_country').send_keys('111')
+        Select(self.selenium.find_element_by_id('id_country')).select_by_value('NL')
 
         # Expect to see the primary cta
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
-        self.selenium.implicitly_wait(2)
+        self.selenium.implicitly_wait(5)
         self.selenium.find_element_by_id('console')
 
         print CustomerSubscription.objects.all()[0].user

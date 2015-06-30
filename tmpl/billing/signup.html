@@ -62,7 +62,7 @@
                   <td style="min-width: 110px"><span id="premium-plan-price">$14.99/month</span></td>
                   <td>100</td>
                   <th class="text-right">
-                    <label class="btn {% if form.fields.knownly_plan.value == 'premium' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
+                    <label id="premium-plan-btn" class="btn {% if form.fields.knownly_plan.value == 'premium' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
                       <input type="radio" name="knownly_plan" value="premium" autocomplete="off"{% if form.fields.knownly_plan.value == 'premium' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'premium' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
@@ -71,7 +71,7 @@
                   <td style="min-width: 110px"><span id="lite-plan-price">$4.99/month</span></td>
                   <td>3</td>
                   <th class="text-right">
-                    <label class="btn {% if form.fields.knownly_plan.value == 'lite' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
+                    <label id="lite-plan-btn" class="btn {% if form.fields.knownly_plan.value == 'lite' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
                       <input type="radio" name="knownly_plan" value="lite" autocomplete="off" {% if form.fields.knownly_plan.value == 'lite' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'lite' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
@@ -80,7 +80,7 @@
                   <td style="min-width: 110px"><span id="free-plan-price">$0.00/month</span></td>
                   <td>0 {{ form.fields.knownly_plan.value }}</td>
                   <th class="text-right">
-                    <label class="btn {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type active">
+                    <label id="free-plan-btn" class="btn {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type active">
                       <input type="radio" name="knownly_plan" value="free" autocomplete="off" {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}checked{% endif %}><span class="input-label">{% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}Chosen{% else %}Choose{% endif %}</span></label>
                   </th>
                 </tr>
