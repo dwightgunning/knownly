@@ -126,7 +126,7 @@ class StripeCustomerService(object):
                     timedelta(days=TRIAL_DAYS_ON_FIRST_PAID_PLAN)
                 customer.subscriptions.create(
                     plan=plan_id,trial_end=trial_end.strftime('%s'))
-            except:
+            except stripe.error.StripeError as se:
                 logger.exception('Stripe API Error while creating stripe '
                                  'customer (%s) subscription to: %s',
                                  stripe_customer.user, plan_id)
