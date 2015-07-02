@@ -180,11 +180,6 @@
 {% block mixpanel_footer %}
   {{ block.super }}
   <script>
-    mixpanel.register({'email': '{{ dropbox_user.email }}'});
-    mixpanel.identify('{{ dropbox_user.email }}');
-    mixpanel.people.set({'$email': '{{ dropbox_user.email }}'})
-    mixpanel.people.set({'$name': '{{ dropbox_user.display_name }}'})
-
     mixpanel.track("Page View", {'template': 'index.html'});
     mixpanel.track_links('#support-link', "Support button clicked");
     mixpanel.track_links('.visit_website_link', "View Site button clicked");

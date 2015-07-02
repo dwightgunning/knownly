@@ -89,6 +89,7 @@ except:
     DEBUG = os.environ['DEBUG']
     DROPBOX_APP_KEY = os.environ['DROPBOX_APP_KEY']
     DROPBOX_APP_SECRET = os.environ['DROPBOX_APP_SECRET']
+    MIXPANEL_TOKEN = os.environ['MIXPANEL_TOKEN']
     SECRET_KEY = os.environ['SECRET_KEY']
     STATIC_ROOT = os.environ['STATIC_ROOT']
     STRIPE_SECRET_KEY = os.environ['STRIPE_SECRET_KEY']
