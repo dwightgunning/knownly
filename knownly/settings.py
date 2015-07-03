@@ -18,6 +18,7 @@ INSTALLED_APPS = (
     'knownly.console',
     'knownly.billing',
     'knownly.landingpages',
+    'knownly.people',
     'knownly.plans',
 )
 
