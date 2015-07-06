@@ -21,12 +21,19 @@ logger = logging.getLogger(__name__)
 
 class PlansView(FormView):
     form_class = SubscriptionPlanForm
-    template_name = 'billing/signup.html'
+    template_name = 'billing/plans.html'
+    mode = 'plans'
 
     PAYMENT_SUCCESS_MESSAGE = 'Thank you for your providing your credit card details. You\'ll not be charged until the end of the trial period.'
 
     def get_success_url(self):
         return reverse('console')
+
+    def get_context_data(self, **kwargs):
+        context_data = super(PlansView, self).get_context_data(**kwargs)
+        context_data['mode'] = self.mode
+
+        return context_data
 
     def form_valid(self, form):
         # 3 parts to this form: the plan, billing info, and billing period

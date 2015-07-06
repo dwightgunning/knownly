@@ -1,0 +1,46 @@
+@import "simple";
+
+.signup-steps {
+  margin-bottom: 25px;
+}
+
+::-moz-selection, ::selection  {
+  text-shadow: none;
+  background: #fcfcfc;
+  background: transparentize($grayscale-light, 0.8);
+}
+
+img {
+  &::selection {
+    background: transparent;
+  }
+  
+  &::-moz-selection {
+    background: transparent;
+  }
+}
+
+[data-toggle="buttons"] {
+  input[type="radio"] {
+    position: absolute;
+    clip: rect(0,0,0,0);
+    pointer-events: none;
+  }
+}
+
+.help-block {
+  font-size: 12px;
+}
+
+#premium-plan-price {
+  width: 80px;
+}
+
+.table {
+  margin-bottom: 0px;
+}
+
+.currency-period-pickers {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}

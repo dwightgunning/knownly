@@ -21,6 +21,7 @@ from dropbox.rest import ErrorResponse
 from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
 from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
+from knownly.plans.models import CustomerSubscription
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,7 @@ class IndexView(TemplateView):
 			context['dropbox_user'] = self.dropbox_user
 			context['websites'] = DropboxSite.objects.filter(dropbox_user=self.dropbox_user)
 			context['create_website_form'] = WebsiteForm({'dropboxy_user': self.dropbox_user})
+			context['subscription'] = CustomerSubscription.objects.get(user=self.request.user)
 			self.template_name = 'console/index.html'
 		else:
 			self.template_name = 'console/public.html'

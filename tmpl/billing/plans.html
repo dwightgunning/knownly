@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load settings_value %}
+
+{% block title %}Knownly{% endblock %}
+
+{% block css_head %}
+  <link href="{% static 'css/plans.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
+
+{% block content %}
+  {% if mode = 'signup' %}
+    {% include 'partials/navbar-squeezer.html' %}
+  {% else %}
+    {% include 'partials/navbar.html'%}
+  {% endif %}
+  <div class="container content text-center signup-steps">
+    {% if mode = 'signup' %}
+        <div class="col-xs-4 col-md-2 col-md-offset-3 col-lg-2 col-lg-offset-3">
+          <h6 class="{% if request.user.is_authenticated %}text-success{% else %}text-primary{% endif %}">Authorize Knownly<br/>
+          {% if request.user.is_authenticated %}<i class="fa fa-2x fa-check text-success"></i>{% else %}<i class="fa fa-2x fa-dropbox text-primary"></i>{% endif %}</h6>
+        </div>
+        <div class="col-xs-4 col-md-2 col-lg-2">
+          <h6 class="{% if request.user.is_authenticated %}text-primary{% else %}text-default{% endif %}">Choose A Plan<br/>
+          {% if request.user.is_authenticated %}<i class="fa fa-2x fa-sliders text-primary"></i>{% else %}<i class="fa fa-2x fa-sliders text-default"></i>{% endif %}</h6>
+        </div>
+        <div class="col-xs-4 col-md-2 col-lg-2">
+          <h6 class="text-default">Create Your Site<br/><i class="fa fa-2x fa-sign-in text-default"></i></h6>
+        </div>
+    {% endif %}
+    <div class="row">
+      {% if messages %}
+      <ul class="messages">
+          {% for message in messages %}
+          <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <div id="begin-auth" class="col-xs-12" style="display: none">
+      <div class="row">
+        <div class="col-xs-12 text-center">
+          <p>To get started, just grant Knownly to create it's own "app" folder in your Dropbox. Knownly only gets to access this new folder; your other files and folders are never accessible.</p>
+          <p>
+            <img id="img-dropbox-auth" class="img-rounded" style="cursor: pointer" src="{% static 'img/dropbox_auth_250_250.png' %}"></a>
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 text-center">
+          <button id="btn-auth" class="btn btn-primary">Click here to approve Knownly</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="plan-chooser" style="display: none">
+      <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+        <h1 class="text-center">Choose your plan</h1>
+      </div>
+      <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+        <div class="row">
+          <div class="col-xs-12 col-sm-8 col-md-8">
+            <form id="paid-form" action="{% url 'choose-plan' %}" accept-charset="UTF-8" class="require-validation" method="POST" data-stripe-publishable-key="{% settings_value 'STRIPE_PUBLISHABLE_KEY' %}">
+              {% csrf_token %}
+              <table id="plans" class="table text-left btn-group" data-toggle="buttons">
+                <thead>
+                  <th class="col-xs-3 col-sm-3 col-md-3">Level</th>
+                  <th class="col-xs-3 col-sm-3 col-md-3">Price</th>
+                  <th class="col-xs-6 col-sm-6 col-md-6" colspan="2">Custom Domains</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Premium</td>
+                    <td style="min-width: 110px"><span id="premium-plan-price">$14.99/month</span></td>
+                    <td>15</td>
+                    <td class="text-right">
+                      <label id="premium-plan-btn" class="btn {% if form.fields.knownly_plan.value == 'premium' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
+                        <input type="radio" name="knownly_plan" value="premium" autocomplete="off"{% if form.fields.knownly_plan.value == 'premium' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'premium' %}Chosen{% else %}Choose{% endif %}</span></label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Lite</td>
+                    <td><span id="lite-plan-price">$4.99/month</span></td>
+                    <td>3</td>
+                    <td class="text-right">
+                      <label id="lite-plan-btn" class="btn {% if form.fields.knownly_plan.value == 'lite' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type">
+                        <input type="radio" name="knownly_plan" value="lite" autocomplete="off" {% if form.fields.knownly_plan.value == 'lite' %}checked{% endif %}><span class="input-label">{% if form.fields.knownly_plan.value == 'lite' %}Chosen{% else %}Choose{% endif %}</span></label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Free</td>
+                    <td><span id="free-plan-price">$0.00/month</span></td>
+                    <td>0 {{ form.fields.knownly_plan.value }}</td>
+                    <td class="text-right">
+                      <label id="free-plan-btn" class="btn {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}btn-primary{% else %}btn-default{% endif %} btn-xs plan-type active">
+                        <input type="radio" name="knownly_plan" value="free" autocomplete="off" {% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}checked{% endif %}><span class="input-label">{% if not form.fields.knownly_plan.value or form.fields.knownly_plan.value = 'free' %}Chosen{% else %}Choose{% endif %}</span></label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="currency-period-pickers text-center">
+                <div class="btn-group btn-xs" data-toggle="buttons">
+                    <label class="btn btn-primary btn-xs currency active">
+                        <input type="radio" name="currency" value="usd" checked>US$</label>
+                    <label class="btn btn-default btn-xs currency">
+                        <input type="radio" name="currency" value="eur">€ </label>
+                </div>
+
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-primary btn-xs period active">
+                        <input type="radio" name="period" id="period" value="monthly" checked>Monthly</label>
+                    <label class="btn btn-default btn-xs period">
+                        <input type="radio" name="period" id="period" value="yearly">Yearly</label>
+                </div>
+              </div>
+
+              <div id="payment-details" class="collapse text-left">
+                <h2>Billing Details</h2>
+                <div class="payment-errors text-danger">
+                  {{ form.non_field_errors }}
+                </div>
+                <div class="form-row">
+                  <div class="form-group card required">
+                    <label class="control-label" for="id_card_number">Card Number</label>
+                    <input id="id_card_number" autocomplete="off" class="form-control card-number" size="20" type="text">
+                  </div>
+                </div>
+                <div class="row form-row">
+                  <div class="col-xs-4 form-group expiration required">
+                    <label class="control-label" for="id_expiry_month">Expiration</label>
+                    <input id="id_expiry_month" class="form-control card-expiry-month" placeholder="MM" size="2" type="text">
+                  </div>
+                  <div class="col-xs-4 form-group expiration required">
+                    <label class="control-label" for="id_expiry_year"> </label>
+                    <input id="id_expiry_year" class="form-control card-expiry-year" placeholder="YYYY" size="4" type="text">
+                  </div>
+                  <div class="col-xs-4 form-group cvc required">
+                    <label class="control-label" for="id_cvc">CVC</label>
+                    <input id="id_cvc" autocomplete="off" class="form-control card-cvc" placeholder="ex. 311" size="4" type="text">
+                  </div>
+                </div>
+                <hr/>
+                <div>
+                  <div>
+                    <div class="form-row text-center">
+                      <div class="btn-group btn-xs" data-toggle="buttons">
+                        <label class="btn btn-primary btn-xs customer-type active">
+                          <input type="radio" id="customer_type_personal" name="customer_type" value="ppl" {% if form.fields.customer_type.value != 'biz' %}checked{% endif %}>Personal
+                        </label>
+                        <label class="btn btn-default btn-xs customer-type">
+                          <input type="radio" id="customer_type_business" name="customer_type" value="biz" role="button" data-toggle="#vat_field" {% if form.fields.customer_type.value == 'biz' %}checked{% endif %}>Business
+                        </label>
+                      </div>
+                      <p class="help-block"><span class="text-danger">{{ form.customer_type.errors.0 }}</span></p>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group required">
+                        <label id="lbl_customer_name" class="control-label" for="id_name">{% if form.fields.customer_type.value == 'biz' %}Business Name{% else %}Customer Name{% endif %}</label>
+                        <input id="id_name" class="form-control" name="name" type="text" size="40">
+                      </div>
+                      <p class="help-block"><span class="text-danger">{{ form.name.errors.0 }}</span></p>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group required">
+                        <label class="control-label" for="id_street_address">Street Address</label>
+                        <input id="id_street_address" class="form-control" name="street_address" type="text" size="30">
+                      </div>
+                      <p class="help-block"><span class="text-danger">{{ form.street_address.errors.0 }}</span></p>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group required">
+                        <label class="control-label" for="id_city">City</label>
+                        <input id="id_city" class="form-control" name="city" type="text" size="30">
+                      </div>
+                      <p class="help-block"><span class="text-danger">{{ form.city.errors.0 }}</span></p>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group required">
+                        <label class="control-label" for="id_post_code">Post code</label>
+                        <input id="id_post_code" class="form-control" name="post_code" type="text" size="15">
+                      </div>
+                      <p class="help-block"><span class="text-danger">{{ form.post_code.errors.0 }}</span></p>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group required">
+                        <label class="control-label" for="id_country">Country</label>
+                          <select id="id_country" name="country" class="form-control">
+                            <option value="" selected>Choose country</option>
+                            {% for value, label in form.fields.country.choices %}
+                              <option value="{{ value}}"{% if form.fields.country.value == value %} selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                          </select>
+                          <p class="help-block"><span class="text-danger">{{ form.country.errors.0 }}</span></p>
+                      </div>
+                    </div>
+
+                    <div id="vat_field" class="form-row" {% if not form.fields.customer_type.value or form.fields.customer_type.value == 'ppl' %}style="display: none"{% endif %}>
+                      <div class="form-group">
+                        <label class="control-label" for="id_vat_id">VAT ID</label>
+                        <input id="id_vat_id" name="vat_id" class="form-control" type="text" size="30">
+                        <p class="help-block"><span class="text-danger">{{ form.vat_id.errors.0 }}</span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <button id="plan-form-submit" class="form-control btn btn-primary submit-button" type="submit">Finish sign up</button>
+                <p class="small text-center">All paid plans include a 14 day free trial. Cancel or change plan any time.</p>
+              </div>
+            </form>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 text-left">
+            <p>All our plans include:</p>
+            <ul>
+              <li>Unlimited Knownly sub-domains</li>
+              <li>Knownly website templates</li>
+              <li>Online support</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer">
+      <div class="container text-center">
+        <p class="small">Handmade in Amsterdam. Copyright &copy; Knownly 2015.</p>
+      </div>
+    </div>
+  </footer>
+{% endblock content %}
+
+{% block js_footer %}
+  {{ block.super }}
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+  <script type="text/javascript">
+    var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
+
+    $('#btn-auth').prop('disabled', {{ request.user.is_authenticated|lower }});
+    if ({{ request.user.is_authenticated|lower }}) {
+      $('#begin-auth').hide();
+      $('#plan-chooser').show();
+    } else {
+      $('#begin-auth').show();
+      $('#plan-chooser').hide();
+    }   
+
+    $('#img-dropbox-auth').click(function () {
+      mixpanel.track('#img-dropbox-auth', "Auth Knownly Clicked", {'src': 'image'});
+      launchDropboxAuth();
+    });
+
+    $('#btn-auth').click(function () {
+      mixpanel.track('#btn-auth', "Auth Knownly Button Clicked", {'src': 'button'});
+      launchDropboxAuth();
+    });
+
+    function launchDropboxAuth() {
+
+      window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
+    }
+
+    // plan buttons
+    $(function() {
+      var planButtons = $("label.plan-type");
+      $(planButtons).on("click", function() {
+        planButtons.toggleClass("btn-primary");
+        planButtons.addClass("btn-default");
+        planButtons.children('span').text("Choose");
+        planButtons.children('input').prop("checked", false);
+        $(this).children('span').text("Chosen");
+        $(this).removeClass("btn-default").addClass("btn-primary");
+        $(this).children('input[type=radio]').prop("checked", true);
+        if ($(this).children('input[type=radio]').attr("value") == 'free') {
+          // $('#payment-details').hide();
+          $('#payment-details').collapse('hide');
+        } else {
+          // $('#payment-details').show();
+          $('#payment-details').collapse('show');
+        }
+      });
+    });
+
+    // billing currency buttons
+    $(function() {
+      var currencyButtons = $("label.currency");
+      $(currencyButtons).on("click", function() {
+        currencyButtons.toggleClass("btn-primary");
+        currencyButtons.addClass("btn-default");
+        currencyButtons.children('input').prop("checked", false);
+        $(this).children('input[type=radio]').prop("checked", true);
+        $(this).removeClass("btn-default").addClass("btn-primary");
+        update_pricing_table();
+      });
+    });
+
+    // billing period buttons
+    $(function() {
+      var billingButtons = $("label.period");
+      $(billingButtons).on("click", function() {
+        billingButtons.toggleClass("btn-primary");
+        billingButtons.addClass("btn-default");
+        billingButtons.children('input').prop("checked", false);
+        $(this).children('input[type=radio]').prop("checked", true);
+        $(this).removeClass("btn-default").addClass("btn-primary");
+        update_pricing_table();
+      });
+    });
+
+    function update_pricing_table() {
+      currency = $("label.currency").children("input:checked").attr("value");
+      period = $("label.period").children("input:checked").attr("value");
+
+      if (currency == 'eur') {
+        currency_label = '€';
+      } else {
+        currency_label = '$';
+      }
+
+      if (period == "monthly") {
+        lite_plan_price = currency_label + "4.99/month";
+        premium_plan_price = currency_label + "14.99/month";
+        free_plan_price = currency_label + "0.00/month";
+      } else {
+        lite_plan_price = currency_label + "49.99/year";
+        premium_plan_price = currency_label + "149.99/year";
+        free_plan_price = currency_label + "0.00/year";
+      }
+
+      $("#premium-plan-price").text(lite_plan_price);
+      $("#lite-plan-price").text(lite_plan_price);
+      $("#free-plan-price").text(free_plan_price);
+      get_selected_plan();
+    };
+
+    function get_selected_plan() {
+      plan = $("label.plan-type").children("input:checked").attr("value");
+      currency = $("label.currency").children("input:checked").attr("value");
+      period = $("label.period").children("input:checked").attr("value");
+
+      plan_label = plan + '-' + period + '-' + currency;
+      return plan_label;
+    }
+
+    // personal vs business customer type button
+    $(function() {
+      var customerTypeButtons = $("label.customer-type");
+      $(customerTypeButtons).on("click", function() {
+        customerTypeButtons.toggleClass("btn-primary");
+        customerTypeButtons.addClass("btn-default");
+        customerTypeButtons.children('input').prop("checked", false);
+        $(this).children('input[type=radio]').prop("checked", true);
+        $(this).removeClass("btn-default").addClass("btn-primary");
+
+        // type = $("label.plan-type").children("input:checked").attr("value");
+
+
+        if ($("input[id=customer_type_business]").prop("checked")) {
+          $('#lbl_customer_name').text('Business Name');
+          $('#vat_field').show();
+        } else {
+          $('#lbl_customer_name').text('Customer Name');
+          $('#vat_field').hide();
+        }
+      });
+    });
+
+    // form validation
+    $(function() {
+      $('form.require-validation').bind('submit', function(e) {
+        var $form         = $(e.target).closest('form'),
+            inputSelector = ['input[type=email]', 'input[type=password]',
+                             'input[type=text]', 'input[type=file]',
+                             'input[type=radio]', 'select',
+                             'textarea'].join(', '),
+            $inputs       = $form.find('.required').find(inputSelector),
+            $errorMessage = $form.find('div.error'),
+            valid         = true;
+
+        $errorMessage.addClass('hide');
+        $('.has-error').removeClass('has-error');
+        $inputs.each(function(i, el) {
+          var $input = $(el);
+          if ($input.val() === '') {
+            $input.parent().addClass('has-error');
+            $errorMessage.removeClass('hide');
+            e.preventDefault(); // cancel on first error
+          }
+        });
+      });
+    });
+
+    $(function() {
+      var $form = $("#paid-form");
+      var cc_bin = '';
+
+      $form.on("submit", function(e) {
+        if ($form.find("input[name=knownly_plan]:checked").attr("value") == "free") {
+          $form.get(0).submit();
+        } else {
+          cc_bin = $('.card-number').val().substring(0, 6);
+          
+          e.preventDefault();
+          Stripe.setPublishableKey($form.data('stripe-publishable-key'));
+          Stripe.createToken({
+            number: $('.card-number').val(),
+            cvc: $('.card-cvc').val(),
+            exp_month: $('.card-expiry-month').val(),
+            exp_year: $('.card-expiry-year').val()
+          }, stripeResponseHandler);
+        }
+      });
+
+      function stripeResponseHandler(status, response) {
+        if (response.error) {
+          $('.error')
+            .removeClass('hide')
+            .find('.alert')
+            .text(response.error.message);
+        } else {
+          // token contains id, last4, and card type
+          var token = response['id'];
+          // insert the token into the form so it gets submitted to the server
+          $form.find('input[type=text]').empty();
+          $form.append("<input type='hidden' name='cc_bin' value='" + cc_bin + "'/>");
+          $form.append("<input type='hidden' name='stripe_token' value='" + token + "'/>");
+          $form.get(0).submit();
+        }
+      }
+    });
+  </script>
+{% endblock %}
+
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'console/plans.html'});
+  </script>
+{% endblock %}

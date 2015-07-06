@@ -19,7 +19,7 @@ urlpatterns = patterns('',
 
 	# Registration flow
 	url(r'^signup/$',
-		plans_views.PlansView.as_view(),
+		plans_views.PlansView.as_view(mode='signup'),
 		name='signup'),
 	url(r'^signup/begin/$',
 		landingpage_views.DropboxAuthStartView.as_view(),

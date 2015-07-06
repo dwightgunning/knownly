@@ -1,15 +1,32 @@
-<!-- Static navbar -->
-<div class="navbar navbar-default navbar-static-top" role="navigation">
-<div class="container">
-  <div class="navbar-header">
-    <a class="navbar-brand" href="/">Knownly</a>
+{% load static %}
+<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+        <i class="fa fa-bars"></i>
+      </button>
+      <a class="navbar-brand page-scroll" href="/">
+        <span class="light"><img src="{% static 'img/logo_small.png' %}" height="22px"> Knownly</span>
+      </a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+      <ul class="nav navbar-nav">
+        <li class="hidden">
+          <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
+        </li>
+        <li>
+          <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+        </li>
+        <li>
+          <a id='support-link' href="{% url 'support' %}">Support</a>
+        </li>
+        <li>
+          <a id='logout-link' href="{% url 'logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
   </div>
-  <div class="navbar-collapse collapse">
-    <ul class="nav navbar-nav navbar-right">
-      <li><span>{{ dropbox_user.display_name }}</span></li>
-      <li><a id='support-link' href="{% url 'support' %}">Support</a></li>
-      <li><a id='logout-link' href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-  </div><!--/.nav-collapse -->
-</div>
-</div>
+  <!-- /.container -->
+</nav>
