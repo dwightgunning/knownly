@@ -16,8 +16,9 @@ sass = require('gulp-ruby-sass');
     });
 
     gulp.task('icons', function() { 
-      return gulp.src(config.bowerDir + '/fontawesome/fonts/**.*') 
-      .pipe(gulp.dest('static/fonts')); 
+      return gulp.src([config.bowerDir + '/fontawesome/fonts/**.*',
+                config.bowerDir + '/bootstrap-sass-official/assets/fonts/**.*']) 
+      .pipe(gulp.dest('static/fonts/')); 
     });
 
     gulp.task('js', function() {
