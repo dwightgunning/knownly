@@ -54,7 +54,7 @@
         <div class="container">
           <div class="row">
               <div class="col-md-8">
-                <img class="img-responsive img-rounded" src="//placehold.it/900x350" alt="">
+                <img class="img-responsive img-rounded" src="{% block hero_img_src %}{% endblock %}" alt="{% block hero_img_alt %}{% endblock %}">
               </div>
               <div class="col-md-4">
                   <h1>{% block tagline %}{% endblock %}</h1>
