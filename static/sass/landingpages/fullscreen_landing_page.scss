@@ -1,5 +1,6 @@
-@import "bootstrap";
-@import "font-awesome";
+// @import "bootstrap";
+// @import "font-awesome";
+@import "base";
 
 /* Links */
 a,
@@ -21,10 +22,6 @@ a:hover {
 html,
 body {
   height: 100%;
-  background-color: #FEFEFE;
-}
-body {
-  color: #D33431;
   text-align: center;
 }
 
