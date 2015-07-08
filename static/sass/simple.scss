@@ -5,7 +5,7 @@
 
   p {
     margin: 0 0 15px;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 1.6;
   }
 
@@ -44,7 +44,6 @@ a {
     .navbar-toggle {
       padding: 4px 6px;
       font-size: 16px;
-      // color: $grayscale-light;
 
       &:focus,
       &:active {
@@ -64,7 +63,7 @@ a {
       &.active {
         outline: none;
         color: $grayscale-primary;
-        background-color: $grayscale-dark;
+        background-color: transparent;
       }
 
       a {
