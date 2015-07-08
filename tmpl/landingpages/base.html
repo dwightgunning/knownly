@@ -106,7 +106,7 @@
 <section id="start-now" class="container content-section text-center">
   <div class="container">
     <div class="col-lg-8 col-lg-offset-2">
-      <span class="lead">{% block start_now_well %}{% endblock %}</span>
+      {% block start_now %}{% endblock %}
     </div>
   </div>
 </section>
@@ -117,10 +117,9 @@
       <h2>About the site</h2>
       <img class="img img-circle img-about" src="{% static 'img/dwight_amsterdam_tcr_square.png' %}">
       <div>
-        <p>Hi, my name is Dwight and I'm the guy behind Knownly.</p>
-        <p>I first had the idea to host websites straight from Dropbox back in January 2014. I was reading through the Dropbox API docs for an unrelated project and the light bulb went on...</p>
-        <p>It would be a great way to quickly put up landing pages for my new ideas. I got excited about doing away with all the Wordpress blogs I'd been sucked in to managing over the years and was sick of maintaining. I also figured it might be useful to other creatives, designers and developers (plus anybody wanting to learn these skills) who don't want to worry about servers and systems admin.</p>
-        <p>After diving in, the service came together quite quickly. I'd built just enough to scratch my own itch and let in some friends and family to try it out. As happens, other projects came up and I've had Knownly on the shelf until recently.</p>
+        <p>Hi, my name is Dwight and Knownly is my little creation.</p>
+        <p>I first had the idea to host websites straight from Dropbox a while back in January 2014. I was reading through the Dropbox API docs for a project and the light bulb went on...</p>
+        <p>It turned out to be a great way to quickly put landing pages online for new ideas. I've done away with all the Wordpress blogs I'd been roped in to managing over the years. After sharing Knownly with a few friends I learned it's also useful to other creatives, designers and developers (plus people wanting to learn these skills). The best part is we don't need to worry about web hosting and control panels anymore.</p>
         <p>So it's time to launch properly - to make it known. As I said, I hope it's useful to you and I love to hear feedback :)</p>
         <ul class="list-inline banner-social-buttons">
           <li>
@@ -139,8 +138,10 @@
 </section>
 
 <footer>
-  <div class="container text-center">
-    <p class="small">Handmade in Amsterdam. Copyright &copy; Knownly 2015.</p>
+  <div class="footer">
+    <div class="container text-center">
+      <p class="small">Handmade in Amsterdam. Copyright &copy; Knownly 2015.</p>
+    </div>
   </div>
 </footer>
 {% endblock %}
