@@ -8,8 +8,8 @@ from dropbox import client
 from knownly.console.models import DropboxUser, DropboxSite
 
 # Get an instance of a logger
-#import logging
-#logger = logging.getLogger(__name__)
+# import logging
+# logger = logging.getLogger(__name__)
 
 
 class SubdomainToDropboxMiddleware(object):
@@ -38,7 +38,7 @@ class SubdomainToDropboxMiddleware(object):
 			#logger.debug('website recognised as being from user: %s' % website.dropbox_user)
 
 			# Build up the dropbox request
-			from_path = '/%s/%s' % (website.domain, request.path.strip("/"))
+			from_path = '/%s/%s' % (website.domain, request.path.lstrip("/"))
 			if from_path == domain or from_path.endswith('/'):
 				from_path = '%sindex.html' % from_path
 
