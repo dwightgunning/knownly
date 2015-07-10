@@ -27,6 +27,7 @@
   <body {% block body_attrs %}{% endblock %}>
     {% block content %}{% endblock %}
     {% block js_footer %}
+      <div id="fb-root"></div>
       <script src="{% static 'js/app.js' %}"></script>
     {% endblock %}
 
