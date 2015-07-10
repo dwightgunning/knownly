@@ -1,0 +1,35 @@
+{% extends 'landingpages/base.html' %}
+{% load static %}
+
+{% block tagline %}Knownly{% endblock %}
+
+{% block hero_img_src %}{% static 'img/developer_hero.jpg' %}{% endblock %}
+{% block hero_img_alt %}{% endblock %}
+
+{% block lead_info %}
+  <p>Host static websites from a Dropbox folder.</p>
+  <p>Three sites at custom domains for just $4.99/month. Three months FREE for Startup Weekend participants.</p>
+  <p>Knownly sub-domains are forever free.</p>
+{% endblock %}
+
+{% block primary_cta_btn %}Try for free{% endblock %}
+
+{% block cta_well %}The perfect place to host your bio, a static weblog, or a landing page for your latest idea.{% endblock %}
+
+{% block uvp_1_heading %}Pure Web Development{% endblock %}
+{% block uvp_1_para %}Design and implement websites any way you like with HTML, CSS, and Javascript. No advertising or WYSIWIG site-builders that never turn out right.{% endblock %}
+
+{% block uvp_2_heading %}Instant<br/> Deployment{% endblock %}
+{% block uvp_2_para %}Your updates are live as soon as the files sync with Dropbox. Working offline? Your changes will be released whenever you re-connect.{% endblock %}
+
+{% block uvp_3_heading %}No Server<br/> Headaches{% endblock %}
+{% block uvp_3_para %}Let us handle the hosting. Sure it's easy to spin up a cheap and powerful VM these days but who needs the hassle of backups and security patches?{% endblock %}
+
+{% block start_now %}<a class="btn btn-primary" href="{% url 'signup' %}">Start now</a>{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'landing_pages/startupweekend.html'});
+  </script>
+{% endblock %}

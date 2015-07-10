@@ -16,6 +16,9 @@ urlpatterns = patterns('',
 	url(r'^welcome/designers/$', 
 		TemplateView.as_view(template_name="landingpages/designers.html"),
 		name='lp-designers'),
+	url(r'^welcome/startupweekend/$', 
+		TemplateView.as_view(template_name="landingpages/startupweekend.html"),
+		name='lp-startupweekend'),
 
 	# Registration flow
 	url(r'^signup/$',
