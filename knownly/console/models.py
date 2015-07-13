@@ -18,6 +18,7 @@ class DropboxSite(models.Model):
 	dropbox_user = models.ForeignKey(DropboxUser)
 	domain = models.CharField(max_length=63, unique=True)
 	date_created = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
+	date_activated = models.DateTimeField(blank=True, null=True)
 	
 	def __unicode__(self):
 		return u'%s' % self.domain
@@ -26,4 +27,5 @@ class ArchivedDropboxSite(models.Model):
 	dropbox_user = models.ForeignKey(DropboxUser)
 	domain = models.CharField(max_length=63)
 	date_created = models.DateTimeField()
+	date_activated = models.DateTimeField(blank=True, null=True)
 	date_archived = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now

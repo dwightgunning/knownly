@@ -8,10 +8,13 @@ class DropboxUserAdmin(ModelAdmin):
     list_display = ('display_name', 'email')
 
 class DropboxSiteAdmin(ModelAdmin):
-    list_display = ('domain', 'dropbox_user', 'date_created', 'visit_site')
+    list_display = ('domain', 'dropbox_user', 'date_created', 'get_date_activated', 'visit_site')
     list_filter = ('dropbox_user',)
-    readonly_fields = ('date_created',)
-    # view_on_site = True
+    readonly_fields = ('date_created', 'date_activated')
+
+    def get_date_activated(self, obj):
+        return obj.date_activated or ''
+    get_date_activated.short_description = 'Date activated'
 
     def _get_url(self, obj):
         return 'http://%s' % obj.domain
