@@ -70,7 +70,7 @@ class IndexView(TemplateView):
 			context['subscription'] = CustomerSubscription.objects.get(user=self.request.user)
 			self.template_name = 'console/index.html'
 		else:
-			self.template_name = 'console/public.html'
+			self.template_name = 'landingpages/public.html'
 
 		return context
 
