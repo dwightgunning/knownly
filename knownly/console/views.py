@@ -174,7 +174,8 @@ class RemoveWebsiteView(DeleteView):
 
         archived_site = ArchivedDropboxSite(dropbox_user=dropbox_website.dropbox_user, 
                                                 domain= dropbox_website.domain, 
-                                                date_created=dropbox_website.date_created)
+                                                date_created=dropbox_website.date_created,
+                                                date_activated=dropbox_website.date_activated)
         archived_site.save()
         dropbox_website.delete()
 
