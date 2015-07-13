@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 
 from knownly import console
 from knownly.billing.views import stripe_webhook
+from knownly.console.views import dropbox_webhook
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -12,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^', include('knownly.landingpages.urls')),
     url(r'^', include('knownly.plans.urls')),
     url(r'^billing/hook/$', stripe_webhook, name='stripe-webhook'),
+    url(r'^dropbox/hook/$', dropbox_webhook, name='dropbox-webhook'),
     url(r'^admin/', include(admin.site.urls)),
 )
 
