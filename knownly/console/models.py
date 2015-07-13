@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core import validators
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 class DropboxUser(models.Model):
@@ -9,7 +10,7 @@ class DropboxUser(models.Model):
 	display_name = models.CharField(_('display name'), max_length=30)
 	dropbox_token = models.TextField()
 	email = models.EmailField()
-	account_created = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
+	account_created = models.DateTimeField(default=timezone.now)
 	date_activated = models.DateTimeField(blank=True, null=True)
 
 	def __unicode__(self):
@@ -18,7 +19,7 @@ class DropboxUser(models.Model):
 class DropboxSite(models.Model):
 	dropbox_user = models.ForeignKey(DropboxUser)
 	domain = models.CharField(max_length=63, unique=True)
-	date_created = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
+	date_created = models.DateTimeField(default=timezone.now)
 	date_activated = models.DateTimeField(blank=True, null=True)
 	
 	def __unicode__(self):
@@ -29,4 +30,4 @@ class ArchivedDropboxSite(models.Model):
 	domain = models.CharField(max_length=63)
 	date_created = models.DateTimeField()
 	date_activated = models.DateTimeField(blank=True, null=True)
-	date_archived = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
+	date_archived = models.DateTimeField(default=timezone.now)
