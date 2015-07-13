@@ -5,7 +5,11 @@ from django.utils.html import format_html
 from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
 
 class DropboxUserAdmin(ModelAdmin):
-    list_display = ('display_name', 'email')
+    list_display = ('display_name', 'email', 'get_date_activated')
+
+    def get_date_activated(self, obj):
+        return obj.date_activated or ''
+    get_date_activated.short_description = 'Date activated'
 
 class DropboxSiteAdmin(ModelAdmin):
     list_display = ('domain', 'dropbox_user', 'date_created', 'get_date_activated', 'visit_site')

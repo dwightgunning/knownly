@@ -1,0 +1,124 @@
+[
+{
+  "fields": {
+    "username": "activated_website_user@test.com",
+    "first_name": "Knownly",
+    "last_name": "Test",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-06-29T17:45:46.003Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$20000$7JhyxKmP5hLk$fxciwLlZff8Op9/cFkB2Ta7itOUnWZ6t+QqwKRr+m1A=",
+    "email": "activated_website_user@test.com",
+    "date_joined": "2015-06-29T17:45:45.847Z"
+  },
+  "model": "auth.user",
+  "pk": 66
+},
+{
+    "fields": {
+        "dropbox_token": "HQ0M_OPGbZAAAAAAAAAAxzd9VkjH3lJHv2RAVcsCAKBaMf8Bra8-aFRDZBtzmTSb",
+        "display_name": "Knownly Test",
+        "user_id": "4363897232",
+        "email": "test@knownly.net",
+        "django_user": 66,
+        "account_created": "2015-06-29T19:01:16.874Z",
+        "date_activated": "2015-06-29T20:01:16.874Z"
+    },
+    "model": "console.dropboxuser",
+    "pk": 47
+},
+{
+  "fields": {
+    "username": "unactivated_website_user@test.com",
+    "first_name": "Knownly",
+    "last_name": "Test",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-06-29T17:45:46.003Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$20000$7JhyxKmP5hLk$fxciwLlZff8Op9/cFkB2Ta7itOUnWZ6t+QqwKRr+m1A=",
+    "email": "unactivated_website_user@test.com",
+    "date_joined": "2015-06-29T17:45:45.847Z"
+  },
+  "model": "auth.user",
+  "pk": 88
+},
+{
+    "fields": {
+        "dropbox_token": "HQ0M_OPGbZAAAAAAAAAAxzd9VkjH3lJHv2RAVcsCAKBaMf8Bra8-aFRDZBtzmTSb",
+        "display_name": "Knownly Test",
+        "user_id": "436232319768",
+        "email": "test@knownly.net",
+        "django_user": 88,
+        "account_created": "2015-06-29T19:01:16.874Z",
+        "date_activated": null
+    },
+    "model": "console.dropboxuser",
+    "pk": 48
+},
+{
+    "fields": {
+        "dropbox_user": 47,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "test1.knownly.net",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 2
+},
+{
+    "fields": {
+        "dropbox_user": 47,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "test2.knownly.net",
+        "date_activated": "2015-07-07T05:32:41.794Z"
+    },
+    "model": "console.dropboxsite",
+    "pk": 3
+},
+{
+    "fields": {
+        "dropbox_user": 47,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "test3.knownly.net",
+        "date_activated": "2015-07-07T06:32:41.794Z"
+    },
+    "model": "console.dropboxsite",
+    "pk": 4
+},
+{
+    "fields": {
+        "dropbox_user": 48,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "test4.knownly.net",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 5
+},
+{
+    "fields": {
+        "dropbox_user": 48,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "test5.knownly.net",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 6
+},
+{
+    "fields": {
+        "dropbox_user": 48,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "test6.knownly.net",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 7
+}
+]

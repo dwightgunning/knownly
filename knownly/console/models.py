@@ -10,6 +10,7 @@ class DropboxUser(models.Model):
 	dropbox_token = models.TextField()
 	email = models.EmailField()
 	account_created = models.DateTimeField(auto_now_add=True) #TODO: Migrate to default=timezone.now
+	date_activated = models.DateTimeField(blank=True, null=True)
 
 	def __unicode__(self):
 		return u'%s' % self.display_name

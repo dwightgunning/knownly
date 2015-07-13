@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from dropbox.client import DropboxClient, DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
 
-from knownly.console.models import DropboxUser
+from knownly.console.models import DropboxUser, DropboxSite
 
 logger = logging.getLogger(__name__)
 
