@@ -25,6 +25,7 @@ from dropbox.rest import ErrorResponse
 from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
 from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
+from knownly.console.tasks import fetch_website_folder_metadata, process_dropbox_user_activity
 from knownly.plans.models import CustomerSubscription
 
 logger = logging.getLogger(__name__)
@@ -108,30 +109,38 @@ class CreateWebsiteView(BaseFormView):
         super(CreateWebsiteView, self).form_valid(form)
         self.dropbox_website = form.save()
 
-
         client = DropboxClient(self.dropbox_user.dropbox_token)
         try:
             client.metadata(self.dropbox_website.domain, file_limit=2)
             message = 'A website folder with the same name already exists in your Dropbox so we\'ve left that alone.'
         except ErrorResponse, e:
             if e.status == 404:
+                # setup the file
                 output = StringIO.StringIO()
                 output.write('<html>\n<head>\n  <title>Hello world</title>\n</head>\n<body>\n  <h1>Hello world...</h1>\n</body>\n</html>\n')
+
+                # Upload the file to dropbox
                 try:
-                    client.put_file('%s/index.html' % self.dropbox_website.domain, output)
+                    created = client.put_file('%s/index.html' % self.dropbox_website.domain, output)
                     message = 'A website folder (<em>/Apps/Knownly.net/%s</em>) has been created in your Dropbox.' % self.dropbox_website.domain
                 except Exception, e:
                     logger.exception("Error creating website folder.")
                     message = "An error occurred and we could not create a website folder in your Dropbox. Please try creating it manually."
                     logger.exception('Unexpected response from Dropbox when checking for existing folder')                  
+
+                try:
+                    fetch_website_folder_metadata.delay(self.dropbox_website.id)
+                except:
+                    logger.exception("Error creating fetch_website_folder_metadata task")
+
+                if created:
+                    if self.dropbox_website.domain.endswith('knownly.net'):
+                        message = '%s Your website is created and immediately active. <a href="http://%s">Check it out</a>.' % (message, self.dropbox_website.domain)
+                    else:
+                        message = '%s Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % (message, reverse('support'))
             else:
                 message = "An error occurred and we could not create a website folder in your Dropbox. Please try creating it manually."
                 logger.exception('Unexpected response from Dropbox when checking for existing folder')
-
-        if self.dropbox_website.domain.endswith('knownly.net'):
-            message = '%s Your website is created and immediately active. <a href="http://%s">Check it out</a>.' % (message, self.dropbox_website.domain)
-        else:
-            message = '%s Your website is created although custom domains may need additional DNS configuration. <a href="%s" class="alert-link">Find out more</a>.' % (message, reverse('support'))
 
         return self.render_to_json_response({'domain': self.dropbox_website.domain, 'message': message})
 
@@ -175,7 +184,9 @@ class RemoveWebsiteView(DeleteView):
         archived_site = ArchivedDropboxSite(dropbox_user=dropbox_website.dropbox_user, 
                                                 domain= dropbox_website.domain, 
                                                 date_created=dropbox_website.date_created,
-                                                date_activated=dropbox_website.date_activated)
+                                                date_activated=dropbox_website.date_activated,
+                                                date_modified=dropbox_website.date_modified,
+                                                dropbox_hash=dropbox_website.dropbox_hash)
         archived_site.save()
         dropbox_website.delete()
 
@@ -200,8 +211,13 @@ def dropbox_webhook(request):
                                  request.body, sha256).hexdigest():
             logger.error("Invalid HEX code provided.")
             return HttpResponse(status=403)
-
-        for uid in json.loads(request.body)['delta']['users']:
-            logger.debug('Dropbox webhook - updated user: %s', uid)
+        else:
+            logger.debug("Dropbox updates received...")
+            for uid in json.loads(request.body)['delta']['users']:
+                if DropboxUser.objects.filter(user_id=uid).exists():
+                    logger.debug('Dropbox webhook - updated user: %s', uid)
+                    process_dropbox_user_activity.delay(uid)
+                else:
+                    logger.warn('Unrecognised dropbox user: %s', uid)
 
         return HttpResponse(status=200)

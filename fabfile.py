@@ -8,6 +8,7 @@ def base_env():
     env.directory = '%s/source' % env.root
     env.activate = 'source %s/venvs/current/bin/activate' % env.root
     env.supervisor_webapp_program = 'knownly'
+    env.supervisor_workers_program = 'knownly-workers'
 
 def prod():
     base_env()    
@@ -25,6 +26,9 @@ def git_pull(remote='origin', branch='prod'):
 def restart_website():
     run("sudo /usr/local/bin/supervisorctl restart %s" % env.supervisor_webapp_program)
 
+def restart_workers():
+    run("sudo /usr/local/bin/supervisorctl restart %s" % env.supervisor_workers_program)
+
 def deploy(remote='origin', branch='master'):
     """Run the actual deployment steps, e.g: $ fab prod deploy"""
     with cd(env.directory):
@@ -36,3 +40,4 @@ def deploy(remote='origin', branch='master'):
         run_under_venv("python manage.py collectstatic --noinput")
     
     restart_website()
+    restart_workers()

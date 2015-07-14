@@ -31,15 +31,17 @@ LOGGING = {
         },
         'knownly': {
             'handlers':['console', 'mail_admins'],
-            'level':'DEBUG',
+            'level':'WARNING',
         },
         'django.db.backends': {
             'handlers':['console', 'mail_admins'],
             'level':'WARNING',
+            'propagate': False,
         },
         'django.request': {
             'handlers':['console', 'mail_admins'],
             'level':'WARNING',
+            'propagate': False,
         },
         'django': {
             'handlers':['console', 'mail_admins'],

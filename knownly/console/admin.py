@@ -14,7 +14,7 @@ class DropboxUserAdmin(ModelAdmin):
 class DropboxSiteAdmin(ModelAdmin):
     list_display = ('domain', 'dropbox_user', 'date_created', 'get_date_activated', 'visit_site')
     list_filter = ('dropbox_user',)
-    readonly_fields = ('date_created', 'date_activated')
+    readonly_fields = ('date_created', 'date_activated', 'dropbox_hash')
 
     def get_date_activated(self, obj):
         return obj.date_activated or ''
