@@ -29,6 +29,10 @@ class SubdomainToDropboxMiddleware(object):
 		else:
 			#logger.debug('Redirecting to dropbox: %s via website: %s' % (request.path, domain_to_match))
 
+			resource_path = '/%s/%s' % (domain_to_match, request.path.lstrip("/"))
+			if resource_path == domain or resource_path.endswith('/'):
+				resource_path = '%sindex.html' % resource_path
+
 			# Find the dropbox user that owns the domain
 			try:
 				website = DropboxSite.objects.get(domain=domain_to_match)
@@ -37,13 +41,8 @@ class SubdomainToDropboxMiddleware(object):
 			
 			#logger.debug('website recognised as being from user: %s' % website.dropbox_user)
 
-			# Build up the dropbox request
-			from_path = '/%s/%s' % (website.domain, request.path.lstrip("/"))
-			if from_path == domain or from_path.endswith('/'):
-				from_path = '%sindex.html' % from_path
-
 			dropbox_client = client.DropboxClient(website.dropbox_user.dropbox_token)
-			dropbox_path = "/files/%s%s" % (dropbox_client.session.root, client.format_path(from_path))
+			dropbox_path = "/files/%s%s" % (dropbox_client.session.root, client.format_path(resource_path))
 			dropbox_url, dropbox_params, dropbox_headers = dropbox_client.request(dropbox_path, method='GET', content_server=True)
 			
 			#logger.debug('Dropbox url to file: %s' % dropbox_url)
