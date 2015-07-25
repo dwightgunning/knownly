@@ -52,15 +52,11 @@ class SubdomainToDropboxMiddleware(object):
 
 			#logger.debug('redirect full path: %s' % dropbox_redirect_path)
 			response = HttpResponse()
-			for i in dropbox_headers:
-				response[i] = dropbox_headers[i]
-
+			response['Authorization'] = dropbox_headers['Authorization']
 			response['Accept-Language'] = request.META.get('HTTP_ACCEPT_LANGUAGE')
 			response['X-Forwarded-For'] = request.META.get('HTTP_X_FORWARDED_FOR')
 			response['User-Agent'] = request.META.get('HTTP_USER_AGENT')
 			response['Accept'] = request.META.get('HTTP_ACCEPT')
-			response['pragma'] = request.META.get('HTTP_PRAGMA')
-			response['Cache-Control'] = request.META.get('HTTP_CACHE_CONTROL')
 			response['Accept-Encoding'] = request.META.get('HTTP_ACCEPT_ENCODING')
 			response['X-Accel-Redirect'] = '/%s%s' % (settings.INTERNAL_REDIRECT_DIRECTORY, dropbox_redirect_path)
 
