@@ -1,12 +1,10 @@
-// @import "bootstrap";
-// @import "font-awesome";
 @import "base";
 
 /* Links */
 a,
 a:focus,
 a:hover {
-  color: #fff;
+  color: $grayscale-lightest;
 }
 
 /* Custom default button */
@@ -22,6 +20,7 @@ a:hover {
 html,
 body {
   height: 100%;
+  margin-bottom: 0px;
   text-align: center;
 }
 
@@ -34,7 +33,7 @@ body {
 }
 .site-wrapper-inner {
   display: table-cell;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .cover-container {
   margin-left: auto;
@@ -48,98 +47,46 @@ body {
 
 
 /*
- * Header
- */
-.masthead-brand {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.masthead-nav > li {
-  display: inline-block;
-}
-.masthead-nav > li + li {
-  margin-left: 20px;
-}
-.masthead-nav > li > a {
-  padding-left: 0;
-  padding-right: 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.75);
-  border-bottom: 2px solid transparent;
-}
-.masthead-nav > li > a:hover,
-.masthead-nav > li > a:focus {
-  background-color: transparent;
-  border-bottom-color: rgba(255,255,255,.25);
-}
-.masthead-nav > .active > a,
-.masthead-nav > .active > a:hover,
-.masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
-}
-
-@media (min-width: 768px) {
-  .masthead-brand {
-    float: left;
-  }
-  .masthead-nav {
-    float: right;
-  }
-}
-
-
-/*
  * Cover
  */
-
 .cover {
-  padding: 0 20px;
-}
-.cover .btn-lg {
-  padding: 10px 20px;
-  font-weight: bold;
-}
+  padding: 40px;
+  background-color: $grayscale-dark;
+  border-radius: 10px;
 
+  .hero-logo {
+    margin-bottom: 20px;
+  }
+
+  .lead {
+    margin-top: 20px;
+    margin-bottom: 0px;
+  }
+
+  .btn-lg {
+    padding: 10px 20px;
+    font-weight: bold;
+  }
+}
 
 /*
  * Footer
  */
 
 .mastfoot {
-  color: #999; /* IE8 proofing */
-  color: rgba(255,255,255,.5);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: $grayscale-lightest;
 }
 
-
-/*
- * Affix and center
- */
 
 @media (min-width: 768px) {
-  /* Pull out the header and footer */
-  .masthead {
-    position: fixed;
-    top: 0;
-  }
   .mastfoot {
-    position: fixed;
-    bottom: 0;
-  }
-  /* Start the vertical centering */
-  .site-wrapper-inner {
-    vertical-align: middle;
-  }
-  /* Handle the widths */
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+    color: $grayscale-dark;
   }
 }
+
 
 @media (min-width: 992px) {
   .masthead,

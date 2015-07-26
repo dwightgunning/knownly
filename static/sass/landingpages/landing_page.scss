@@ -36,7 +36,7 @@ a {
   height: auto;
   padding: 80px 0;
   text-align: center;
-  color: $grayscale-light;
+  color: $grayscale-dark;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
@@ -160,7 +160,7 @@ ul.banner-social-buttons {
 ::-moz-selection, ::selection  {
   text-shadow: none;
   background: #fcfcfc;
-  background: transparentize($grayscale-light, 0.8);
+  background: transparentize($grayscale-lightest, 0.8);
 }
 
 img {

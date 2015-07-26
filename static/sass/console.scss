@@ -3,7 +3,7 @@
 ::-moz-selection, ::selection  {
   text-shadow: none;
   background: #fcfcfc;
-  background: transparentize($grayscale-light, 0.8);
+  background: transparentize($grayscale-lightest, 0.8);
 }
 
 img {
@@ -34,8 +34,8 @@ img {
 }
 
 ul.list-group {
-
   li.list-group-item {
     background-color: $grayscale-medium;
+    color: $grayscale-lightest;
   }
 }

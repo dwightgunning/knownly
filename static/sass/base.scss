@@ -1,15 +1,16 @@
 @import "bootstrap";
 @import "font-awesome";
 
-$grayscale-primary: #8CCDD3 !default;
-$grayscale-primary-border: #7ECED5 !default;
+$grayscale-primary: #27A9E1 !default;
+$grayscale-primary-border: #278AE1 !default;
 
-$grayscale-primary-dark: #449FA8 !default;
-$grayscale-primary-dark-border: #2C9BA6 !default;
+$grayscale-primary-dark: #2752E1 !default;
+$grayscale-primary-dark-border: #133EE1 !default;
 
-$grayscale-dark: #000 !default;
+$grayscale-dark: #030303 !default;
 $grayscale-medium: #333 !default;
-$grayscale-light: #fff !default;
+$grayscale-light: #F4F4F4 !default;
+$grayscale-lightest: #FDFDFD !default;
 
 $grayscale-body-font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
 $grayscale-headline-font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -23,10 +24,9 @@ body {
   /* Margin bottom by footer height */
   margin-bottom: 50px;
   font-family: $grayscale-body-font-family;
-  color: $grayscale-light;
+  color: $grayscale-lightest;
   background-color: $grayscale-dark;
-  background-image: url("/static/img/use_your_illusion.png");
-  -webkit-tap-highlight-color: transparentize($grayscale-light, 0.8);
+  -webkit-tap-highlight-color: transparentize($grayscale-lightest, 0.8);
   overflow-y: scroll;
 }
 
@@ -41,12 +41,14 @@ h6, .h6 {
   font-family: $grayscale-headline-font-family;
   font-weight: 700;
   letter-spacing: 1px;
+  color: $grayscale-lightest;
 }
 
 p {
   margin: 0 0 10px;
   font-size: 18px;
   line-height: 1.5;
+  color: $grayscale-lightest;
 }
 
 .text-primary {
@@ -62,7 +64,7 @@ p {
 }
 
 .btn-primary {
-  color: #fff;
+  color: $grayscale-lightest;
   background-color: $grayscale-primary;
   border-color: $grayscale-primary-border;
 }
@@ -71,7 +73,7 @@ p {
 	.btn-primary:active, .btn-primary.active,
 	.open>.btn-primary.dropdown-toggle {
 
-  color: #fff;
+  color: $grayscale-lightest;
   background-color: $grayscale-primary-dark;
   border-color: $grayscale-primary-dark-border;
 }
@@ -80,8 +82,12 @@ p {
   vertical-align:bottom;
 }
 
+.badge {
+  background-color: $grayscale-lightest;
+}
+
 footer {
-  margin-top: 10px;
+  margin-top: 50px;
 
   .footer {
     position: absolute;
@@ -92,5 +98,25 @@ footer {
     p {
       margin: 0;
     }
+  }
+}
+
+@media (min-width: 768px) {
+  body {
+    background-image: url("/static/img/patterns/cubes.png");
+    color: $grayscale-dark;
+  }
+
+  h1, .h1,
+  h2, .h2,
+  h3, .h3,
+  h4, .h4,
+  h5, .h5,
+  h6, .h6 {
+    color: $grayscale-dark;
+  }
+
+  p {
+    color: $grayscale-dark;
   }
 }

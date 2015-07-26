@@ -1,16 +1,6 @@
 @import "base";
 @import "hover";
 
-@media(min-width:$screen-xs-max) {
-
-  p {
-    margin: 0 0 15px;
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-}
-
 a {
   color: $grayscale-primary;
   -webkit-transition: all .2s ease-in-out;
@@ -28,14 +18,17 @@ a {
   font-weight: 400;
 }
 
-.navbar-custom {
+.navbar {
   margin-bottom: 0;
-  border-bottom: 1px solid transparentize($grayscale-light, 0.7);
+  border-bottom: 1px solid transparentize($grayscale-medium, 0.7);
   font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
-  background-color: $grayscale-dark;
+  background-color: $grayscale-light;
+  color: $grayscale-dark;
 
   .navbar-brand {
     font-weight: 700;
+    padding-top: 7px;
+    padding-bottom: 0px;
 
     &:focus {
       outline: none;
@@ -53,10 +46,10 @@ a {
   }
 
   a {
-    color: $grayscale-light;
+    color: $grayscale-dark;
   }
 
-  .nav {
+  ul.nav {
 
     li {
 
@@ -81,7 +74,6 @@ a {
         &.active {
           outline: none;
           color: $grayscale-primary;
-          background-color: $grayscale-dark;
           background-color: transparent;
         }
       }
@@ -103,21 +95,34 @@ a {
   .navbar {
     padding: 10px 0;
     border-bottom: none;
-    letter-spacing: 1px;
-    background: transparent;
+    background-color: transparent;
     -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
     -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
     transition: background .5s ease-in-out,padding .5s ease-in-out;
+    letter-spacing: 1px;
   }
 
   .top-nav-collapse {
     padding: 0;
-    background-color: $grayscale-dark;
+    background-color: $grayscale-light;
+    border-bottom: 1px solid transparentize($grayscale-medium, 0.7);
+    color: $grayscale-dark;
+    a {
+      padding: 0;
+      color: $grayscale-dark;
+      img {
+        margin-top: 0px;
+      }
+    }
   }
 
-  .navbar-custom.top-nav-collapse {
-    border-bottom: 1px solid transparentize($grayscale-light, 0.7);
+  p {
+    margin: 0 0 15px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: $grayscale-dark;
   }
+
 }
 
 .btn {
@@ -133,9 +138,9 @@ a {
 
   &:hover,
   &:focus {
-    border: 1px solid $grayscale-primary;
+    border: 1px solid $grayscale-primary-dark-border;
     outline: none;
-    color: $grayscale-dark;
+    color: $grayscale-primary-dark;
     background-color: $grayscale-primary;
   }
 }
@@ -147,17 +152,21 @@ a {
 .panel-default {
   border-color: $grayscale-medium;
   background-color: $grayscale-dark;
-  
+  color: $grayscale-lightest;
 
   .panel-heading {
     background-color: $grayscale-medium;
-    color: $grayscale-light;
+    color: $grayscale-lightest;
     font-size: 18px;
+  }
+
+  p {
+    color: $grayscale-lightest;
   }
 }
 
 .well {
-  color: $grayscale-light;
+  color: $grayscale-lightest;
   font-weight: 500;
-  background-color: rgba(245, 245, 245, 0.15);
+  background-color: $grayscale-dark;
 }
