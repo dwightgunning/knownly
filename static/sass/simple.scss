@@ -169,4 +169,16 @@ a {
   color: $grayscale-lightest;
   font-weight: 500;
   background-color: $grayscale-dark;
+
+  p {
+    color: $grayscale-lightest;
+  }
+}
+
+@media (min-width: 768px) {
+  .well {
+    p {
+      color: $grayscale-lightest;
+    }
+  }
 }
