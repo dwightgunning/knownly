@@ -1,0 +1,26 @@
+{% extends 'landingpages/base.html' %}
+{% load static %}
+
+{% block tagline %}Knownly{% endblock %}
+
+{% block hero_img_src %}{% static 'img/developer_hero.jpg' %}{% endblock %}
+{% block hero_img_alt %}{% endblock %}
+
+{% block lead_info %}
+  <p>Focus on learning HTML, CSS and Javascript with simple hosting from a Dropbox folder.</p>
+  <p>Knownly sub-domains are forever free.</p>
+  <p>Get 3x custom domains (<em>yourname.com</em>) for $4.99 per month after a two week trial.</p>
+{% endblock %}
+
+{% block primary_cta_btn %}Try for free{% endblock %}
+
+{% block cta_well %}The easiest way to practice web development and get your site online without any servers.{% endblock %}
+
+{% block start_now %}<a class="btn btn-primary" href="{% url 'signup' %}">Start now</a>{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'landing_pages/learning-to-code.html'});
+  </script>
+{% endblock %}

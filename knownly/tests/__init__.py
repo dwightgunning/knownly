@@ -57,7 +57,7 @@ class LandingPageTests(LiveServerTestCase):
         self.selenium.find_element_by_id('primary-cta')
 
     def test_creatives(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/welcome/creatives'))
+        self.selenium.get('%s%s' % (self.live_server_url, '/welcome/learning-to-code'))
         # Expect to see the primary cta
         self.selenium.find_element_by_id('primary-cta')
 
