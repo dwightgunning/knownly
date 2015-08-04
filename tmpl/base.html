@@ -6,9 +6,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{% block description %}Knownly. Turn a Dropbox folder into a website. Make it known.{% endblock %}">
-    <meta name="author" content="{% block author %}{% endblock %}">
+    <meta name="description" content="{% block description %}Turn a Dropbox folder into a website. Make it known.{% endblock %}">
+    <link rel="canonical" href="https://www.knownly.net{{ request.get_full_path }}" />
+    <meta name="author" content="{% block author %}Knownly{% endblock %}">
     <link rel="shortcut icon" href="{% static 'img/brand/Knownly_Favicon.png' %}">
+
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="{% block og_title %}Knownly.net{% endblock %}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.knownly.net{% static 'img/brand/Knownly_Logo_Bubble_Device_255_x_255.png' %}" />
+    <meta property="og:url" content="https://www.knownly.net{{ request.get_full_path }}" />
+    <meta property="og:description" content="{% block og_description %}Turn a Dropbox folder into a website. Make it known.{% endblock %}" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:width" content="255">
+    <meta property="og:image:height" content="255">
+    <meta property="og:site_name" content="Knownly.net" />
 
     <title>{% block title %}{% endblock %}</title>
 
