@@ -1,6 +1,12 @@
 @import "bootstrap";
 @import "font-awesome";
 
+$knownly-heading-font-family: "Open Sans", "Montserrat", "Helvetica Neue" , Helvetica, Arial, sans-serif;
+$knownly-paragraph-font-family: "Open Sans", "Montserrat", "Helvetica Neue" , Helvetica, Arial, sans-serif;
+
+$knownly-orange: #f06821;
+$knownly-blue: #27A9E1;
+
 $grayscale-primary: #27A9E1 !default;
 $grayscale-primary-border: #278AE1 !default;
 
@@ -94,14 +100,14 @@ footer {
     bottom: 0;
     width: 100%;
     /* Set the fixed height of the footer here */
-    height: 40px;
+    height: 50px;
     p {
       margin: 0;
     }
   }
 }
 
-@media (min-width: 768px) {
+@media(min-width:$screen-sm-min) {
   body {
     background-image: url("/static/img/patterns/cubes.png");
     color: $grayscale-dark;

@@ -19,6 +19,10 @@ urlpatterns = patterns('',
 	url(r'^welcome/learning-to-code/$', 
 		TemplateView.as_view(template_name="landingpages/learning-to-code.html"),
 		name='lp-learning-to-code'),
+	url(r'^welcome/creatives/$',
+		TemplateView.as_view(template_name="landingpages/creatives.html"),
+		name='lp-creatives'),
+
 
 	# Registration flow
 	url(r'^signup/$',

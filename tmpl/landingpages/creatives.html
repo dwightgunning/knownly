@@ -1,0 +1,23 @@
+{% extends 'landingpages/base2.html' %}
+{% load static %}
+
+{% block tagline %}Turn a <strong>Dropbox</strong> folder into a <strong>website</strong>. Make it Known.{% endblock %}
+
+{% block how-it-works-cta %}The perfect place to host your portfolio{% endblock %}
+
+{% block how-it-works-content %}
+  <ul>
+    <li>Host multiple websites from one Dropbox account</li>
+    <li>Knownly URLs are free forever (e.g. my-site.knownly.net)</li>
+    <li>Only $4.99 for 3 custom domains.</li>
+  </ul>
+{% endblock %}
+
+{% block primary_cta_btn %}Get started{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'landing_pages/creatives.html'});
+  </script>
+{% endblock %}

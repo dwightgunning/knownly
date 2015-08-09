@@ -21,7 +21,7 @@ a {
 .navbar {
   margin-bottom: 0;
   border-bottom: 1px solid transparentize($grayscale-medium, 0.7);
-  font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: $grayscale-headline-font-family;
   background-color: $grayscale-light;
   color: $grayscale-dark;
 
@@ -126,7 +126,7 @@ a {
 }
 
 .btn {
-  font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: $grayscale-headline-font-family;
   font-weight: 400;
   -webkit-transition: all .3s ease-in-out;
   -moz-transition: all .3s ease-in-out;
