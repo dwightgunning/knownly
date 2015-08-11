@@ -88,12 +88,27 @@ img {
 
 .content-section {
   padding-top: 60px;
+  padding-bottom: 40px;
 }
+
+
+@media(min-width:$screen-sm-min) {
+
+  .content-section {
+    padding-top: 120px;
+    padding-bottom: 80px;
+  }
+
+}
+
+
+
+
+
 
 #how-it-works {
   background-color: #fdfdfd;
   border-top: 7px solid $knownly-blue;
-  padding-bottom: 20px;
 
   h2 {
     text-transform: uppercase;
@@ -119,7 +134,6 @@ img {
 
 #getting-started {
   background-color: $knownly-orange;
-  padding-bottom: 20px;
   color: $grayscale-lightest;
 
   h1, h2, h3 {
@@ -143,7 +157,6 @@ img {
 
 #pricing {
   background-color: $grayscale-lightest;
-  padding-bottom: 20px;
   border-bottom: 7px solid $knownly-orange;
 
   .section-footer > p > a {
@@ -164,7 +177,6 @@ img {
 }
 
 #about {
-  margin-bottom: 25px;
   background-image: url("/static/img/patterns/cubes.png");
   color: $grayscale-dark;
 
@@ -221,6 +233,7 @@ img {
 .section-footer {
   p {
     font-style: italic;
+    letter-spacing: 1.5px;
     margin-top: 20px;
     margin-bottom: 0px;
 
