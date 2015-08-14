@@ -1,27 +1,23 @@
-{% extends 'landingpages/base.html' %}
+{% extends 'landingpages/base2.html' %}
 {% load static %}
 
-{% block tagline %}Knownly{% endblock %}
+{% block tagline %}Turn a <strong>Dropbox</strong> folder into a <strong>website</strong>. Make your idea Known.{% endblock %}
 
-{% block hero_img_src %}{% static 'img/designers_hero.jpg' %}{% endblock %}
-{% block hero_img_alt %}{% endblock %}
+{% block how-it-works-cta %}The quick and simple way to validate your idea and iterate your MVP{% endblock %}
 
-{% block lead_info %}
-  <p>Build and launch your landing page from a Dropbox folder.</p>
-  <p>3x custom-domain sites for $4.99/month.</p>
-  <p>ALL Startup Weekend participants get their first three months free.</p>
-  <p>Knownly sub-domains are forever free.</p>
+{% block how-it-works-content %}
+  <ul>
+	<li>Launch multiple websites from one Dropbox account</li>
+    <li>ALL Startup Weekend participants get three months free</li>
+    <li>Only $4.99 for 3 custom domains.</li>
+  </ul>
 {% endblock %}
 
-{% block primary_cta_btn %}Try for free{% endblock %}
-
-{% block cta_well %}The quickest way to a landing page that shows off your UVPs and registers news users{% endblock %}
-
-{% block start_now %}<a class="btn btn-primary" href="{% url 'signup' %}">Start now</a>{% endblock %}
+{% block primary_cta_btn %}Get started{% endblock %}
 
 {% block mixpanel_footer %}
   {{ block.super }}
   <script type="text/javascript">
-    mixpanel.track("Page View", {'template': 'landing_pages/startupweekend.html'});
+    mixpanel.track("Page View", {'template': 'landing_pages/creatives.html'});
   </script>
 {% endblock %}
