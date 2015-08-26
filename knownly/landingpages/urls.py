@@ -19,11 +19,17 @@ urlpatterns = patterns('',
 	url(r'^welcome/creatives/$',
 		TemplateView.as_view(template_name="landingpages/creatives.html"),
 		name='lp-creatives'),
+	url(r'^welcome/founders/$',
+		TemplateView.as_view(template_name="landingpages/founders.html"),
+		name='lp-founders'),
+	url(r'^welcome/startupweekend/$', 
+		TemplateView.as_view(template_name="landingpages/startupweekend.html"),
+		name='lp-startupweekend'),
 
 	# Startup Weekend short URL landing page
 	url(r'^startupweekend/$', 
 		TemplateView.as_view(template_name="landingpages/startupweekend.html"),
-		name='lp-startupweekend'),
+		name='lp-startupweekend-short'),
 
 	# Registration flow
 	url(r'^signup/$',

@@ -4,6 +4,7 @@
 {% block title %}Knownly{% endblock %}
 
 {% block css_head %}
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,700|Open+Sans+Condensed:700,300' rel='stylesheet' type='text/css'>
   <link href="{% static 'css/landingpages/landing_page.css' %}" rel="stylesheet">
 {% endblock %}
 
@@ -36,10 +37,10 @@
           <a class="page-scroll" href="#about">About</a>
         </li>
         <li>
-          <a class="page-scroll" href="{% url 'signup' %}">Signup</a>
+          <a class="page-scroll" href="/community/blog/">Blog</a>
         </li>
         <li>
-          <a class="page-scroll" href="{% url 'login' %}">Login</a>
+          <a id="btn-login" href="#">Login</a>
         </li>
       </ul>
     </div>
@@ -48,89 +49,147 @@
   <!-- /.container -->
 </nav>
 
-  <!-- Intro Header -->
-  <header class="intro">
-    <div class="intro-body">
-        <div class="container">
-          <div class="row">
-              <div class="col-md-8">
-                <img class="img-responsive img-rounded" src="{% block hero_img_src %}{% endblock %}" alt="{% block hero_img_alt %}{% endblock %}">
-              </div>
-              <div class="col-md-4">
-                  <h1>{% block tagline %}{% endblock %}</h1>
-                  <div class="text-left lead-info">{% block lead_info %}{% endblock %}</div>
-                  <a id="primary-cta" class="btn btn-primary btn-lg page-scroll" href="{% url 'signup' %}">{% block primary_cta_btn %}{% endblock %}</a>
-              </div>
-          </div>
-          <hr>
-          <div class="row">
-              <div class="col-lg-12">
-                  <div class="well text-center">
-                      <span class="lead">{% block cta_well %}{% endblock %}</span>
-                  </div>
-              </div>
-          </div>
-          <div class="row">
-              <div class="col-md-4">
-                  <h2>{% block uvp_1_heading %}{% endblock %}</h2>
-                  <p>{% block uvp_1_para %}{% endblock %}</p>
-              </div>
-              <div class="col-md-4">
-                  <h2>{% block uvp_2_heading %}{% endblock %}</h2>
-                  <p>{% block uvp_2_para %}{% endblock %}</p>
-              </div>
-              <div class="col-md-4">
-                  <h2>{% block uvp_3_heading %}{% endblock %}</h2>
-                  <p>{% block uvp_3_para %}{% endblock %}</p>
-              </div>
-          </div>
-      </div>
-    </div>
-  </header>
-
-<section id="how-it-works" class="content-section text-center">
-  {% include "landingpages/partials/how-it-works.html" %}
-</section>
-
-<section id="pricing" class="content-section text-center">
-  <div class="download-section">
-    <div class="container">
-      <div class="col-lg-8 col-lg-offset-2">
-        <h2>Pricing</h2>
-        {% include "billing/partials/pricing.html" %}
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="start-now" class="container content-section text-center">
+<!-- Intro Header -->
+<section id="intro" class="content-section">
   <div class="container">
-    <div class="col-lg-8 col-lg-offset-2">
-      {% block start_now %}{% endblock %}
+    <div class="row">
+      <div class="col-md-12 intro-body">
+        <img src="{% static 'img/brand/Knownly_Logo_Web_Simple_140_x_40.png' %}" />
+        <h1>{% block tagline %}{% endblock %}</h1>
+        <a id="primary-cta" class="btn btn-primary btn-lg page-scroll" href="{% url 'signup' %}">{% block primary_cta_btn %}{% endblock %}</a>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="about" class="container content-section text-center">
-  <div class="row">
-    <div class="col-lg-6 col-lg-offset-3">
-      <h2>About the site</h2>
-      <div class="text-justify">
-        <p>Hi,</p>
-        <p>My name is Dwight and Knownly is my little creation.</p>
-        <p>I first had the idea to host websites straight from Dropbox a while back while I was reading through the Dropbox API docs for another project. Then the light bulb went on...</p>
-        <p>It turned out to be a great way to quickly put landing pages for new ideas online. I could also do away with all the Wordpress blogs I'd been roped in to managing over the years. I shared Knownly with a few friends and found out it's also useful to creatives, designers and developers (plus people wanting to learn these skills). The best part is having full control over the designs but not having to worry about web hosting anymore.</p>
-        <p>I'm really pleased that Knownly is finally out there. I hope you find it useful and I would love to hear any feedback you may have.</p>
-        <img class="center-block img-circle img-about" src="{% static 'img/dwight_amsterdam_tcr_128_x_128.png' %}">
-        <ul class="list-inline text-center banner-social-buttons">
+<section id="how-it-works" class="content-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-5">
+        <img class="center-block img-responsive" src="{% static 'img/how_it_works_1.png' %}" />
+      </div>
+      <div class="col-sm-7">
+        <h2>{% block how-it-works-cta %}{% endblock %}</h2>
+        {% block how-it-works-content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="getting-started" class="content-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Getting started</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <h3>1: Link your dropbox</h3>
+        <p>During signup you will be directed to Dropbox. Log in and grant Knownly permission to create a folder where your website(s) files will live.</p>
+      </div>
+
+      <div class="col-md-4">
+        <h3>2: Claim your domain</h3>
+        <p>Knownly.net sub-domains are free so you can try things out straight away. You can also claim a any domain you own and link that to a website folder.</p>
+      </div>
+      <div class="col-md-4">
+        <h3>3: Drop in your files</h3>
+        <p>Now it's time to create your site. Work with one of our templates, get advice from our community, or craft something of your very own.</p>
+      </div>
+      <div class="col-md-12 text-center section-footer">
+        <p>If you need any assistance along the way, we're <a href="{% url 'support' %}">happy to help</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="content-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+                <th></th>
+                <th>Free</th>
+                <th>Lite</th>
+                <th>Premium</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-left">Knownly sub-domains:</td>
+                    <td>Unlimited</td>
+                    <td>Unlimited</td>
+                    <td>Unlimited</td>
+                </tr>
+                <tr>
+                    <td class="text-left">Custom domains:</td>
+                    <td>0</td>
+                    <td>3</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td class="text-left">Page views (monthly):</td>
+                    <td>10,000</td>
+                    <td>100,000</td>
+                    <td>Unlimited</td>
+                </tr>
+                <tr>
+                    <td class="text-left">Data transfer (monthly):</td>
+                    <td>1G</td>
+                    <td>10G</td>
+                    <td>100G</td>
+                </tr>
+                <tr>
+                    <td class="text-left">Price:</td>
+                    <td>Free</td>
+                    <td>$4.99 per month</td>
+                    <td>$14.99 per month</td>
+                </tr>
+            </tbody>
+          </table>
+         </div>
+      </div>
+      <div class="text-center section-footer">
+        <div class="row">
+          <div class="col-md-12 text-center section-footer">
+            <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Get started</a>
+            <p>Upgrade/Downgrade your plan any time. Need something special, just email <a href="mailto:info@knownly.net">info@knownly.net</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="content-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <h2>About the site</h2>
+        <div class="text-justify about-content">
+          <p>Hi,</p>
+          <p>My name is Dwight and Knownly is my little creation.</p>
+          <p>I first had the idea to host websites straight from Dropbox a while back while I was reading through the Dropbox API docs for another project. Then the light bulb went on...</p>
+          <p>It turned out to be a great way to quickly put landing pages for new ideas online. I could also do away with all the Wordpress blogs I'd been roped in to managing over the years. I shared Knownly with a few friends and found out it's also useful to creatives, designers and developers (plus people wanting to learn these skills). The best part is having full control over the designs but not having to worry about web hosting anymore.</p>
+          <p>I'm really pleased that Knownly is finally out there. I hope you find it useful and I would love to hear any feedback you may have.</p>
+          <img class="center-block img-circle img-about" src="{% static 'img/dwight_amsterdam_tcr_128_x_128.png' %}">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="list-inline text-center social-buttons">
           <li>
-            <a href="mailto:info@knownly.net" class="btn btn-default btn-lg"><i class="fa fa-send-o fa-fw"></i> <span class="network-name">Email</span></a>
+            <a href="mailto:info@knownly.net" class="btn btn-default"><i class="fa fa-send-o fa-fw"></i> <span class="network-name">Email</span></a>
           </li>
           <li>
-            <a href="https://twitter.com/knownly_net" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
+            <a href="https://twitter.com/knownly_net" class="btn btn-default"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
           </li>
           <li>
-            <a href="https://facebook.com/knownly_net" class="btn btn-default btn-lg"><i class="fa fa-facebook-official fa-fw"></i> <span class="network-name">Facebook</span></a>
+            <a href="https://facebook.com/knownly_net" class="btn btn-default"><i class="fa fa-facebook-official fa-fw"></i> <span class="network-name">Facebook</span></a>
           </li>
         </ul>
       </div>
@@ -145,4 +204,17 @@
     </div>
   </div>
 </footer>
+{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
+
+    $('#btn-login').click(function () {
+      mixpanel.track('#btn-login', "Login Button Clicked");
+      window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
+      return false;
+    });
+  </script>
 {% endblock %}

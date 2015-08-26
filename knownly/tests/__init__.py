@@ -31,7 +31,7 @@ class PublicPagesTests(LiveServerTestCase):
     def test_homepage(self):
         self.selenium.get(self.live_server_url)
         # Expect to see the primary cta
-        self.selenium.find_element_by_id('btn-signup')
+        self.selenium.find_element_by_id('primary-cta')
 
 
 class LandingPageTests(LiveServerTestCase):

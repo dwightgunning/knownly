@@ -1,26 +1,23 @@
 {% extends 'landingpages/base.html' %}
 {% load static %}
 
-{% block tagline %}Knownly{% endblock %}
+{% block tagline %}Publish <strong>custom websites</strong> straight from your <strong>Dropbox</strong>{% endblock %}
 
-{% block hero_img_src %}{% static 'img/designers_hero.jpg' %}{% endblock %}
-{% block hero_img_alt %}{% endblock %}
+{% block how-it-works-cta %}Keep full control your web design with pure HTML5/CSS3{% endblock %}
 
-{% block lead_info %}
-  <p>Publish websites straight from Dropbox.</p>  
-  <p>Three custom domains (e.g. <em>yourname.com</em>) for $4.99 per month after a two week trial.</p>
-  <p>Knownly sub-domains are forever free.</p>
+{% block how-it-works-content %}
+  <ul>
+    <li>Host multiple websites from one Dropbox account</li>
+    <li>Websites at Knownly sub-domains are free forever</li>
+    <li>Up to 3 websites on custom domains for $4.99 / month</li>
+  </ul>
 {% endblock %}
 
 {% block primary_cta_btn %}Get started{% endblock %}
 
-{% block cta_well %}The perfect place to host your portfolio and the simplest way to share drafts and deliverables.{% endblock %}
-
-{% block start_now %}<a class="btn btn-primary" href="{% url 'signup' %}">Start now</a>{% endblock %}
-
 {% block mixpanel_footer %}
   {{ block.super }}
   <script type="text/javascript">
-    mixpanel.track("Page View", {'template': 'landing_pages/designers.html'});
+    mixpanel.track("Page View", {'template': 'landing_pages/creatives.html'});
   </script>
 {% endblock %}

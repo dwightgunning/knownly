@@ -1,22 +1,19 @@
 {% extends 'landingpages/base.html' %}
 {% load static %}
 
-{% block tagline %}Knownly{% endblock %}
+{% block tagline %}<strong>Static websites</strong> straight from your <strong>Dropbox</strong>{% endblock %}
 
-{% block hero_img_src %}{% static 'img/developer_hero.jpg' %}{% endblock %}
-{% block hero_img_alt %}{% endblock %}
+{% block how-it-works-cta %}The simplest way to host static websites.{% endblock %}
 
-{% block lead_info %}
-  <p>Host static websites from a Dropbox folder.</p>
-  <p>Three sites at custom domains for just $4.99/month. Trial it for free for two weeks.</p>
-  <p>Knownly sub-domains are forever free.</p>
+{% block how-it-works-content %}
+  <ul>
+    <li>Host multiple websites from one Dropbox account</li>
+    <li>Websites at Knownly sub-domains are free forever</li>
+    <li>Up to 3 websites on custom domains for $4.99 / month</li>
+  </ul>
 {% endblock %}
 
-{% block primary_cta_btn %}Try for free{% endblock %}
-
-{% block cta_well %}The perfect place to host your bio, a static weblog, or a landing page for your latest idea.{% endblock %}
-
-{% block start_now %}<a class="btn btn-primary" href="{% url 'signup' %}">Start now</a>{% endblock %}
+{% block primary_cta_btn %}Get started{% endblock %}
 
 {% block mixpanel_footer %}
   {{ block.super }}
