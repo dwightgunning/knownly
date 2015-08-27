@@ -6,7 +6,7 @@
 
 {% block css_head %}
   <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,700|Open+Sans+Condensed:700,300' rel='stylesheet' type='text/css'>
-  <link href="{% static 'css/landingpages/landing_page.css' %}" rel="stylesheet">
+  {{ block.super }}
 {% endblock %}
 
 {% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
@@ -19,7 +19,7 @@
         <i class="fa fa-bars"></i>
       </button>
       <a class="navbar-brand page-scroll" href="#page-top">
-        <img class="brand-logo-dark" src="{% static 'img/brand/Knownly_Logo_Web_Simple_140_x_40.png' %}" />
+        <img class="brand-logo" src="{% static 'img/brand/Knownly_Logo_Web_Simple_140_x_40.png' %}" />
       </a>
     </div>
 

@@ -1,5 +1,3 @@
-@import "simple";
-
 body {
   font-family: $knownly-paragraph-font-family;
   color: $grayscale-dark;
@@ -49,12 +47,6 @@ img {
 .navbar {
   font-family: $knownly-heading-font-family;
   font-size: 16px;
-}
-
-@media(min-width:$screen-sm-min) {
-  .navbar-brand {
-    display: none;
-  }
 }
 
 #intro {
