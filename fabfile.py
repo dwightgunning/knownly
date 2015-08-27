@@ -34,6 +34,7 @@ def deploy(remote='origin', branch='master'):
     with cd(env.directory):
         git_pull(remote=remote, branch=branch)
         run_under_venv("pip install -r %s/requirements.txt" % env.directory)
+        run_under_venv("npm install")
         run_under_venv("python manage.py syncdb --noinput")
         run_under_venv("python manage.py migrate --noinput")
         run('gulp') # Build the statics
