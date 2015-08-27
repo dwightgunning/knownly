@@ -109,8 +109,13 @@ img {
     text-shadow: 1px 1px 1px #ccc;
     font-size: 96px;    
   }
+
   .fa.alt {
     color: $knownly-orange;
+  }
+
+  .usergroup:hover {
+    text-shadow: 2px 2px 2px #aaa;
   }
 
 }
@@ -174,6 +179,7 @@ img {
 
   .table {
     font-size: 20px;
+    margin-bottom: 20px;
 
     thead > tr {
       border-bottom: 3px solid $knownly-blue;
@@ -241,6 +247,7 @@ img {
 
 .section-footer {
   p {
+    font-size: 14px;
     font-style: italic;
     letter-spacing: 1.5px;
     margin-top: 20px;
