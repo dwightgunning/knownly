@@ -100,8 +100,8 @@ img {
     text-transform: uppercase;
     font-size: 24px;
     line-height: 1.4em;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 0px;
   }
 
   .fa {
@@ -114,8 +114,20 @@ img {
     color: $knownly-orange;
   }
 
-  .usergroup:hover {
-    text-shadow: 2px 2px 2px #aaa;
+  .usergroup {
+    margin-bottom: 40px;
+
+    a:hover {
+      text-shadow: 3px 3px 3px #aaa;
+    }
+  }
+
+  @media(min-width:$screen-sm-min) {
+
+    .usergroup {
+      margin-bottom: 0px;
+    }
+
   }
 
 }
