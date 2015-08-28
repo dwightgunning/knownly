@@ -7,7 +7,8 @@ var rename = require('gulp-rename');
 
 var config = {
     jsDir: './static/js/',
-    sassPath: './static/sass/import.scss',
+    sassPath: './static/sass/',
+    sassImport: './static/sass/import.scss',
      bowerDir: './bower_components' 
 }
 
@@ -35,7 +36,7 @@ gulp.task('js', function() {
 });
 
 gulp.task('css', function() { 
-    return sass(config.sassPath, {
+    return sass(config.sassImport, {
         style: 'compressed',
         loadPath: [
               config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
