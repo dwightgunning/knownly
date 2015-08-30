@@ -148,34 +148,34 @@ a {
 
 .panel-default {
   border-color: $grayscale-medium;
-  background-color: $grayscale-dark;
-  color: $grayscale-lightest;
+  background-color: $grayscale-lightest;
+  color: $grayscale-dark;
 
   .panel-heading {
-    background-color: $grayscale-medium;
-    color: $grayscale-lightest;
+    background-color: $grayscale-light;
+    color: $grayscale-dark;
     font-size: 18px;
   }
 
   p {
-    color: $grayscale-lightest;
+    color: $grayscale-dark;
   }
 }
 
 .well {
-  color: $grayscale-lightest;
+  color: $grayscale-dark;
   font-weight: 500;
-  background-color: $grayscale-dark;
+  background-color: $grayscale-lightest;
 
   p {
-    color: $grayscale-lightest;
+    color: $grayscale-dark;
   }
 }
 
-@media (min-width: 768px) {
-  .well {
-    p {
-      color: $grayscale-lightest;
-    }
-  }
-}
+// @media (min-width: 768px) {
+//   .well {
+//     p {
+//       color: $grayscale-dark;
+//     }
+//   }
+// }
