@@ -3,7 +3,7 @@ import redis
 import urlparse
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponsePermanentRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from dropbox import client 
@@ -23,13 +23,13 @@ class SubdomainToDropboxMiddleware(object):
         subdomains.
         """
         domain = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME')
-        domain_to_match = domain.split(':')[0]
+        domain_to_match = domain.split(':')[0].lower()
 
         if domain_to_match in ('www.knownly.net', '127.0.0.1', 'localhost'):
-            #logger.debug('Serving: %s' % request.path)
+            logger.info('Serving: %s' % request.path)
             return None
         else:
-            #logger.debug('Redirecting to dropbox: %s via website: %s' % (request.path, domain_to_match))
+            logger.info('Redirecting to dropbox: %s via website: %s' % (request.path, domain_to_match))
 
             resource_path = '/%s/%s' % (domain_to_match, request.path.lstrip("/"))
             if resource_path == domain or resource_path.endswith('/'):
@@ -54,7 +54,7 @@ class SubdomainToDropboxMiddleware(object):
                 try:
                     website = DropboxSite.objects.get(domain=domain_to_match)
                 except DropboxSite.DoesNotExist:
-                    return HttpResponsePermanentRedirect('https://www.knownly.net')
+                    return HttpResponseRedirect('https://www.knownly.net')
                 
                 #logger.debug('website recognised as being from user: %s' % website.dropbox_user)
 
