@@ -6,20 +6,12 @@
 {% block og_title %}Knownly Support{% endblock %}
 {% block og_description %}Support and FAQ for Knownly{% endblock %}
 
-{% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
-
 {% block content %}
 {% include 'partials/navbar.html' with active="support" %}
-<div id="support" class="container content">
+<div id="support" class="container">
   <div class="container">
     <h1>Support</h1>
-    {% if messages %}        
-      <div class="masthead">      
-          {% for message in messages %}
-              <div class="alert alert-public {{ message.tags }}">{{ message|safe }}</div>
-          {% endfor %}
-      </div>
-    {% endif %}
+    {% include 'partials/messages.html %}
 
     <div class="panel-group" id="accordion">
       <div id="where-are-knownly-folders" class="panel panel-default">

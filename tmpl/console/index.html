@@ -3,8 +3,6 @@
 
 {% block title %}My websites | Knownly{% endblock %}
 
-{% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
-
 {% block content %}
 {% include 'partials/navbar.html' %}
 <!-- Remove website modal -->
@@ -28,7 +26,7 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="console" class="container content">
+<div id="console">
   <div class="container">
     <h1>My websites</h1>
     {% if messages %}

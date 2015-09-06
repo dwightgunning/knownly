@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login, logout
 from django.core.urlresolvers import reverse
 from django.views.generic import View, TemplateView, RedirectView
 
