@@ -12,43 +12,7 @@
 {% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-        <i class="fa fa-bars"></i>
-      </button>
-      <a class="navbar-brand page-scroll" href="#page-top">
-        <img class="brand-logo" src="{% static 'img/brand/Knownly_Logo_Web_Simple_140_x_40.png' %}" />
-      </a>
-    </div>
-
-    <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-      <ul class="nav navbar-nav">
-        <li class="hidden">
-          <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
-        </li>
-        <li>
-          <a class="page-scroll" href="/community/">Community</a>
-        </li>
-        <li>
-          <a class="page-scroll" href="/community/blog/">Blog</a>
-        </li>
-        <li>
-          <a class="page-scroll" href="#pricing">Pricing</a>
-        </li>
-        <li>
-          <a class="page-scroll" href="#about">About</a>
-        </li>
-        <li>
-          <a id="btn-login" href="#">Login</a>
-        </li>
-      </ul>
-    </div>
-    <!-- /.navbar-collapse -->
-  </div>
-  <!-- /.container -->
-</nav>
+{% include 'partials/navbar.html' %}
 
 <!-- Intro Header -->
 <section id="intro" class="content-section">
@@ -133,7 +97,7 @@
 <section id="pricing" class="content-section">
   <div class="container">
     <div class="row">
-      <div class="col-lg-12 col-lg-offset-2">
+      <div class="col-lg-8 col-lg-offset-2">
         <h2>Pricing</h2>
         <!-- Table -->
         <div class="table-responsive">
@@ -224,13 +188,7 @@
   </div>
 </section>
 
-<footer>
-  <div class="footer">
-    <div class="container text-center">
-      <p class="small">Handmade in Amsterdam. Copyright &copy; Knownly 2015.</p>
-    </div>
-  </div>
-</footer>
+{% include 'partials/footer.html' %}
 {% endblock %}
 
 {% block mixpanel_footer %}
@@ -238,15 +196,5 @@
   <script type="text/javascript">
     mixpanel.track("Page View", {'template': 'public.html'});
     mixpanel.track_links('#btn-signup', "Signup Button Clicked", {'position': 'CTA'});
-  </script>
-
-  <script type="text/javascript">
-    var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
-
-    $('#btn-login').click(function () {
-      mixpanel.track('#btn-login', "Login Button Clicked");
-      window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
-      return false;
-    });
   </script>
 {% endblock %}

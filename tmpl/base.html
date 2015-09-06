@@ -36,12 +36,22 @@
     {% endblock %}
   </head>
 
-  <body {% block body_attrs %}{% endblock %}>
+  <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
     {% block content %}{% endblock %}
     {% block js_footer %}
       <div id="fb-root"></div>
       <script src="{% static 'js/app.js' %}"></script>
     {% endblock %}
+
+    <script type="text/javascript">
+      var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";
+
+      $('#btn-login').click(function () {
+        mixpanel.track('#btn-login', "Login Button Clicked");
+        window.open('{% url 'dropbox_auth_start' %}', '_blank', strWindowFeatures);
+        return false;
+      });
+    </script>
 
     {% block mixpanel_footer %}
       <script type="text/javascript">

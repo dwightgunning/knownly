@@ -79,14 +79,12 @@ class IndexView(TemplateView):
 
         return context
 
-class LogoutDropboxUserView(RedirectView):
+class LogoutDropboxUserView(TemplateView):
+    template_name = 'logout.html'
 
-    def get_redirect_url(self, **kwargs):
+    def dispatch(self, *args, **kwargs):
         logout(self.request)
-
-        message = "Thanks for spending some time with us. Hope to see you soon!"
-        messages.add_message(self.request, messages.INFO, message)
-        return reverse('console')
+        return super(LogoutDropboxUserView, self).dispatch(*args, **kwargs)
 
 class CreateWebsiteView(BaseFormView):
     success_url = '/'

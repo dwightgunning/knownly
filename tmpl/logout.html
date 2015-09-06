@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}See you soon! | Knownly{% endblock %}
+
+{% block content %}
+{% include 'partials/navbar-squeezer.html' %}
+
+<section class="content-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h1>You're all logged out. Thanks for stoping by :)</h1>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'partials/footer.html' %}
+{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script>
+    mixpanel.track("Page View", {'template': 'logout.html'});
+  </script>
+{% endblock %}

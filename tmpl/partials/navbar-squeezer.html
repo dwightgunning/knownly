@@ -6,6 +6,24 @@
         <img class="brand-logo-dark" src="{% static 'img/brand/Knownly_Logo_Web_Simple_140_x_40.png' %}" />
       </a>
     </div>
+
+	<div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+	<ul class="nav navbar-nav">
+	<li class="hidden">
+	  <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
+	</li>
+	{% if request.user.is_authenticated %}
+	  <li>
+	    <a id='logout-link' href="{% url 'logout' %}">Logout</a>
+	  </li>
+	{% else %}
+	  <li>
+	    <a id="btn-login" href="#">Login</a>
+	  </li>
+	{% endif %}
+	</ul>
+	</div>
+	<!-- /.navbar-collapse -->
   </div>
   <!-- /.container -->
 </nav>

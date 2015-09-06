@@ -15,21 +15,37 @@
         <li class="hidden">
           <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
         </li>
-        <li>
-          <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
-        </li>
+        {% if request.user.is_authenticated %}
+          <li>
+            <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+          </li>
+        {% endif %}
         <li>
           <a class="page-scroll" href="/community/">Community</a>
         </li>
         <li>
           <a class="page-scroll" href="/community/blog/">Blog</a>
         </li>
+        {% if not request.user.is_authenticated %}
+          <li>
+            <a class="page-scroll" href="#how-it-works">How it works</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="#pricing">Pricing</a>
+          </li>
+        {% endif %}
         <li>
           <a id='support-link' href="{% url 'support' %}" {% if active == "support" %}class="active"{% endif %}>Support</a>
         </li>
-        <li>
-          <a id='logout-link' href="{% url 'logout' %}">Logout</a>
-        </li>
+        {% if request.user.is_authenticated %}
+          <li>
+            <a id='logout-link' href="{% url 'logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <li>
+            <a id="btn-login" href="#">Login</a>
+          </li>
+        {% endif %}
       </ul>
     </div>
     <!-- /.navbar-collapse -->
