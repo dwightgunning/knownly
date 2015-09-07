@@ -13,3 +13,5 @@ DATABASES = {
         'NAME': '',
     }
 }
+
+MASHAPE_API_KEY = ''
