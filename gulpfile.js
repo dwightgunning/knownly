@@ -1,26 +1,27 @@
-var gulp = require('gulp')
-var bower = require('gulp-bower')
-var concat = require('gulp-concat')
-var notify = require('gulp-notify') 
-var sass = require('gulp-ruby-sass')
-var rename = require('gulp-rename');
+﻿/* jshint node: true */
+'use strict';
+
+var gulp    = require('gulp'),
+    path    = require('path'),
+    plugins = require('gulp-load-plugins')({
+        lazy: false}),
+    del     = require('del');
 
 var config = {
-    jsDir: './static/js/',
-    sassPath: './static/sass/',
-    sassImport: './static/sass/import.scss',
-     bowerDir: './bower_components' 
-}
+    errorPagesDir: './static-src/error-pages',
+    imagesDir: './static-src/img',
+    miscDir: './static-src/misc',
+    jsDir: './static-src/js',
+    sassPath: './static-src/sass',
+    bowerDir: './bower_components',
+    staticOutputDir: './static'
+};
 
-gulp.task('bower', function() { 
-    return bower().pipe(gulp.dest(config.bowerDir)) 
-});
-
-gulp.task('icons', function() { 
+gulp.task('icons', function() {
     return gulp.src([
         config.bowerDir + '/fontawesome/fonts/**.*',
-        config.bowerDir + '/bootstrap-sass-official/assets/fonts/**/*.*']) 
-    .pipe(gulp.dest('static/fonts/')); 
+        config.bowerDir + '/bootstrap-sass-official/assets/fonts/**/*.*'])
+    .pipe(gulp.dest(config.staticOutputDir + '/fonts/'));
 });
 
 gulp.task('js', function() {
@@ -28,32 +29,50 @@ gulp.task('js', function() {
         config.bowerDir + '/jquery/dist/jquery.min.js',
         config.bowerDir + '/bootstrap-sass-official/assets/javascripts/bootstrap.min.js',
         config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
-        config.jsDir + '/**/*.js',
-        '!' + config.jsDir + '/app.js',
+        config.jsDir + '/scrolling.js',
+        config.jsDir + '/scrolling.js',
+        config.jsDir + '/twitter_widgets.js',
     ])
-    .pipe(concat('app.js'))
-    .pipe(gulp.dest('static/js/')); 
+    .pipe(plugins.concat('knownly-app.js'))
+    .pipe(gulp.dest(config.staticOutputDir + '/js/'));
 });
 
-gulp.task('css', function() { 
-    return sass(config.sassImport, {
-        style: 'compressed',
-        loadPath: [
-              config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
-             config.bowerDir + '/fontawesome/scss',
-            config.bowerDir + '/hover/scss',
-        ]
-    }) 
-    .on('error', notify.onError(function(error) {
-        return 'Error: ' + error.message;
-    }))
-    .pipe(rename('knownly.css'))
-    .pipe(gulp.dest('static/css'));
+gulp.task('sass', function() {
+    gulp.src(config.sassPath + '/import.scss')
+    .pipe(plugins.sass({ 
+            includePaths: [
+                config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
+                config.bowerDir + '/fontawesome/scss',
+                config.bowerDir + '/hover/scss'],
+            outputStyle: 'compressed'
+        }).on('error', plugins.sass.logError))
+    .pipe(plugins.rename('knownly.css'))
+    .pipe(gulp.dest(config.staticOutputDir + '/css'));
+});
+
+gulp.task('static-error-pages', function() {
+return gulp.src([config.errorPagesDir + '/*.html',])
+    .pipe(gulp.dest(config.staticOutputDir + '/error-pages/'));
+});
+
+gulp.task('static-misc', function() {
+return gulp.src([config.miscDir + '/*',])
+    .pipe(gulp.dest(config.staticOutputDir));
+});
+
+gulp.task('static-images', function() {
+return gulp.src([config.imagesDir + '/**/*',])
+    .pipe(gulp.dest(config.staticOutputDir + '/img/'));
 });
 
 // Rerun the task when a file changes
- gulp.task('watch', function() {
-    gulp.watch(config.sassPath + '/**/*.scss', ['css']); 
+gulp.task('watch', function() {
+    gulp.watch(config.sassPath + '/**/*.scss', ['css']);
 });
 
-  gulp.task('default', ['bower', 'icons', 'css', 'js']);
+gulp.task('clean', function() {
+    return del([config.staticOutputDir + '/*', ]);
+});
+
+gulp.task('default');
+gulp.task('build', ['icons', 'sass', 'js', 'static-images', 'static-error-pages', 'static-misc']);

@@ -1,11 +1,31 @@
 {
-	"devDependencies": {
-	    "gulp": "^3.9.0",
-	    "gulp-bower": "0.0.10",
-	    "gulp-concat": "^2.5.2",
-	    "gulp-notify": "^2.2.0",
-	    "gulp-rename": "^1.2.2",
-	    "gulp-ruby-sass": "^1.0.5",
-	    "gulp-sourcemaps": "^1.5.2"
-	}
+  "name": "Knownly",
+  "keywords": [
+    "hosting",
+    "dropbox",
+    "knownly"
+  ],
+  "private": true,
+  "version": "0.0.1",
+  "description": "The Knownly service for publishing websites from Dropbox",
+  "repository": "https://dwightgunning@bitbucket.org/dwightgunning/knownly.git",
+  "license": "Copyright Dwight Gunning 2014-2015",
+  "homepage": "https://www.knownly.net",
+  "author": "Dwight Gunning",
+  "bugs": "dwight@knownly.net",
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "^1.5.2",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.5.2",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.0.4",
+    "node-sass": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=0.12.7"
+  }
 }
