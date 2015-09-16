@@ -46,7 +46,10 @@ def deploy(remote='origin', branch='master'):
         run_under_venv("npm install")
         run_under_venv("python manage.py syncdb --noinput")
         run_under_venv("python manage.py migrate --noinput")
-        run('gulp build')  # Build the statics
+        # Build Knownly statics
+        run('gulp build')
+        # collect statics from Django and installed apps (excl. Knownly)
+        run_under_venv("python manage.py collectstatic --noinput")
 
     restart_website()
     restart_workers()
