@@ -122,8 +122,7 @@ gulp.task('js-ng-app', function(cb) {
 gulp.task('js-app', function(cb) {
     return clean('/js/knownly-app.js', function() {
         gulp.src([
-            config.jsDir + '/scrolling.js',
-            config.jsDir + '/twitter_widgets.js',
+            config.jsDir + '/*.js',
         ])
         .pipe(plugins.concat('knownly-app.js'))
         .pipe(plugins.uglify())
@@ -178,7 +177,9 @@ gulp.task('static-images', function(cb) {
 });
 
 gulp.task('watch', function() {
-    gulp.watch(config.sassPath + '/**/*.scss', ['css']);
+    gulp.watch(config.sassPath + '/**/*.scss', ['sass', 'ng-index']);
+    gulp.watch(config.ngAppPath + '/**/*', ['ng-index']);
+    gulp.watch(config.jsDir + '/**/*.js', ['js-app']);
 });
 
 function clean(relativePath, cb) {
