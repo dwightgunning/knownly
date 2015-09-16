@@ -1,6 +1,7 @@
 import os
 
 import dj_database_url
+from django.contrib.messages import constants as message_constants
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -41,16 +42,12 @@ ROOT_URLCONF = 'knownly.urls'
 
 SECRET_KEY = '&r$=!+FDIOSJVPSOIDVJ_*-wvf!tyf$asdfadfdfa(*_()*24132r1u'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static/"),
-)
-
 STATIC_URL = '/static/'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'tmpl'),],
+        'DIRS': [os.path.join(BASE_DIR, 'tmpl'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,7 +66,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-from django.contrib.messages import constants as message_constants
 MESSAGE_TAGS = {
     message_constants.SUCCESS: 'alert-success',
     message_constants.INFO: 'alert-info',
@@ -84,7 +80,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 try:
-    from settings_local import *
+    from settings_local import *  # NOQA
 except:
     print 'No settings_local.py available.'
     DATABASES = \
@@ -100,7 +96,7 @@ except:
     TEMPLATE_DEBUG = os.environ['SECRET_KEY']
 
 try:
-    from settings_logging import *
+    from settings_logging import *  # NOQA
 except:
     print 'Error loading logging configuration'
     raise

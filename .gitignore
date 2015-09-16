@@ -42,6 +42,4 @@ collected_static/
 .sass-cache/
 bower_components/
 node_modules/
-static/css/
-static/fonts/
-static/js/
+static/

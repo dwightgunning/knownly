@@ -40,7 +40,8 @@
     {% block content %}{% endblock %}
     {% block js_footer %}
       <div id="fb-root"></div>
-      <script src="{% static 'js/app.js' %}"></script>
+      <script src="{% static 'js/vendor.js' %}"></script>
+      <script src="{% static 'js/knownly-app.js' %}"></script>
 
       <script type="text/javascript">
         var strWindowFeatures = "menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes,width=600,height=600";

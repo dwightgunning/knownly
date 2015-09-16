@@ -1,11 +1,10 @@
 {
-  "name": "knownly",
+  "name": "Knownly",
   "version": "0.0.1",
   "authors": [
     "Dwight Gunning <dwight@dwightgunning.com>"
   ],
   "description": "Host your website from dropbox.",
-  "license": "MIT",
   "homepage": "https://knownly.net",
   "private": true,
   "ignore": [
@@ -15,10 +14,14 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
+  "dependencies": {
+    "angular": "~1.4.5",
+    "angular-animate": "~1.4.5",
+    "angular-route": "~1.4.5",
     "bootstrap-sass-official": "~3.3.4",
-    "fontawesome": "~4.3.0",
     "hover": "~2.0.2",
-    "angular": "~1.4.5"
+    "jquery": "~2.1.4",
+    "animate.css": "~3.4.0",
+    "fontawesome": "~4.4.0"
   }
 }

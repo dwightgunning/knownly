@@ -11,7 +11,7 @@
 <div id="support" class="container">
   <div class="container">
     <h1>Support</h1>
-    {% include 'partials/messages.html %}
+    {% include 'partials/messages.html' %}
 
     <div class="panel-group" id="accordion">
       <div id="where-are-knownly-folders" class="panel panel-default">
@@ -97,7 +97,8 @@
 {% endblock %}
 
 {% block js_footer %}
-  <script src="{% static 'js/app.js' %}"></script>
+  <script src="{% static 'js/vendor.js' %}"></script>
+  <script src="{% static 'js/knownly-app.js' %}"></script>
   <script>
     $(document).ready(function() {
       var anchor = window.location.hash.replace("#", "");

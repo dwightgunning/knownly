@@ -1,6 +1,7 @@
-from fabric.api import *
+from fabric.api import cd, env, run
 
 prod_server = '178.79.169.241'
+
 
 def base_env():
     env.user = 'knownly'
@@ -10,12 +11,15 @@ def base_env():
     env.supervisor_webapp_program = 'knownly'
     env.supervisor_workers_program = 'knownly-workers'
 
+
 def prod():
-    base_env()    
+    base_env()
     env.hosts = [prod_server]
+
 
 def run_under_venv(command):
     run(env.activate + ' && ' + command)
+
 
 def git_pull(remote='origin', branch='prod'):
     """Updates the repository."""
@@ -23,11 +27,16 @@ def git_pull(remote='origin', branch='prod'):
         run('git fetch --all')
         run('git reset --hard %s/%s' % (remote, branch))
 
+
 def restart_website():
-    run("sudo /usr/local/bin/supervisorctl restart %s" % env.supervisor_webapp_program)
+    run("sudo /usr/local/bin/supervisorctl restart %s" %
+        env.supervisor_webapp_program)
+
 
 def restart_workers():
-    run("sudo /usr/local/bin/supervisorctl restart %s" % env.supervisor_workers_program)
+    run("sudo /usr/local/bin/supervisorctl restart %s" %
+        env.supervisor_workers_program)
+
 
 def deploy(remote='origin', branch='master'):
     """Run the actual deployment steps, e.g: $ fab prod deploy"""
@@ -37,8 +46,10 @@ def deploy(remote='origin', branch='master'):
         run_under_venv("npm install")
         run_under_venv("python manage.py syncdb --noinput")
         run_under_venv("python manage.py migrate --noinput")
-        run('gulp') # Build the statics
+        # Build Knownly statics
+        run('gulp build')
+        # collect statics from Django and installed apps (excl. Knownly)
         run_under_venv("python manage.py collectstatic --noinput")
-    
+
     restart_website()
     restart_workers()
