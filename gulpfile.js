@@ -39,6 +39,7 @@ gulp.task('ng-index', ['sass', 'ng-templates', 'js-ng-app'], function() {
           .pipe(inject(config.staticOutputDir +'/js/templates-*.js', 'templates'))
           .pipe(gulp.dest(config.staticOutputDir + '/'))
           .on('error', plugins.util.log)
+          .pipe(plugins.livereload())
           .on('end', cb || function() {});
     });
 });
@@ -128,6 +129,7 @@ gulp.task('js-app', function(cb) {
         .pipe(plugins.uglify())
         .pipe(gulp.dest(config.staticOutputDir + '/js/')) // Emit non-revision-tagged version for Django templated views
         .pipe(plugins.size({ showFiles: true }))
+        .pipe(plugins.livereload())
         .on('end', cb || function() {});
     });
 });
@@ -148,6 +150,7 @@ gulp.task('sass', function(cb) {
         .pipe(plugins.streamify(plugins.rev()))
         .pipe(plugins.size({ showFiles: true }))
         .pipe(gulp.dest(config.staticOutputDir + '/css'))
+        .pipe(plugins.livereload())
         .on('end', cb || function() {});
     });
 });
@@ -177,6 +180,8 @@ gulp.task('static-images', function(cb) {
 });
 
 gulp.task('watch', function() {
+    plugins.livereload.listen();
+
     gulp.watch(config.sassPath + '/**/*.scss', ['sass', 'ng-index']);
     gulp.watch(config.ngAppPath + '/**/*', ['ng-index']);
     gulp.watch(config.jsDir + '/**/*.js', ['js-app']);
