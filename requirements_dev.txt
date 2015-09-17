@@ -1,0 +1,8 @@
+# Install base requirements
+-r requirements.txt
+
+flake8==2.4.1
+ipython==3.2.0
+isort==4.1.2
+pipdeptree==0.4.3
+pyflakes==0.8.1
