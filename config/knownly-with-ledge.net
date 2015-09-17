@@ -1,0 +1,215 @@
+lua_package_path '/sites/knownly/lua_modules/lua-resty-cookie/lib/?.lua;/sites/knownly/lua_modules/lua-resty-redis-connector/lib/?.lua;/sites/knownly/lua_modules/lua-resty-http/lib/?.lua;/sites/knownly/lua_modules/lua-resty-redis/lib/?.lua;/sites/knownly/lua_modules/lua-resty-qless/lib/?.lua;/sites/knownly/lua_modules/ledge/lib/?.lua;;';
+
+if_modified_since Off;
+lua_check_client_abort On;
+resolver 8.8.8.8;
+
+init_by_lua '
+  local ledge_m = require "ledge.ledge"
+  ledge = ledge_m.new()
+  ledge:config_set("advertise_ledge", false)
+  -- ledge:config_set("origin_mode", ledge.ORIGIN_MODE_AVOID)
+  ledge:config_set("enable_collapsed_forwarding", true)
+  ledge:config_set("redis_host", { host = "127.0.0.1", port = 6380 })
+  ledge:config_set("upstream_host", "dl.dropboxusercontent.com")
+  ledge:config_set("upstream_port", 443)
+  ledge:config_set("upstream_use_ssl", true)
+  ledge:config_set("upstream_ssl_verify", false)
+  ledge:config_set("upstream_ssl_server_name", "dl.dropboxusercontent.com")
+  ledge:config_set("cache_max_memory", 5128)
+  ledge:config_set("stale_if_error", 86400)
+';
+
+init_worker_by_lua 'ledge:run_workers()';
+
+server {
+    listen 8280;
+    server_name ledge.knownly.net;
+
+    access_log  /sites/knownly/logs/ledge.log sitelog;
+    error_log  /sites/knownly/logs/ledge_error.log;
+
+    location / {
+        content_by_lua '
+          -- ledge:bind("origin_required", function() ngx.log(ngx.STDERR, "Origin required") end)
+          -- ledge:bind("before_request", function(req_params) ngx.log(ngx.STDERR, "Before request event") end)
+          -- ledge:bind("response_ready", function(res) ngx.log(ngx.STDERR, "Response ready event") end)
+          ledge:bind("before_save", function(res) ngx.log(ngx.STDERR, "Saving to cache") end)
+          ledge:bind("origin_fetched", function(res)
+            -- Add some cache headers.  Ledge will assume they came from the origin.
+            res.header["Cache-Control"] = "max-age=" .. 86400
+            res.header["Last-Modified"] = ngx.http_time(ngx.time())
+            res.header["Expires"] = ngx.http_time(ngx.time() + 86400)
+          end)
+          ledge:run()
+        ';
+    }
+}
+
+server {
+    listen 80;
+    server_name www.knownly.net knownly.net;
+
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    return 301 https://www.knownly.net$request_uri;
+}
+
+server {
+    listen 80 default_server;
+    server_name *.knownly.net "";
+    server_tokens off;
+    more_set_headers 'Server: Knownly.net';
+
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:8201;
+    }
+
+    location ~* ^/dropbox_redirect/(?<dropbox_path>.*) {
+        internal;
+        resolver 8.8.8.8; # DNS must be specified to resolve external URLs
+        access_log  /sites/knownly/logs/nginx_acccess.log upstreamlog;
+        
+        proxy_pass_request_headers on;
+
+        # Always proxy to GET method; Do not use local disk for storing the request
+        # =========================================================================
+        proxy_method GET;
+        proxy_buffering off;
+        proxy_pass_request_body off;
+        proxy_max_temp_file_size 0;
+
+        # Add auth and cache-control headers
+        # ==================================
+        set $xauth_temp $upstream_http_authorization;
+        proxy_set_header Authorization $xauth_temp;
+        set $cache_control_tmp $upstream_http_cache_control;
+        proxy_set_header Cache-Control $cache_control_tmp;
+
+        # Hide dropbox and other sensitive response headers
+        # =================================================
+        proxy_hide_header content-security-policy;
+        proxy_hide_header content-security-policy-report-only;
+        proxy_hide_header x-content-security-policy;
+        proxy_hide_header x-server-response-time;
+        proxy_hide_header x-dropbox-request-id;
+        proxy_hide_header X-RequestId;
+        proxy_hide_header x-dropbox-metadata;
+        proxy_hide_header x-robots-tag;
+        proxy_hide_header x-webkit-csp;
+        proxy_hide_header via;
+        # proxy_hide_header age;
+        # proxy_hide_header x-cache;
+
+        # Add explicit vary header to improve cacheability
+        # ================================================
+        add_header Vary Accept-Encoding;
+
+        set $download_url http://ledge.knownly.net:8280/$dropbox_path;
+        proxy_pass $download_url;
+        proxy_intercept_errors on;
+
+        error_page 302 @404;
+        error_page 404 @404;
+        error_page 429 503 =307 @307;
+    }
+
+    location @307 {
+        root /;
+        try_files /sites/knownly/static/307_user_website_429_503.html =307;
+        expires 30d;
+        add_header Cache-Control "public";
+        #add_header Pragma public;
+    }
+
+    location @404 {
+         root /;
+         try_files /sites/knownly/static/404_user_website.html =404;
+         expires 30d;
+         add_header Cache-Control "public";
+         #add_header Pragma public;
+    }
+}
+
+server {
+    listen 443;
+    server_name knownly.net;
+    ssl on;
+    ssl_certificate /sites/knownly/ssl/knownly.chained.crt;
+    ssl_certificate_key /sites/knownly/ssl/knownly.key;
+    ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers             HIGH:!aNULL:!MD5;
+
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    return 301 https://www.knownly.net$request_uri;
+}
+
+# Redirect knownly subdomains and custom domains back to HTTP (will show ugly cert warning)
+server {
+    listen 443 default_server;
+    server_name "" _;
+    ssl on;
+    ssl_certificate /sites/knownly/ssl/knownly.chained.crt;
+    ssl_certificate_key /sites/knownly/ssl/knownly.key;
+    ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers             HIGH:!aNULL:!MD5;
+
+    rewrite ^(.*) http://$host$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name www.knownly.net;
+    ssl on;
+    ssl_certificate /sites/knownly/ssl/knownly.chained.crt;
+    ssl_certificate_key /sites/knownly/ssl/knownly.key;
+    ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers             HIGH:!aNULL:!MD5;
+    more_set_headers 'Server: Knownly.net';
+    
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    error_page 404		/static/404_knownly.html;
+    error_page 500 501 502 503 	/static/50x_knownly.html;
+
+    location /community {
+        alias /sites/knownly/community/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8201;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Protocol ssl; # https://gist.github.com/3228782
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Scheme $scheme;
+
+	proxy_intercept_errors on;
+    }
+
+    location /robots.txt {
+        alias /sites/knownly/static/robots.txt;
+    }
+
+    location /favicon.ico {
+        alias /sites/knownly/static/favicon.ico;
+    }
+
+    location /BingSiteAuth.xml {
+        alias /sites/knownly/static/BingSiteAuth.xml;
+    }
+    
+    location /static/ {
+       alias /sites/knownly/static/;
+    }
+}
