@@ -60,7 +60,7 @@ gulp.task('ng-templates', function(cb) {
       });
 });
 
-gulp.task('icons', function(cb) {
+gulp.task('icons-vendor', function(cb) {
     return clean('/fonts/*', function() {
         gulp.src([
             config.bowerDir + '/fontawesome/fonts/**.*',
@@ -90,6 +90,7 @@ gulp.task('js-ng-vendor', function(cb) {
             config.bowerDir + '/requirejs/require.js',
             config.bowerDir + '/jquery/dist/jquery.js',
             config.bowerDir + '/angular/angular.js', 
+            config.bowerDir + '/angular-cookies/angular-cookies.js',
             config.bowerDir + '/angular-animate/angular-animate.js', 
             config.bowerDir + '/angular-route/angular-route.js',
             config.bowerDir + '/angular-loader/angular-loader.js',
@@ -194,4 +195,5 @@ function clean(relativePath, cb) {
 }
 
 gulp.task('default');
-gulp.task('build', ['icons', 'js-vendor', 'js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);
+gulp.task('build', ['js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);
+gulp.task('deploy', ['icons-vendor', 'js-ng-vendor', 'js-vendor', 'js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);

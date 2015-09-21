@@ -15,11 +15,12 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.4.5",
-    "angular-animate": "~1.4.5",
+    "angular": "~1.4.6",
+    "angular-animate": "~1.4.6",
     "angular-bootstrap": "~0.13.4",
-    "angular-loader": "~1.4.5",
-    "angular-route": "~1.4.5",
+    "angular-cookies": "~1.4.6",
+    "angular-loader": "~1.4.6",
+    "angular-route": "~1.4.6",
     "bootstrap-sass-official": "~3.3.4",
     "fontawesome": "~4.4.0",
     "hover": "~2.0.2",
