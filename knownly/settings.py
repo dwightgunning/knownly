@@ -16,6 +16,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_nose',
     'django_countries',
+    'rest_framework',
+    'knownly.api',
     'knownly.console',
     'knownly.billing',
     'knownly.landingpages',

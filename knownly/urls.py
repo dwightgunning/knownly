@@ -17,15 +17,19 @@ sitemaps = {
 
 urlpatterns = \
     patterns('',
+             url(r'^', include('knownly.api.urls')),
              url(r'^', include('knownly.console.urls')),
              url(r'^', include('knownly.landingpages.urls')),
              url(r'^', include('knownly.plans.urls')),
+
              url(r'^billing/hook/$', stripe_webhook, name='stripe-webhook'),
              url(r'^dropbox/hook/$', dropbox_webhook, name='dropbox-webhook'),
              url(r'^admin/', include(admin.site.urls)),
+
              url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
                  name='django.contrib.sitemaps.views.sitemap'),
-             url(r'ng/', serve_static,
+
+             url(r'domains/', serve_static,
                  {'path': 'index.html',
                   'document_root': settings.STATIC_ROOT},
                  name='custom-statics'), )
