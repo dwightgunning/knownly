@@ -1,15 +1,30 @@
-var knownlyApp = angular.module('knownlyApp', [
-  'ngRoute',
-  'knownlyApp.services',
-  'knownlyApp.controllers',
-]);
+(function () {
+  'use strict';
 
-knownlyApp.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/domains/', {
-  	templateUrl: 'views/layouts/_domains.html',
-  	controller: 'DomainsCtrl'
-  });
-  $routeProvider.otherwise({
-  	redirectTo: '/domains/'
-  });
-}]);
+  var knownlyApp = angular.module('knownlyApp', [
+    'ngRoute',
+    'knownlyApp.services',
+    'knownlyApp.controllers',
+  ]);
+
+  knownlyApp.config(['$locationProvider', '$routeProvider', '$httpProvider',
+      function($locationProvider, $routeProvider, $httpProvider) {
+
+    // Disable hash routing
+    $locationProvider.hashPrefix('!');
+    $locationProvider.html5Mode(true);
+    
+    // Use Django CSRF tokens
+    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+
+    $routeProvider.when('/', {
+      templateUrl: 'views/layouts/_domains.html',
+      controller: 'DomainsController'
+    });
+    $routeProvider.otherwise({
+      redirectTo: '/'
+    });
+  }]);
+
+})();

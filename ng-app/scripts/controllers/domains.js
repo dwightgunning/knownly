@@ -1,12 +1,21 @@
-angular.module('knownlyApp.controllers', [])
+/**
+* Domains controller
+* @namespace knownlyApp.controllers
+*/
+(function () {
+  'use strict';
 
-	// Domains Controller
-	.controller('DomainsCtrl', ['$scope', function($scope) {    
-	 
-	  $scope.init = function() {
-	    // initialise
-	  };
+  angular
+    .module('knownlyApp.controllers', [])
+    .controller('DomainsController', DomainsController);
 
-	  $scope.init();
+  DomainsController.$inject = ['$scope'];
 
-	}]);
+  /**
+  * @namespace DomainsController
+  */
+  function DomainsController($scope) {
+    var viewModel = this;
+
+  }
+})();

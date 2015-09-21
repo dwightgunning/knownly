@@ -22,10 +22,11 @@
 
     <!-- inject:app-style:css --><!-- endinject -->
     
+    <base href="/domains/">
   </head>
 
   <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-    <nav class="navbar navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-fixed-top" role="navigation" ng-controller="NavbarController as viewModel">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
@@ -42,7 +43,7 @@
               <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
             </li>
             <li>
-                <span>[[ Username ]]</span>
+                <span>{{ viewModel.userAccount.email }}</span>
             </li>
             <li>
               <a class="page-scroll" href="/community/">Community</a>
@@ -54,7 +55,7 @@
                 <a id='support-link' href="#">Support</a>
             </li>
             <li>
-                <a id='logout-link' href="#">[[ Logout ]]</a>
+                <a id='logout-link' href="javascript:void(0)" ng-click="viewModel.logout()">Logout</a>
             </li>
           </ul>
         </div>
