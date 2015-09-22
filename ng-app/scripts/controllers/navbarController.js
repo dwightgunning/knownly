@@ -1,12 +1,12 @@
 /**
-* NavbarController
+* Navbar controller
 * @namespace knownlyApp.controllers
 */
 (function () {
   'use strict';
 
   angular
-    .module('knownlyApp.controllers')
+    .module('knownlyApp.controllers.navbar', [])
     .controller('NavbarController', NavbarController);
 
   NavbarController.$inject = ['$scope', 'AuthenticationService'];
@@ -15,6 +15,7 @@
   * @namespace NavbarController
   */
   function NavbarController($scope, AuthenticationService) {
+
     var viewModel = this;
 
     viewModel.logout = logout;

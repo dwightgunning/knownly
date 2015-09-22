@@ -6,7 +6,7 @@
   'use strict';
 
   angular
-    .module('knownlyApp.services', ['ngCookies'])
+    .module('knownlyApp.services.authentication', ['ngCookies'])
     .factory('AuthenticationService', AuthenticationService);
 
   AuthenticationService.$inject = ['$http', '$cookies', '$q'];
@@ -17,7 +17,7 @@
     */
   function AuthenticationService($http, $cookies, $q) {
     /**
-    * @name AuthenticationServiceFactory
+    * @name AuthenticationService
     * @desc The Factory to be returned
     */
     var _AuthenticationService = {

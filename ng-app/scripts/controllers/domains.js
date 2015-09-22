@@ -6,16 +6,27 @@
   'use strict';
 
   angular
-    .module('knownlyApp.controllers', [])
+    .module('knownlyApp.controllers.domains', [])
     .controller('DomainsController', DomainsController);
 
-  DomainsController.$inject = ['$scope'];
+  DomainsController.$inject = ['_', '$scope', 'DomainsService'];
 
   /**
   * @namespace DomainsController
   */
-  function DomainsController($scope) {
+  function DomainsController(_, $scope, DomainsService) {
+
     var viewModel = this;
+
+    $scope.searchTerm = '';
+    $scope.searchResults = [];
+
+    $scope.searchDomains = function(searchTerm){
+      var results = DomainsService.searchDomains(searchTerm);
+      results.then(function(searchResults){
+        $scope.searchResults = _.pluck(searchResults, 'domain');
+      });
+    };
 
   }
 })();

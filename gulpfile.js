@@ -86,7 +86,7 @@ gulp.task('js-vendor', function(cb) {
 gulp.task('js-ng-vendor', function(cb) {
     return clean('/js/vendor-*.js', function() {
         return gulp.src([
-            config.bowerDir + '/underscore/*.js',
+            config.bowerDir + '/underscore/underscore.js',
             config.bowerDir + '/requirejs/require.js',
             config.bowerDir + '/jquery/dist/jquery.js',
             config.bowerDir + '/angular/angular.js', 
@@ -108,6 +108,7 @@ gulp.task('js-ng-vendor', function(cb) {
 gulp.task('js-ng-app', function(cb) {
     return clean('/js/app-*.js', function() {
         gulp.src([
+            config.ngAppPath + '/scripts/directives/**/*.js',
             config.ngAppPath + '/scripts/services/**/*.js',
             config.ngAppPath + '/scripts/controllers/**/*.js',
             config.ngAppPath + '/scripts/app.js',
