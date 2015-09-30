@@ -21,7 +21,9 @@
     * @desc The Factory to be returned
     */
     var _DomainsService = {
-      searchDomains: searchDomains
+      searchDomains: searchDomains,
+      getDomainStatuses: getDomainStatuses
+
     };
 
     return _DomainsService;
@@ -34,6 +36,19 @@
       $http.post('/domains/search/?query=' + searchTerm)
         .then(function(data, status, headers, config) {
           deferred.resolve(data.data.results);
+        }, function(data, status, headers, config) {
+          return deferred.reject(undefined);
+        });
+
+      return deferred.promise;
+    }
+
+    function getDomainStatuses(domains) {
+      var deferred = $q.defer();
+
+      $http.post('/domains/status/?domain=' + domains.join('%2C'))
+        .then(function(data, status, headers, config) {
+          deferred.resolve(data.data.status);
         }, function(data, status, headers, config) {
           return deferred.reject(undefined);
         });
