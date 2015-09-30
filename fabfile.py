@@ -42,8 +42,9 @@ def deploy(remote='origin', branch='master'):
     """Run the actual deployment steps, e.g: $ fab prod deploy"""
     with cd(env.directory):
         git_pull(remote=remote, branch=branch)
+        run_under_venv("npm i")
+        run_under_venv("bower install --config.interactive=false")
         run_under_venv("pip install -r %s/requirements.txt" % env.directory)
-        run_under_venv("npm install")
         run_under_venv("python manage.py syncdb --noinput")
         run_under_venv("python manage.py migrate --noinput")
         # Build Knownly statics
