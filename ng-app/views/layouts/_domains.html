@@ -1,6 +1,38 @@
 <div id="domains">
-  <h1>Domain search</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Domain search</h1>
+      </div>
+    </div>
 
-  <!-- search box input -->
-  <autocomplete model="searchTerm" data="searchResults" on-type="searchDomains">
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Domain search (Search box directive)</h2>
+        <autocomplete model="searchTerm" data="flatSearchResults" on-type="searchDomains"></autocomplete>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12" style="margin-top: 30px">
+        <h2>Data model example</h2>
+        <table class="table">
+          <thead>
+            <th>Domain</th>
+            <th>Zone</th>
+            <th>Status</th>
+            <th>Summary</th>
+          </thead>
+          <tbody>
+            <tr ng-repeat="domain in domainSearchResults">
+              <td>{{domain.domain}}</td>
+              <td>{{domain.status.zone}}</td>
+              <td>{{domain.status.status}}</td>
+              <td>{{domain.status.summary}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
