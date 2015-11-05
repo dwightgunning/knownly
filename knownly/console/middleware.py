@@ -52,7 +52,7 @@ class SubdomainToDropboxMiddleware(object):
 
                 # Find the dropbox user that owns the domain
                 try:
-                    website = DropboxSite.objects.get(domain=domain_to_match)
+                    website = DropboxSite.objects.get(domain__iexact=domain_to_match)
                 except DropboxSite.DoesNotExist:
                     return HttpResponseRedirect('https://www.knownly.net')
                 

@@ -168,7 +168,7 @@ class RemoveWebsiteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         try:
-            dropbox_website = DropboxSite.objects.get(domain=self.request.POST['domain'])
+            dropbox_website = DropboxSite.objects.get(domain__iexact=self.request.POST['domain'])
         except DropboxSite.DoesNotExist:
             logger.exception("Attempt to delete site that doesn't exist. Domain: %s" % self.request.POST['domain'])
             context = {'message': 'Website not known at Knonwly.'}

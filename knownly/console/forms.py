@@ -12,7 +12,7 @@ class WebsiteForm(forms.ModelForm):
 
         def clean_domain(self):
             domain = self.cleaned_data['domain']
-            if DropboxSite.objects.filter(domain=domain).exists():
+            if DropboxSite.objects.filter(domain__iexact=domain).exists():
                 raise forms.ValidationError("This domain has already been claimed. Please choose another.")
 
             valid_domains = re.compile(r'^[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})(\.[a-zA-Z\d-]{,63})?.$')
