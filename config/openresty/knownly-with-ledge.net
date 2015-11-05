@@ -1,51 +1,3 @@
-lua_package_path '/sites/knownly/lua_modules/lua-resty-cookie/lib/?.lua;/sites/knownly/lua_modules/lua-resty-redis-connector/lib/?.lua;/sites/knownly/lua_modules/lua-resty-http/lib/?.lua;/sites/knownly/lua_modules/lua-resty-redis/lib/?.lua;/sites/knownly/lua_modules/lua-resty-qless/lib/?.lua;/sites/knownly/lua_modules/ledge/lib/?.lua;;';
-
-if_modified_since Off;
-lua_check_client_abort On;
-resolver 8.8.8.8;
-
-init_by_lua '
-  local ledge_m = require "ledge.ledge"
-  ledge = ledge_m.new()
-  ledge:config_set("advertise_ledge", false)
-  -- ledge:config_set("origin_mode", ledge.ORIGIN_MODE_AVOID)
-  ledge:config_set("enable_collapsed_forwarding", true)
-  ledge:config_set("redis_host", { host = "127.0.0.1", port = 6380 })
-  ledge:config_set("upstream_host", "dl.dropboxusercontent.com")
-  ledge:config_set("upstream_port", 443)
-  ledge:config_set("upstream_use_ssl", true)
-  ledge:config_set("upstream_ssl_verify", false)
-  ledge:config_set("upstream_ssl_server_name", "dl.dropboxusercontent.com")
-  ledge:config_set("cache_max_memory", 5128)
-  ledge:config_set("stale_if_error", 86400)
-';
-
-init_worker_by_lua 'ledge:run_workers()';
-
-server {
-    listen 8280;
-    server_name ledge.knownly.net;
-
-    access_log  /sites/knownly/logs/ledge.log sitelog;
-    error_log  /sites/knownly/logs/ledge_error.log;
-
-    location / {
-        content_by_lua '
-          -- ledge:bind("origin_required", function() ngx.log(ngx.STDERR, "Origin required") end)
-          -- ledge:bind("before_request", function(req_params) ngx.log(ngx.STDERR, "Before request event") end)
-          -- ledge:bind("response_ready", function(res) ngx.log(ngx.STDERR, "Response ready event") end)
-          ledge:bind("before_save", function(res) ngx.log(ngx.STDERR, "Saving to cache") end)
-          ledge:bind("origin_fetched", function(res)
-            -- Add some cache headers.  Ledge will assume they came from the origin.
-            res.header["Cache-Control"] = "max-age=" .. 86400
-            res.header["Last-Modified"] = ngx.http_time(ngx.time())
-            res.header["Expires"] = ngx.http_time(ngx.time() + 86400)
-          end)
-          ledge:run()
-        ';
-    }
-}
-
 server {
     listen 80;
     server_name www.knownly.net knownly.net;
@@ -75,9 +27,11 @@ server {
     location ~* ^/dropbox_redirect/(?<dropbox_path>.*) {
         internal;
         resolver 8.8.8.8; # DNS must be specified to resolve external URLs
-        access_log  /sites/knownly/logs/nginx_acccess.log upstreamlog;
+        access_log  /sites/knownly/logs/nginx_access.log upstreamlog;
         
-        proxy_pass_request_headers on;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_pass_request_headers off;
 
         # Always proxy to GET method; Do not use local disk for storing the request
         # =========================================================================
@@ -111,8 +65,8 @@ server {
         # Add explicit vary header to improve cacheability
         # ================================================
         add_header Vary Accept-Encoding;
-
         set $download_url http://ledge.knownly.net:8280/$dropbox_path;
+        # set $download_url https://dl.dropboxusercontent.com/$dropbox_path;
         proxy_pass $download_url;
         proxy_intercept_errors on;
 
@@ -175,7 +129,7 @@ server {
     ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers             HIGH:!aNULL:!MD5;
     more_set_headers 'Server: Knownly.net';
-    
+
     access_log  /sites/knownly/logs/nginx_access.log sitelog;
     error_log  /sites/knownly/logs/nginx_error.log;
 
@@ -188,6 +142,7 @@ server {
 
     location / {
         proxy_pass http://127.0.0.1:8201;
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Protocol ssl; # https://gist.github.com/3228782
