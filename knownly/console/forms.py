@@ -7,6 +7,7 @@ from knownly.console.models import DropboxSite
 
 logger = logging.getLogger(__name__)
 
+
 class WebsiteForm(forms.ModelForm):
 
     class Meta:
