@@ -1,4 +1,5 @@
 {% load settings_value %}
+{% load raven %}
 
 <!DOCTYPE HTML>
 <html lang="en-US">
@@ -25,6 +26,10 @@
                 }
             });
         </script>
+
+        <script src="https://cdn.ravenjs.com/1.2.0/jquery,native/raven.min.js"></script>
+        <script>Raven.config('{% sentry_public_dsn %}').install()</script>
+        
         <title>Registration - Next steps</title>
     </head>
     <body>(This window will close automatically...)</body>

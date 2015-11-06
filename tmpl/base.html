@@ -1,5 +1,6 @@
 {% load static %}
 {% load settings_value %}
+{% load raven %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -40,6 +41,10 @@
     {% block content %}{% endblock %}
     {% block js_footer %}
       <div id="fb-root"></div>
+
+      <script src="https://cdn.ravenjs.com/1.2.0/jquery,native/raven.min.js"></script>
+      <script>Raven.config('{% sentry_public_dsn %}').install()</script>
+
       <script src="{% static 'js/knownly-vendor.js' %}"></script>
       <script src="{% static 'js/knownly-app.js' %}"></script>
 
