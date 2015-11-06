@@ -29,6 +29,7 @@ INSTALLED_APPS = (
 INTERNAL_REDIRECT_DIRECTORY = 'dropbox_redirect'
 
 MIDDLEWARE_CLASSES = (
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
     'knownly.console.middleware.SubdomainToDropboxMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
