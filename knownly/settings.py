@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'knownly.landingpages',
     'knownly.people',
     'knownly.plans',
+    'knownly.vouchers',
 )
 
 INTERNAL_REDIRECT_DIRECTORY = 'dropbox_redirect'
