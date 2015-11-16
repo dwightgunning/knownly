@@ -7,8 +7,12 @@
     'ngCookies',
     'knownlyApp.services.authentication',
     'knownlyApp.services.domains',
-    'knownlyApp.controllers.navbar',
-    'knownlyApp.controllers.domains'
+    'knownlyApp.services.vouchers',
+    'knownlyApp.controllers.account',
+    'knownlyApp.controllers.account.profile',
+    'knownlyApp.controllers.account.plansAndBilling',
+    'knownlyApp.controllers.domains',
+    'knownlyApp.controllers.navbar'
   ]);
 
   knownlyApp.constant('_', window._);
@@ -25,6 +29,11 @@
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
 
     $routeProvider.when('/', {
+      templateUrl: 'views/layouts/account/_base.html',
+      controller: 'AccountController',
+      controllerAs: 'viewModel',
+    });
+    $routeProvider.when('/domains/', {
       templateUrl: 'views/layouts/_domains.html',
       controller: 'DomainsController',
       controllerAs: 'viewModel',

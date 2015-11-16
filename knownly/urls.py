@@ -29,7 +29,7 @@ urlpatterns = \
              url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
                  name='django.contrib.sitemaps.views.sitemap'),
 
-             url(r'^domains/$', serve_static,
+             url(r'^account/', serve_static,
                  {'path': 'index.html',
                   'document_root': settings.STATIC_ROOT},
                  name='ng-index'),
