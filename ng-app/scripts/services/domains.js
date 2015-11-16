@@ -21,8 +21,8 @@
     * @desc The Factory to be returned
     */
     var _DomainsService = {
-      searchDomains: searchDomains,
-      getDomainStatuses: getDomainStatuses
+      'searchDomains': searchDomains,
+      'getDomainStatuses': getDomainStatuses
 
     };
 
