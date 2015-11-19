@@ -33,7 +33,9 @@ urlpatterns = \
                  {'path': 'index.html',
                   'document_root': settings.STATIC_ROOT},
                  name='ng-index'),
-             url(r'^domains/', include('knownly.domains.urls')), )
+
+             url(r'^api/', include('knownly.vouchers.urls')),
+             url(r'^api/', include('knownly.domains.urls')), )
 
 if settings.DEBUG:
     urlpatterns += \
