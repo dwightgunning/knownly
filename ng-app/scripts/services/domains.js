@@ -33,7 +33,7 @@
     function searchDomains(searchTerm) {
       var deferred = $q.defer();
 
-      $http.post('/domains/search/?query=' + searchTerm)
+      $http.post('/api/domains/search/?query=' + searchTerm)
         .then(function(data, status, headers, config) {
           deferred.resolve(data.data.results);
         }, function(data, status, headers, config) {
@@ -46,7 +46,7 @@
     function getDomainStatuses(domains) {
       var deferred = $q.defer();
 
-      $http.post('/domains/status/?domain=' + domains.join('%2C'))
+      $http.post('/api/domains/status/?domain=' + domains.join('%2C'))
         .then(function(data, status, headers, config) {
           deferred.resolve(data.data.status);
         }, function(data, status, headers, config) {
