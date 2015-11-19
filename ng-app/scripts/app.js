@@ -9,8 +9,6 @@
     'knownlyApp.services.domains',
     'knownlyApp.services.vouchers',
     'knownlyApp.controllers.account',
-    'knownlyApp.controllers.account.profile',
-    'knownlyApp.controllers.account.plansAndBilling',
     'knownlyApp.controllers.domains',
     'knownlyApp.controllers.navbar'
   ]);

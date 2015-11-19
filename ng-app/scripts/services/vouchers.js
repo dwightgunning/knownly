@@ -9,58 +9,69 @@
     .module('knownlyApp.services.vouchers', [])
     .factory('VouchersService', VouchersService);
 
-  VouchersService.$inject = ['$http', '$q'];
+  VouchersService.$inject = ['$http', '$q', '$log'];
 
   /**
     * @namespace VouchersService
     * @returns {Factory}
     */
-  function VouchersService($http, $q) {
+  function VouchersService($http, $q, $log) {
     /**
     * @name VouchersService
     * @desc The Factory to be returned
     */
-    var _VouchersService = {
-      'submitVoucherClaim': submitVoucherClaim,
-      'listClaimedVouchers': listClaimedVouchers
+    var service = {
+      'vouchersRedeemed': [],
+      'submitVoucherRedemption': submitVoucherRedemption,
+      'listRedeemedVouchers': listRedeemedVouchers
     };
 
-    return _VouchersService;
+    return service;
 
-    function submitVoucherClaim() {
-      console.log("Submitting voucher code");
+    ////////////////////////
+
+    function submitVoucherRedemption(voucherCode) {
+      var requestData = {'voucher_code': voucherCode};
+
+      return $http({
+                    url: '/api/vouchers/', 
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    data: requestData
+                  })
+        .then(submitVoucherRedemptionComplete)
+        .catch(submitVoucherRedemptionFailed);
+
+      function submitVoucherRedemptionComplete(data, status, headers, config) {
+        service.vouchersRedeemed.push(data.data);
+      }
+
+      function submitVoucherRedemptionFailed(error) {
+        $log.error('XHR Failed for submitVoucherRedemptionFailed.');
+        if ('error' in error.data) {
+          return $q.reject(error.data.error);
+        } else {
+          return $q.reject('An unexpected error occurred.');
+        }
+      }
     }
 
-    function listClaimedVouchers() {
-      console.log("Submitting voucher code");
+    function listRedeemedVouchers() {
+      return $http({
+                    url: '/api/vouchers/', 
+                    method: 'get',
+                    headers: {'Content-Type': 'application/json'}
+                  })
+        .then(listRedeemedVouchersComplete)
+        .catch(listRedeemedVouchersFailed);
+
+      function listRedeemedVouchersComplete(data, status, headers, config) {
+        angular.copy(data.data, service.vouchersRedeemed);
+      }
+
+      function listRedeemedVouchersFailed(error) {
+        $log.error('XHR Failed for listRedeemedVouchers.');
+      }
     }
-
-    // Service methods
-
-    // function searchDomains(searchTerm) {
-    //   var deferred = $q.defer();
-
-    //   $http.post('/domains/search/?query=' + searchTerm)
-    //     .then(function(data, status, headers, config) {
-    //       deferred.resolve(data.data.results);
-    //     }, function(data, status, headers, config) {
-    //       return deferred.reject(undefined);
-    //     });
-
-    //   return deferred.promise;
-    // }
-
-    // function getDomainStatuses(domains) {
-    //   var deferred = $q.defer();
-
-    //   $http.post('/domains/status/?domain=' + domains.join('%2C'))
-    //     .then(function(data, status, headers, config) {
-    //       deferred.resolve(data.data.status);
-    //     }, function(data, status, headers, config) {
-    //       return deferred.reject(undefined);
-    //     });
-
-    //   return deferred.promise;
-    // }
   }
 })();

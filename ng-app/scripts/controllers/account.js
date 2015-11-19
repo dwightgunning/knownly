@@ -9,36 +9,50 @@
     .module('knownlyApp.controllers.account', [])
     .controller('AccountController', AccountController);
 
-  AccountController.$inject = ['_', '$scope', 'VouchersService'];
+  AccountController.$inject = ['_', '$scope', 'VouchersService', '$log'];
 
   /**
   * @namespace AccountController
   */
-  function AccountController(_, $scope, VouchersService) {
+  function AccountController(_, $scope, VouchersService, $log) {
     var viewModel = this;
-    // var defaultSection = 'profile';
-    var defaultSection = 'plansAndBilling';
+    var defaultSection = 'profile';
 
-    viewModel.activeSection = this.defaultSection;
+    viewModel.activeSection = defaultSection;
+
+    viewModel.voucherRedemptionForm = {};
+    viewModel.voucherToRedeem = '';
+    viewModel.vouchersRedeemed = VouchersService.vouchersRedeemed;
+
+    activate();
+
+    function activate() {
+        return VouchersService.listRedeemedVouchers();
+    }
 
     viewModel.setActiveSection = function(sectionName) {
       viewModel.activeSection = sectionName;
     };
 
-    viewModel.submitVoucherClaim = function() {
-      console.log("Controller method");
-      VouchersService.submitVoucherClaim();
-    };
+    viewModel.submitVoucherRedemption = function() {
+      viewModel.saving = true;
 
-    this.accountSections = {
-      'plans-and-billing': {
-          'controller': 'AccountPlansAndBillingController',
-          'template': 'views/layouts/account/_plans_and_billing.html'
-      },
-      'profile': {
-        'controller': 'AccountProfile',
-        'template': 'views/layouts/account/_profile.html'
+      if (!viewModel.voucherToRedeem.trim()) {
+        return;
       }
+
+      VouchersService.submitVoucherRedemption(viewModel.voucherToRedeem)
+        .then(function success() {
+          viewModel.voucherRedemptionForm.voucherToRedeem = '';
+        })
+        .catch(function(error) {
+          viewModel.voucherRedemptionForm.voucherToRedeemField.$errors = error;
+        })
+        .finally(function () {
+          viewModel.saving = false;
+        });
+
+      return true;
     };
   }
 })();
