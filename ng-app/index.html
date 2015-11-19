@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" ng-app='knownlyApp'>
+<html lang="en" ng-app="knownlyApp" ng-strict-di>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Turn a Dropbox folder into a website. Make it known.">
-    <link rel="canonical" href="https://www.knownly.net/{ $location.path() }" />
     <meta name="author" content="Knownly">
     <link rel="shortcut icon" href="/static/img/brand/Knownly_Favicon.png">
 
@@ -13,7 +12,6 @@
     <meta property="og:title" content="Knownly.net" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://www.knownly.net/static/img/brand/Knownly_Logo_Bubble_Device_255_x_255.png" />
-    <meta property="og:url" content="https://www.knownly.net/{ $location.path() }" />
     <meta property="og:description" content="Turn a Dropbox folder into a website. Make it known." />
     <meta property="og:locale" content="en_US" />
     <meta property="og:image:width" content="255">
@@ -26,42 +24,12 @@
   </head>
 
   <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-    <nav class="navbar navbar-fixed-top" role="navigation" ng-controller="NavbarController as viewModel">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-            <i class="fa fa-bars"></i>
-          </button>
-          <a class="navbar-brand page-scroll" href="/">
-            <img class="brand-logo-dark" src="/static/img/brand/Knownly_Logo_Web_Simple_140_x_40.png" />
-          </a>
-        </div>
-
-        <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-          <ul class="nav navbar-nav">
-            <li class="hidden">
-              <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
-            </li>
-            <li>
-                <span>{{ viewModel.userAccount.email }}</span>
-            </li>
-            <li>
-                <a id='support-link' href="#">Support</a>
-            </li>
-            <li>
-                <a id='logout-link' href="javascript:void(0)" ng-click="viewModel.logout()">Logout</a>
-            </li>
-          </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-      </div>
-      <!-- /.container -->
-    </nav>
+    <ng-include src="'components/navbar/navbar.html'" ng-controller="NavbarController as viewModel"></ng-include>
 
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <div ng-view></div>
+          <div ui-view="main"></div>
         </div>
       </div>
     </div>

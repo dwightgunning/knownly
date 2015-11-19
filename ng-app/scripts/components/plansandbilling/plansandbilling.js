@@ -1,24 +1,21 @@
 /**
-* Account controller
-* @namespace knownlyApp.controllers.account
+* PlansAndBilling controller
+* @namespace knownlyApp.controllers.account.plansandbilling
 */
 (function () {
   'use strict';
 
   angular
-    .module('knownlyApp.controllers.account', [])
-    .controller('AccountController', AccountController);
+    .module('knownlyApp.controllers.account.plansandbilling', [])
+    .controller('PlansAndBillingController', PlansAndBillingController);
 
-  AccountController.$inject = ['_', '$scope', 'VouchersService', '$log'];
+  PlansAndBillingController.$inject = ['VouchersService', '$log'];
 
   /**
-  * @namespace AccountController
+  * @namespace PlansAndBillingController
   */
-  function AccountController(_, $scope, VouchersService, $log) {
-    var viewModel = this;
-    var defaultSection = 'profile';
-
-    viewModel.activeSection = defaultSection;
+  function PlansAndBillingController(VouchersService, $log) {
+  	var viewModel = this;
 
     viewModel.voucherRedemptionForm = {};
     viewModel.voucherToRedeem = '';
@@ -55,4 +52,5 @@
       return true;
     };
   }
+
 })();

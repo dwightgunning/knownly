@@ -1,0 +1,44 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Plans</div>
+    <div class="panel-body">
+		<h3>Current Plan</h3>
+		<p>Your current plan is: <strong>...</strong></p>
+		<p>Trial Expiring: ...</p>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Vouchers</div>
+    <div class="panel-body" style="padding:30px">
+        <form class="form-inline" name="viewModel.voucherRedemptionForm" novalidate>
+          <div class="form-group">
+              <div class="input-group">
+                  <input id="voucherToRedeem" type="text" name="voucherToRedeemField" class="form-control" ng-model="viewModel.voucherToRedeem" placeholder="Voucher code" ng-disabled="saving">
+              </div>
+              <input type="submit" class="btn btn-default" ng-click="viewModel.submitVoucherRedemption()" value="Claim it">
+          </div>
+        </form>
+        <div class="form-error" role="alert">
+          <div ng-show="viewModel.voucherRedemptionForm.voucherToRedeemField.$errors" class="text-danger">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            {{ viewModel.voucherRedemptionForm.voucherToRedeemField.$errors }}
+          </div>
+        </div>
+
+        <table class="table" ng-show="!!viewModel.vouchersRedeemed.length">
+          <thead>
+            <th>Voucher Code</th>
+            <th>Redeemed At</th>
+            <th>Campaign</th>
+          </thead>
+          <tbody>
+            <tr ng-repeat="redemption in viewModel.vouchersRedeemed">
+              <td>{{ redemption.voucher.voucher_code }}</td>
+              <td>{{ redemption.redeemed_at|date }}</td>
+              <td>{{ redemption.voucher.campaign.name }}</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</div>

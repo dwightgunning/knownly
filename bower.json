@@ -20,7 +20,7 @@
     "angular-bootstrap": "~0.13.4",
     "angular-cookies": "~1.4.6",
     "angular-loader": "~1.4.6",
-    "angular-route": "~1.4.6",
+    "angular-ui-router": "~0.2.15",
     "bootstrap-sass-official": "~3.3.4",
     "fontawesome": "~4.4.0",
     "hover": "~2.0.2",
