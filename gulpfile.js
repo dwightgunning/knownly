@@ -38,7 +38,6 @@ gulp.task('ng-index', ['sass', 'ng-templates', 'js-ng-app'], function() {
           .pipe(inject(config.staticOutputDir + '/js/app-*.js', 'app'))
           .pipe(inject(config.staticOutputDir +'/js/templates-*.js', 'templates'))
           .pipe(gulp.dest(config.staticOutputDir + '/'))
-          .on('error', plugins.util.log)
           .pipe(plugins.livereload())
           .on('end', cb || function() {});
     });
@@ -47,13 +46,17 @@ gulp.task('ng-index', ['sass', 'ng-templates', 'js-ng-app'], function() {
 gulp.task('ng-templates', function(cb) {
     plugins.util.log('Building angular templates');
 
-    return clean('/js/templates-*.js', function() {
+    return clean('/js/templates-*+(.js|.map)', function() {
         gulp.src(config.ngAppPath + '/views/**/*.html')
+          .pipe(plugins.plumber({errorHandler: onError}))
           .pipe(plugins.angularTemplatecache({
             root:   'views/',
             module: 'knownlyApp'
           }))
+          .pipe(gulp.dest(config.staticOutputDir + '/js'))
+          .pipe(plugins.sourcemaps.init())
           .pipe(plugins.streamify(plugins.rev()))
+          .pipe(plugins.sourcemaps.write('./'))
           .pipe(gulp.dest(config.staticOutputDir + '/js'))
           .on('error', plugins.util.log)
           .on('end', cb || function() {});
@@ -71,20 +74,28 @@ gulp.task('icons-vendor', function(cb) {
 });
 
 gulp.task('js-vendor', function(cb) {
-    return clean('/js/vendor.js', function() {
+    return clean('/js/knownly-vendor*+(.js|.map)', function() {
         gulp.src([
             config.bowerDir + '/jquery/dist/jquery.min.js',
             config.bowerDir + '/bootstrap-sass-official/assets/javascripts/bootstrap.min.js',
             config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
         ])
+        .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.concat('knownly-vendor.js'))
+        .pipe(gulp.dest(config.staticOutputDir + '/js/'))
+        .pipe(plugins.sourcemaps.init())
+        .pipe(plugins.uglify())
+        .pipe(plugins.rename({
+          extname: '.min.js'
+        }))
+        .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .on('end', cb || function() {});
     });
 });
 
 gulp.task('js-ng-vendor', function(cb) {
-    return clean('/js/vendor-*.js', function() {
+    return clean('/js/vendor-*+(.js|.map)', function() {
         return gulp.src([
             config.bowerDir + '/underscore/underscore.js',
             config.bowerDir + '/requirejs/require.js',
@@ -97,25 +108,33 @@ gulp.task('js-ng-vendor', function(cb) {
             config.bowerDir + '/angular-bootstrap/ui-bootstrap.js',
             config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
         ])
+        .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.concat('vendor.js'))
+        .pipe(gulp.dest(config.staticOutputDir + '/js/'))
+        .pipe(plugins.sourcemaps.init())
         .pipe(plugins.uglify())
         .pipe(plugins.streamify(plugins.rev()))
+        .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .on('end', cb || function() {});
     });
 });
 
 gulp.task('js-ng-app', function(cb) {
-    return clean('/js/app-*.js', function() {
+    return clean('/js/app-*+(.js|.map)', function() {
         gulp.src([
             config.ngAppPath + '/scripts/directives/**/*.js',
             config.ngAppPath + '/scripts/services/**/*.js',
             config.ngAppPath + '/scripts/controllers/**/*.js',
             config.ngAppPath + '/scripts/app.js',
         ])
+        .pipe(plugins.plumber({errorHandler: onError}))
+        .pipe(plugins.sourcemaps.init())
         .pipe(plugins.concat('app.js'))
+        .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .pipe(plugins.uglify())
         .pipe(plugins.streamify(plugins.rev()))
+        .pipe(plugins.sourcemaps.write('./'))
         .pipe(plugins.size({ showFiles: true }))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .on('end', cb || function() {});
@@ -123,12 +142,19 @@ gulp.task('js-ng-app', function(cb) {
 });
 
 gulp.task('js-app', function(cb) {
-    return clean('/js/knownly-app.js', function() {
+    return clean('/js/knownly-app*+(.js|.map)', function() {
         gulp.src([
             config.jsDir + '/*.js',
         ])
+        .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.concat('knownly-app.js'))
+        .pipe(gulp.dest(config.staticOutputDir + '/js/'))
+        .pipe(plugins.sourcemaps.init())
         .pipe(plugins.uglify())
+        .pipe(plugins.rename({
+          extname: '.min.js'
+        }))
+        .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest(config.staticOutputDir + '/js/')) // Emit non-revision-tagged version for Django templated views
         .pipe(plugins.size({ showFiles: true }))
         .pipe(plugins.livereload())
@@ -145,7 +171,7 @@ gulp.task('sass', function(cb) {
                     config.bowerDir + '/fontawesome/scss',
                     config.bowerDir + '/hover/scss'],
                 outputStyle: 'compressed'
-            }).on('error', plugins.sass.logError))
+            }))
         .pipe(plugins.minifyCss())
         .pipe(plugins.rename('knownly.css'))
         .pipe(gulp.dest(config.staticOutputDir + '/css')) // Emit non-revision-tagged version for Django templated views
@@ -194,6 +220,18 @@ function clean(relativePath, cb) {
 
   del([config.staticOutputDir + relativePath, ]).then(cb || function() {});
 }
+
+var onError = function (error) {  
+  plugins.notify.onError(
+    {
+      title: "Error", 
+      message: "Check your terminal", sound: "Sosumi"
+    }
+  )(error);
+  console.log(error.toString());
+  this.emit("end");
+};
+
 
 gulp.task('default');
 gulp.task('build', ['js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);
