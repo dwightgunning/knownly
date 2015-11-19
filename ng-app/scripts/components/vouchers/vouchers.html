@@ -1,6 +1,10 @@
 <div class="panel panel-default">
     <div class="panel-heading">Vouchers</div>
-    <div class="panel-body" style="padding:30px">
+    <div class="panel-body">
+      <p>Knownly is proud to support students, teachers, open source projects and other non-profits with free upgrades.</p>
+      <p>We love seeing creativity and people making ideas known!</p>
+      <p>If you fall into one of the above categories, just <a href="mailto:info@knownly.net">send us an email</a> with a quick outline of your situation. We'll respond with a voucher code to claim below.</p>
+      <p></p>
         <form class="form-inline" name="viewModel.voucherRedemptionForm" novalidate>
           <div class="form-group">
               <div class="input-group">
@@ -16,8 +20,13 @@
             {{ viewModel.voucherRedemptionForm.voucherToRedeemField.$errors }}
           </div>
         </div>
+    </div>
+</div>
 
-        <table class="table" ng-show="!!viewModel.vouchersRedeemed.length">
+<div class="panel panel-default" ng-show="!!viewModel.vouchersRedeemed.length">
+    <div class="panel-heading">Your vouchers</div>
+    <div class="panel-body">
+        <table class="table">
           <thead>
             <th>Voucher Code</th>
             <th>Redeemed At</th>
