@@ -1,20 +1,20 @@
 /**
-* PlansAndBilling controller
-* @namespace knownlyApp.controllers.account.plansandbilling
+* Vouchers controller
+* @namespace knownlyApp.controllers.account.vouchers
 */
 (function () {
   'use strict';
 
   angular
-    .module('knownlyApp.controllers.account.plansandbilling', [])
-    .controller('PlansAndBillingController', PlansAndBillingController);
+    .module('knownlyApp.controllers.account.vouchers', [])
+    .controller('VouchersController', VouchersController);
 
-  PlansAndBillingController.$inject = ['VouchersService', '$log'];
+  VouchersController.$inject = ['VouchersService', '$log'];
 
   /**
-  * @namespace PlansAndBillingController
+  * @namespace VouchersController
   */
-  function PlansAndBillingController(VouchersService, $log) {
+  function VouchersController(VouchersService, $log) {
   	var viewModel = this;
 
     viewModel.voucherRedemptionForm = {};

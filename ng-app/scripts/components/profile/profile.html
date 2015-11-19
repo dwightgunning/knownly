@@ -1,6 +1,27 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Profile</div>
-    <div class="panel-body">
-        <p>More to come...</p>
+  <div class="panel-heading">Profile</div>
+  <div class="panel-body">
+	<form class="form" name="viewModel.profileForm" novalidate>
+    <div class="form-group">
+  		<label class="col-md-12" for="nameField">Name</label>
+  		<div class="col-md-6">
+      	<input id="name" type="text" name="nameField" class="form-control" ng-model="viewModel.name" placeholder="First name" ng-disabled="saving">
+      </div>
+      <div class="col-md-6">
+      	<input id="name" type="text" name="nameField" class="form-control" ng-model="viewModel.name" placeholder="Last name" ng-disabled="saving">
+      </div>
     </div>
+    <div class="form-group">
+  		<label class="col-md-12" for="emailField">Email</label>
+      <div class="col-md-12">
+      	<input id="email" type="text" name="emailField" class="form-control" ng-model="viewModel.email" placeholder="Email" ng-disabled="saving">
+      </div>
+    </div>
+    <div class="form-group">
+	    <div class="col-md-12">
+	    	<input type="submit" class="btn btn-default" ng-click="viewModel.submitVoucherRedemption()" value="Save">
+    	</div>
+    </div>
+  </form>
+  </div>
 </div>

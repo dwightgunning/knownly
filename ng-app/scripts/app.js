@@ -10,7 +10,8 @@
     'knownlyApp.services.vouchers',
     'knownlyApp.controllers.account',
     'knownlyApp.controllers.account.profile',
-    'knownlyApp.controllers.account.plansandbilling',
+    'knownlyApp.controllers.account.billing',
+    'knownlyApp.controllers.account.vouchers',
     'knownlyApp.controllers.domains',
     'knownlyApp.controllers.navbar'
   ]);
@@ -64,12 +65,22 @@
           }
         }
       })
-      .state('account.plansandbilling', {
-        url: '/plans-billing/',
+      .state('account.billing', {
+        url: '/billing/',
         views: {
           'account-section': {
-            templateUrl: 'components/plansandbilling/plansandbilling.html',
-            controller: 'PlansAndBillingController',
+            templateUrl: 'components/billing/billing.html',
+            controller: 'BillingController',
+            controllerAs: 'viewModel'
+          }
+        }
+      })
+      .state('account.vouchers', {
+        url: '/vouchers/',
+        views: {
+          'account-section': {
+            templateUrl: 'components/vouchers/vouchers.html',
+            controller: 'VouchersController',
             controllerAs: 'viewModel'
           }
         }
