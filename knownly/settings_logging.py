@@ -24,7 +24,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'sentry': {
-            'level': 'ERROR',
+            'level': 'WARNING',
             'class':
                 'raven.contrib.django.raven_compat.handlers.SentryHandler',
             'formatter': 'verbose'
