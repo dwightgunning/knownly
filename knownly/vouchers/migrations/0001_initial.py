@@ -5,6 +5,7 @@ from django.db import migrations, models
 import django.utils.timezone
 from django.conf import settings
 import django.core.validators
+import uuid
 
 
 class Migration(migrations.Migration):
@@ -17,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Voucher',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uuid', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
                 ('voucher_code', models.CharField(unique=True, max_length=24)),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('total_available', models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1)])),
@@ -26,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VoucherCampaign',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uuid', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('start_date', models.DateField(null=True, blank=True)),
@@ -36,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VoucherRedemption',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uuid', models.UUIDField(default=uuid.uuid4, serialize=False, primary_key=True)),
                 ('redeemed_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('voucher', models.ForeignKey(to='vouchers.Voucher')),
