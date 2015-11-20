@@ -111,6 +111,10 @@ class CreateWebsiteView(BaseFormView):
 
         client = DropboxClient(self.dropbox_user.dropbox_token)
         try:
+            # Request metadata for the planned website folder. An error
+            # response is expected indicating that the folder does not exist
+            #
+            # A file_limit of 2 is used to keep the request short
             client.metadata(self.dropbox_website.domain, file_limit=2)
             message = 'A website folder with the same name already exists ' \
                       'in your Dropbox so we\'ve left that alone.'
@@ -157,6 +161,11 @@ class CreateWebsiteView(BaseFormView):
                                   'configuration. <a href="%s" ' \
                                   'class="alert-link">Find out more</a>.' \
                                   % (message, reverse('support'))
+            elif e.status == 406:
+                # Dropbox API v1 returns a 406 if the file_limit is exceeded
+                message = 'A website folder with the same name already ' \
+                          'exists in your Dropbox. We\'ve left it unchanged ' \
+                          'and it will now be linked to your chosedn domain.'
             else:
                 message = 'An error occurred and we could not create a ' \
                           'website folder in your Dropbox. Please try ' \
