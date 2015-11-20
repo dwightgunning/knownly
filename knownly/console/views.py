@@ -38,11 +38,7 @@ class IndexView(TemplateView):
             if self.dropbox_user.dropbox_token:
                 client = DropboxClient(self.dropbox_user.dropbox_token)
                 try:
-                    account_info = client.account_info()
-                    self.dropbox_user.display_name = \
-                        account_info["display_name"]
-                    self.dropbox_user.email = account_info["email"]
-                    self.dropbox_user.save()
+                    client.account_info()
                 except ErrorResponse as e:
                     logger.exception("Account authentication problem.")
                     # Remove the dead user_access token

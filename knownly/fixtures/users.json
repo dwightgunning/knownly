@@ -20,9 +20,7 @@
 {
     "fields": {
         "dropbox_token": "HQ0M_OPGbZAAAAAAAAAAxzd9VkjH3lJHv2RAVcsCAKBaMf8Bra8-aFRDZBtzmTSb",
-        "display_name": "Knownly Test",
         "user_id": "436389768",
-        "email": "test@knownly.net",
         "django_user": 39,
         "account_created": "2015-06-29T19:01:16.874Z"
     },
