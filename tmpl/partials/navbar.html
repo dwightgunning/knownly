@@ -17,7 +17,13 @@
         </li>
         {% if request.user.is_authenticated %}
           <li>
-            <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+          {% if request.user.first_name or request.user.last_name %}
+            <span><a href="/account/">{{ request.user.first_name }} {{ request.user.last_name }}</a></span>
+          {% elif request.user.email %}
+            <span><a href="/account/">{{ request.user.email }}</a></span>
+          {% else %}
+            <span><a href="/account/">Account</a></span>
+          {% endif %}
           </li>
         {% endif %}
         {% if not request.user.is_authenticated %}

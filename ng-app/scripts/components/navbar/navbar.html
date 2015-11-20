@@ -17,6 +17,7 @@
         <li>
             <span ng-show='viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.first_name }} {{ viewModel.userAccount.last_name }}</a></span>
             <span ng-show='!viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.email }}</a></span>
+            <span ng-show='!viewModel.userAccount.first_name && !viewModel.userAccount.email'><a ui-sref="account.profile" ui-sref-active="active">Account</a></span>
         </li>
         <li>
             <a id='support-link' href="#">Support</a>
