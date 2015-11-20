@@ -8,13 +8,15 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import BaseFormView, DeleteView
 from dropbox.client import DropboxClient
 from dropbox.rest import ErrorResponse
+from rest_framework.generics import RetrieveUpdateAPIView
 
+from knownly.console import serializers
 from knownly.console.forms import WebsiteForm
 from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
                                     DropboxUser)
@@ -36,12 +38,8 @@ class IndexView(TemplateView):
             if self.dropbox_user.dropbox_token:
                 client = DropboxClient(self.dropbox_user.dropbox_token)
                 try:
-                    account_info = client.account_info()
-                    self.dropbox_user.display_name = \
-                        account_info["display_name"]
-                    self.dropbox_user.email = account_info["email"]
-                    self.dropbox_user.save()
-                except ErrorResponse, e:
+                    client.account_info()
+                except ErrorResponse as e:
                     logger.exception("Account authentication problem.")
                     # Remove the dead user_access token
                     self.dropbox_user.access_token = ''
@@ -53,7 +51,7 @@ class IndexView(TemplateView):
                     message = 'Account authentication error.'
                     try:
                         message = '%s %s' % (messages, e.user_error_message)
-                    except AttributeError, e:
+                    except AttributeError as e:
                         logger.exception(e)
                         pass
 
@@ -116,7 +114,7 @@ class CreateWebsiteView(BaseFormView):
             client.metadata(self.dropbox_website.domain, file_limit=2)
             message = 'A website folder with the same name already exists ' \
                       'in your Dropbox so we\'ve left that alone.'
-        except ErrorResponse, e:
+        except ErrorResponse as e:
             if e.status == 404:
                 # setup the file
                 output = StringIO.StringIO()
@@ -132,7 +130,7 @@ class CreateWebsiteView(BaseFormView):
                               '(<em>/Apps/Knownly.net/%s</em>)' \
                               ' has been created in your Dropbox.' \
                               % self.dropbox_website.domain
-                except Exception, e:
+                except Exception as e:
                     logger.exception("Error creating website folder.")
                     message = 'An error occurred and we could not create a ' \
                               'website folder in your Dropbox. Please try ' \
@@ -256,3 +254,17 @@ def dropbox_webhook(request):
                     logger.warn('Unrecognised dropbox user: %s', uid)
 
         return HttpResponse(status=200)
+
+
+class ProfileView(RetrieveUpdateAPIView):
+    serializer_class = serializers.ProfileSerializer
+
+    def get_object(self):
+        if self.request.user.is_authenticated():
+            return self.request.user
+        else:
+            raise Http404
+
+    def perform_update(self, serializer):
+        super(ProfileView, self).perform_update(serializer)
+        logger.warn('User profile updated: %s' % serializer.data)

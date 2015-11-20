@@ -1,0 +1,29 @@
+#account {
+	padding-top: 80px;
+}
+
+.form-error {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	min-height: 20px;
+}
+
+.panel-body {
+	padding: 30px;
+}
+
+.form-success {
+	margin-left: 10px;
+}
+
+.animate-show {
+  opacity: 1;
+}
+
+.animate-show.ng-hide-add, .animate-show.ng-hide-remove {
+  transition: all linear 0.5s;
+}
+
+.animate-show.ng-hide {
+  opacity: 0;
+}

@@ -9,13 +9,12 @@
     .module('knownlyApp.controllers.navbar', [])
     .controller('NavbarController', NavbarController);
 
-  NavbarController.$inject = ['$scope', 'AuthenticationService'];
+  NavbarController.$inject = ['AuthenticationService'];
 
   /**
   * @namespace NavbarController
   */
-  function NavbarController($scope, AuthenticationService) {
-
+  function NavbarController(AuthenticationService) {
     var viewModel = this;
 
     viewModel.logout = logout;
@@ -25,15 +24,9 @@
         viewModel.userAccount = userAccount;
       }, function() {
         // Handle authentication error
-        console.log("No authenticated user");
         window.location = '/';
       });
 
-    /**
-    * @name logout
-    * @desc Log the user out
-    * @memberOf knownlyApp.controllers.NavbarController
-    */
     function logout() {
       AuthenticationService.logout();
     }

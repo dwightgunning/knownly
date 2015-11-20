@@ -5,6 +5,10 @@ from django.contrib.messages import constants as message_constants
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+ADMINS = (
+    ('Dwight Gunning', 'dwight@knownly.net'),
+)
+
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (

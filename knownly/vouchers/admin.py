@@ -35,7 +35,7 @@ class VoucherRedemptionForm(forms.ModelForm):
 
 
 class VoucherCampaignAdmin(admin.ModelAdmin):
-    readonly_fields = ('created_at', )
+    readonly_fields = ('uuid', 'created_at', )
     list_display = ('name', 'start_date', 'end_date')
 
     def get_readonly_fields(self, request, obj=None):
@@ -47,10 +47,11 @@ class VoucherCampaignAdmin(admin.ModelAdmin):
 
 class VoucherAdmin(admin.ModelAdmin):
     list_display = ('voucher_code', 'campaign')
-    readonly_fields = ('created_at', )
+    readonly_fields = ('uuid', 'created_at', )
 
 
 class VoucherRedemptionAdmin(admin.ModelAdmin):
+    readonly_fields = ('uuid', )
     form = VoucherRedemptionForm
     list_display = ('user', 'voucher', 'redeemed_at')
 

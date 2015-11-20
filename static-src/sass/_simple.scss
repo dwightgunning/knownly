@@ -133,8 +133,7 @@ a {
 .btn-default {
   @include button-variant($grayscale-primary, transparentize(white, 1), $grayscale-primary);
 
-  &:hover,
-  &:focus {
+  &:hover {
     border: 1px solid $grayscale-primary-dark-border;
     outline: none;
     color: $grayscale-primary-dark;

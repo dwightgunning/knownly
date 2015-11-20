@@ -46,11 +46,11 @@ gulp.task('ng-index', ['sass', 'ng-templates', 'js-ng-app'], function() {
 gulp.task('ng-templates', function(cb) {
     plugins.util.log('Building angular templates');
 
-    return clean('/js/templates-*+(.js|.map)', function() {
-        gulp.src(config.ngAppPath + '/views/**/*.html')
+    return clean('/js/templates*+(.js|.map)', function() {
+        gulp.src(config.ngAppPath + '/scripts/components/**/*.html')
           .pipe(plugins.plumber({errorHandler: onError}))
           .pipe(plugins.angularTemplatecache({
-            root:   'views/',
+            root:   'components/',
             module: 'knownlyApp'
           }))
           .pipe(gulp.dest(config.staticOutputDir + '/js'))
@@ -102,8 +102,8 @@ gulp.task('js-ng-vendor', function(cb) {
             config.bowerDir + '/jquery/dist/jquery.js',
             config.bowerDir + '/angular/angular.js', 
             config.bowerDir + '/angular-cookies/angular-cookies.js',
-            config.bowerDir + '/angular-animate/angular-animate.js', 
-            config.bowerDir + '/angular-route/angular-route.js',
+            config.bowerDir + '/angular-animate/angular-animate.js',
+            config.bowerDir + '/angular-ui-router/release/angular-ui-router.js',
             config.bowerDir + '/angular-loader/angular-loader.js',
             config.bowerDir + '/angular-bootstrap/ui-bootstrap.js',
             config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
@@ -125,7 +125,7 @@ gulp.task('js-ng-app', function(cb) {
         gulp.src([
             config.ngAppPath + '/scripts/directives/**/*.js',
             config.ngAppPath + '/scripts/services/**/*.js',
-            config.ngAppPath + '/scripts/controllers/**/*.js',
+            config.ngAppPath + '/scripts/components/**/*.js',
             config.ngAppPath + '/scripts/app.js',
         ])
         .pipe(plugins.plumber({errorHandler: onError}))
@@ -165,6 +165,7 @@ gulp.task('js-app', function(cb) {
 gulp.task('sass', function(cb) {
     return clean('/css/*.css', function() {
         gulp.src(config.sassPath + '/import.scss')
+        .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.sass({ 
                 includePaths: [
                     config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
@@ -211,7 +212,7 @@ gulp.task('watch', function() {
     plugins.livereload.listen();
 
     gulp.watch(config.sassPath + '/**/*.scss', ['sass', 'ng-index']);
-    gulp.watch(config.ngAppPath + '/**/*', ['ng-index']);
+    gulp.watch(config.ngAppPath + '/**/*+(.js|.html)', ['ng-index']);
     gulp.watch(config.jsDir + '/**/*.js', ['js-app']);
 });
 
@@ -232,7 +233,6 @@ var onError = function (error) {
   this.emit("end");
 };
 
-
 gulp.task('default');
 gulp.task('build', ['js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);
-gulp.task('deploy', ['icons-vendor', 'js-ng-vendor', 'js-vendor', 'js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);
+gulp.task('deploy', ['icons-vendor', 'js-ng-vendor', 'js-vendor', 'build']);

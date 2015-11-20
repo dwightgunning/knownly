@@ -1,0 +1,33 @@
+<nav class="navbar navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+        <i class="fa fa-bars"></i>
+      </button>
+      <a class="navbar-brand page-scroll" href="/">
+        <img class="brand-logo-dark" src="/static/img/brand/Knownly_Logo_Web_Simple_140_x_40.png" />
+      </a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+      <ul class="nav navbar-nav">
+        <li class="hidden">
+          <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
+        </li>
+        <li>
+            <span ng-show='viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.first_name }} {{ viewModel.userAccount.last_name }}</a></span>
+            <span ng-show='!viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.email }}</a></span>
+            <span ng-show='!viewModel.userAccount.first_name && !viewModel.userAccount.email'><a ui-sref="account.profile" ui-sref-active="active">Account</a></span>
+        </li>
+        <li>
+            <a id='support-link' href="#">Support</a>
+        </li>
+        <li>
+            <a id='logout-link' href="javascript:void(0)" ng-click="viewModel.logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+  <!-- /.container -->
+</nav>

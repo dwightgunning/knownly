@@ -20,9 +20,7 @@
 {
     "fields": {
         "dropbox_token": "HQ0M_OPGbZAAAAAAAAAAxzd9VkjH3lJHv2RAVcsCAKBaMf8Bra8-aFRDZBtzmTSb",
-        "display_name": "Knownly Test",
         "user_id": "4363897232",
-        "email": "test@knownly.net",
         "django_user": 66,
         "account_created": "2015-06-29T19:01:16.874Z",
         "date_activated": "2015-06-29T20:01:16.874Z"
@@ -51,9 +49,7 @@
 {
     "fields": {
         "dropbox_token": "HQ0M_OPGbZAAAAAAAAAAxzd9VkjH3lJHv2RAVcsCAKBaMf8Bra8-aFRDZBtzmTSb",
-        "display_name": "Knownly Test",
         "user_id": "436232319768",
-        "email": "test@knownly.net",
         "django_user": 88,
         "account_created": "2015-06-29T19:01:16.874Z",
         "date_activated": null
