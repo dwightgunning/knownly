@@ -264,3 +264,7 @@ class ProfileView(RetrieveUpdateAPIView):
             return self.request.user
         else:
             raise Http404
+
+    def perform_update(self, serializer):
+        super(ProfileView, self).perform_update(serializer)
+        logger.warn('User profile updated: %s' % serializer.data)
