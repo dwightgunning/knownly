@@ -15,7 +15,8 @@
           <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
         </li>
         <li>
-            <span>{{ viewModel.userAccount.email }}</span>
+            <span ng-show='viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.first_name }} {{ viewModel.userAccount.last_name }}</a></span>
+            <span ng-show='!viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.email }}</a></span>
         </li>
         <li>
             <a id='support-link' href="#">Support</a>
