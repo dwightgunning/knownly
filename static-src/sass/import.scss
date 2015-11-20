@@ -2,6 +2,26 @@
 @import 'font-awesome';
 @import 'hover';
 
+$knownly-heading-font-family: "Open Sans", "Montserrat", "Helvetica Neue" , Helvetica, Arial, sans-serif;
+$knownly-paragraph-font-family: "Open Sans", "Montserrat", "Helvetica Neue" , Helvetica, Arial, sans-serif;
+
+$knownly-orange: #f06821;
+$knownly-blue: #27A9E1;
+
+$grayscale-primary: #27A9E1 !default;
+$grayscale-primary-border: #278AE1 !default;
+
+$grayscale-primary-dark: #2752E1 !default;
+$grayscale-primary-dark-border: #133EE1 !default;
+
+$grayscale-dark: #030303 !default;
+$grayscale-medium: #333 !default;
+$grayscale-light: #F4F4F4 !default;
+$grayscale-lightest: #FDFDFD !default;
+
+$grayscale-body-font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
+$grayscale-headline-font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,sans-serif;
+
 @import '_base';
 @import '_simple';
 @import 'pages/_landing_page';

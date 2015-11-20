@@ -165,6 +165,7 @@ gulp.task('js-app', function(cb) {
 gulp.task('sass', function(cb) {
     return clean('/css/*.css', function() {
         gulp.src(config.sassPath + '/import.scss')
+        .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.sass({ 
                 includePaths: [
                     config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
