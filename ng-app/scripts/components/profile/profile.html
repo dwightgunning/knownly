@@ -1,27 +1,41 @@
 <div class="panel panel-default">
   <div class="panel-heading">Profile</div>
   <div class="panel-body">
-	<form class="form" name="viewModel.profileForm" novalidate>
-    <div class="form-group">
-  		<label class="col-md-12" for="nameField">Name</label>
-  		<div class="col-md-6">
-      	<input id="name" type="text" name="nameField" class="form-control" ng-model="viewModel.name" placeholder="First name" ng-disabled="saving">
-      </div>
-      <div class="col-md-6">
-      	<input id="name" type="text" name="nameField" class="form-control" ng-model="viewModel.name" placeholder="Last name" ng-disabled="saving">
-      </div>
+    <div class="col-md-6">
+      <form class="form" name="viewModel.profileForm" novalidate>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group" ng-class="{'has-error': !viewModel.profileForm.first_name.$pristine && viewModel.profileForm.first_name.$invalid}">
+              <label for="first_name">First name</label>
+              <input type="text" name="first_name" class="form-control" ng-model="viewModel.profile.first_name" ng-attr-placeholder="First name" ng-disabled="saving" required>
+              <div ng-if="!viewModel.profileForm.first_name.$pristine" ng-repeat="(error, validity) in viewModel.profileForm.first_name.$error" class="help-block" ng-switch="error">
+                <span ng-switch-when="required">This field is required.</span>
+                <span ng-switch-default="required">{{ error }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group" ng-class="{'has-error': !viewModel.profileForm.last_name.$pristine && viewModel.profileForm.last_name.$invalid}">
+              <label for="last_name">Last name</label>
+              <input type="text" name="last_name" class="form-control" ng-model="viewModel.profile.last_name" ng-attr-placeholder="Last name" ng-disabled="saving" required>
+              <div ng-if="!viewModel.profileForm.last_name.$pristine" ng-repeat="(error, validity) in viewModel.profileForm.last_name.$error" class="help-block" ng-switch="error">
+                <span ng-switch-when="required">This field is required.</span>
+                <span ng-switch-default="required">{{ error }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" ng-class="{'has-error': !viewModel.profileForm.email.$pristine && viewModel.profileForm.email.$invalid}">
+          <label for="email">Email</label>
+          <input type="email" name="email" class="form-control" ng-model="viewModel.profile.email" ng-attr-placeholder="Email" ng-disabled="saving" required>
+          <div ng-if="!viewModel.profileForm.email.$pristine" ng-repeat="(error, validity) in viewModel.profileForm.email.$error" class="help-block" ng-switch="error">
+            <span ng-switch-when="required">This field is required.</span>
+            <span ng-switch-when="email">This email address is invalid</span>
+            <span ng-switch-default="required">{{ error }}</span>
+          </div>
+        </div>
+        <input type="submit" class="btn btn-primary" ng-click="viewModel.submitProfileForm()" value="Save" ng-disabled="viewModel.profileForm.$invalid"> <input type="button" class="btn btn-default" ng-click="viewModel.resetProfileForm()" value="Reset" /><span class="text-success form-success animate-show" role="alert" ng-show="viewModel.showSuccess">Saved.</span>
+      </form>
     </div>
-    <div class="form-group">
-  		<label class="col-md-12" for="emailField">Email</label>
-      <div class="col-md-12">
-      	<input id="email" type="text" name="emailField" class="form-control" ng-model="viewModel.email" placeholder="Email" ng-disabled="saving">
-      </div>
-    </div>
-    <div class="form-group">
-	    <div class="col-md-12">
-	    	<input type="submit" class="btn btn-default" ng-click="viewModel.submitVoucherRedemption()" value="Save">
-    	</div>
-    </div>
-  </form>
   </div>
 </div>

@@ -3,8 +3,10 @@
 
   var knownlyApp = angular.module('knownlyApp', [
     'autocomplete',
+    'ngAnimate',
     'ngCookies',
     'ui.router',
+    'knownlyApp.services.account',
     'knownlyApp.services.authentication',
     'knownlyApp.services.domains',
     'knownlyApp.services.vouchers',

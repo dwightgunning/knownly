@@ -27,10 +27,6 @@
         return VouchersService.listRedeemedVouchers();
     }
 
-    viewModel.setActiveSection = function(sectionName) {
-      viewModel.activeSection = sectionName;
-    };
-
     viewModel.submitVoucherRedemption = function() {
       viewModel.saving = true;
 
