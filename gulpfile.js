@@ -5,6 +5,7 @@ var gulp    = require('gulp'),
     path    = require('path'),
     plugins = require('gulp-load-plugins')({
         lazy: false}),
+    // gulpSequence = require('gulpSequence'),
     del     = require('del');
 
 var config = {
@@ -37,6 +38,7 @@ gulp.task('ng-index', ['sass', 'ng-templates', 'js-ng-app'], function() {
           .pipe(inject(config.staticOutputDir + '/js/vendor-*.js', 'vendor'))
           .pipe(inject(config.staticOutputDir + '/js/app-*.js', 'app'))
           .pipe(inject(config.staticOutputDir +'/js/templates-*.js', 'templates'))
+          .pipe(plugins.size({title: '\t File size [index.html]',  showFiles: true }))
           .pipe(gulp.dest(config.staticOutputDir + '/'))
           .pipe(plugins.livereload())
           .on('end', cb || function() {});
@@ -56,6 +58,7 @@ gulp.task('ng-templates', function(cb) {
           .pipe(gulp.dest(config.staticOutputDir + '/js'))
           .pipe(plugins.sourcemaps.init())
           .pipe(plugins.streamify(plugins.rev()))
+          .pipe(plugins.size({title: '\t File size [ng-templates]',  showFiles: true }))
           .pipe(plugins.sourcemaps.write('./'))
           .pipe(gulp.dest(config.staticOutputDir + '/js'))
           .on('error', plugins.util.log)
@@ -68,6 +71,7 @@ gulp.task('icons-vendor', function(cb) {
         gulp.src([
             config.bowerDir + '/fontawesome/fonts/**.*',
             config.bowerDir + '/bootstrap-sass-official/assets/fonts/**/*.*'])
+        .pipe(plugins.size({title: '\t File size [Icons]'}))
         .pipe(gulp.dest(config.staticOutputDir + '/fonts/'))
         .on('end', cb || function() {});
     });
@@ -88,6 +92,7 @@ gulp.task('js-vendor', function(cb) {
         .pipe(plugins.rename({
           extname: '.min.js'
         }))
+        .pipe(plugins.size({title: '\t File size [js-vendor]',  showFiles: true }))
         .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .on('end', cb || function() {});
@@ -113,6 +118,7 @@ gulp.task('js-ng-vendor', function(cb) {
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .pipe(plugins.sourcemaps.init())
         .pipe(plugins.uglify())
+        .pipe(plugins.size({title: '\t File size [ng-vendor]:',  showFiles: true }))
         .pipe(plugins.streamify(plugins.rev()))
         .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
@@ -135,7 +141,7 @@ gulp.task('js-ng-app', function(cb) {
         .pipe(plugins.uglify())
         .pipe(plugins.streamify(plugins.rev()))
         .pipe(plugins.sourcemaps.write('./'))
-        .pipe(plugins.size({ showFiles: true }))
+        .pipe(plugins.size({title: '\t File size [ng-app]:', showFiles: true }))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .on('end', cb || function() {});
     });
@@ -154,9 +160,9 @@ gulp.task('js-app', function(cb) {
         .pipe(plugins.rename({
           extname: '.min.js'
         }))
+        .pipe(plugins.size({title: '\t File size [js-app]:',  showFiles: true }))
         .pipe(plugins.sourcemaps.write('./'))
         .pipe(gulp.dest(config.staticOutputDir + '/js/')) // Emit non-revision-tagged version for Django templated views
-        .pipe(plugins.size({ showFiles: true }))
         .pipe(plugins.livereload())
         .on('end', cb || function() {});
     });
@@ -177,7 +183,7 @@ gulp.task('sass', function(cb) {
         .pipe(plugins.rename('knownly.css'))
         .pipe(gulp.dest(config.staticOutputDir + '/css')) // Emit non-revision-tagged version for Django templated views
         .pipe(plugins.streamify(plugins.rev()))
-        .pipe(plugins.size({ showFiles: true }))
+        .pipe(plugins.size({title: '\t File size [CSS]:',  showFiles: true }))
         .pipe(gulp.dest(config.staticOutputDir + '/css'))
         .pipe(plugins.livereload())
         .on('end', cb || function() {});
@@ -217,7 +223,7 @@ gulp.task('watch', function() {
 });
 
 function clean(relativePath, cb) {
-  plugins.util.log('Cleaning: ' + plugins.util.colors.blue(relativePath));
+  // plugins.util.log('Cleaning: ' + plugins.util.colors.blue(relativePath));
 
   del([config.staticOutputDir + relativePath, ]).then(cb || function() {});
 }
@@ -233,6 +239,13 @@ var onError = function (error) {
   this.emit("end");
 };
 
-gulp.task('default');
-gulp.task('build', ['js-app', 'ng-index', 'static-images', 'static-error-pages', 'static-misc']);
-gulp.task('deploy', ['icons-vendor', 'js-ng-vendor', 'js-vendor', 'build']);
+gulp.task('statics',['icons-vendor',
+                          'static-images',
+                          'static-error-pages',
+                          'static-misc']);
+
+
+gulp.task('regular-site', ['js-vendor', 'sass', 'js-app']);
+gulp.task('angular-site', plugins.sequence('js-ng-vendor', 'ng-index'));
+gulp.task('deploy', plugins.sequence(['regular-site', 'angular-site'], 'statics'));
+gulp.task('default', ['deploy']);

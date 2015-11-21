@@ -29,6 +29,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-rev": "^6.0.1",
     "gulp-sass": "^2.0.4",
+    "gulp-sequence": "^0.4.1",
     "gulp-size": "^2.0.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-streamify": "^1.0.2",
@@ -39,8 +40,5 @@
   },
   "engines": {
     "node": ">=0.12.7"
-  },
-  "dependencies": {
-    "gulp-sourcemaps": "^1.6.0"
   }
 }
