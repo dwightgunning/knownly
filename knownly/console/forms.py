@@ -39,8 +39,5 @@ class WebsiteForm(forms.ModelForm):
         return domain
 
     def save(self, commit=True):
-        instance = super(WebsiteForm, self).save(commit=False)
-        instance.dropbox_user = self.dropbox_user
-        if commit:
-            instance.save()
-        return instance
+        raise NotImplementedError(
+            "Websites should be created with the DjangoWebsiteService")

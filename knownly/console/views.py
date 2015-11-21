@@ -1,13 +1,11 @@
 import hmac
 import json
 import logging
-import StringIO
 from hashlib import sha256
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
@@ -17,11 +15,12 @@ from dropbox.rest import ErrorResponse
 from rest_framework.generics import RetrieveUpdateAPIView
 
 from knownly.console import serializers
+from knownly.console.exceptions import DropboxWebsiteError
 from knownly.console.forms import WebsiteForm
 from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
                                     DropboxUser)
-from knownly.console.tasks import (fetch_website_folder_metadata,
-                                   process_dropbox_user_activity)
+from knownly.console.services import DropboxWebsiteService
+from knownly.console.tasks import process_dropbox_user_activity
 from knownly.plans.models import CustomerSubscription
 
 logger = logging.getLogger(__name__)
@@ -105,76 +104,25 @@ class CreateWebsiteView(BaseFormView):
                                                        **kwargs)
 
     def form_valid(self, form):
-        form.dropbox_user = self.dropbox_user
-        super(CreateWebsiteView, self).form_valid(form)
-        self.dropbox_website = form.save()
-
-        client = DropboxClient(self.dropbox_user.dropbox_token)
         try:
-            # Request metadata for the planned website folder. An error
-            # response is expected indicating that the folder does not exist
-            #
-            # A file_limit of 2 is used to keep the request short
-            client.metadata(self.dropbox_website.domain, file_limit=2)
-            message = 'A website folder with the same name already exists ' \
-                      'in your Dropbox so we\'ve left that alone.'
-        except ErrorResponse as e:
-            if e.status == 404:
-                # setup the file
-                output = StringIO.StringIO()
-                output.write('<html>\n<head>\n  <title>Hello world</title>\n'
-                             '</head>\n<body>\n  <h1>Hello world...</h1>\n'
-                             '</body>\n</html>\n')
+            website = DropboxWebsiteService.create_website(self.dropbox_user,
+                                                           form.cleaned_data)
 
-                # Upload the file to dropbox
-                try:
-                    created = client.put_file(
-                        '%s/index.html' % self.dropbox_website.domain, output)
-                    message = 'A website folder ' \
-                              '(<em>/Apps/Knownly.net/%s</em>)' \
-                              ' has been created in your Dropbox.' \
-                              % self.dropbox_website.domain
-                except Exception as e:
-                    logger.exception("Error creating website folder.")
-                    message = 'An error occurred and we could not create a ' \
-                              'website folder in your Dropbox. Please try ' \
-                              'creating it manually.'
-                    logger.exception('Unexpected response from Dropbox '
-                                     'when checking for existing folder')
+            message = 'A website folder ' \
+                      '(<em>/Apps/Knownly.net/%s</em>)' \
+                      ' has been created in your Dropbox.' % website.domain
 
-                try:
-                    fetch_website_folder_metadata.delay(
-                        self.dropbox_website.id)
-                except:
-                    logger.exception('Error creating '
-                                     'fetch_website_folder_metadata task')
-
-                if created:
-                    if self.dropbox_website.domain.endswith('knownly.net'):
-                        message = '%s Your website is created and ' \
-                                  'immediately active. ' \
-                                  '<a href="http://%s">Check it out</a>.' \
-                                  % (message, self.dropbox_website.domain)
-                    else:
-                        message = '%s Your website is created although ' \
-                                  'custom domains may need additional DNS ' \
-                                  'configuration. <a href="%s" ' \
-                                  'class="alert-link">Find out more</a>.' \
-                                  % (message, reverse('support'))
-            elif e.status == 406:
-                # Dropbox API v1 returns a 406 if the file_limit is exceeded
-                message = 'A website folder with the same name already ' \
-                          'exists in your Dropbox. We\'ve left it unchanged ' \
-                          'and it will now be linked to your chosedn domain.'
-            else:
-                message = 'An error occurred and we could not create a ' \
-                          'website folder in your Dropbox. Please try ' \
-                          'creating it manually.'
-                logger.exception('Unexpected response from Dropbox when '
-                                 'checking for existing folder')
+        except DropboxWebsiteError as dwe:
+            message = dwe.message
+        except Exception:
+            logger.exception("Could not create the Dropbox Website")
+            message = "An unexpected error occured. Please try again"
 
         return self.render_to_json_response(
-            {'domain': self.dropbox_website.domain, 'message': message})
+            {
+                'domain': form.cleaned_data["domain"].domain,
+                'message': message
+            })
 
     def form_invalid(self, form):
         return self.render_to_json_response(form.errors, status=400)
