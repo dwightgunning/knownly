@@ -111,6 +111,7 @@ gulp.task('js-ng-vendor', function(cb) {
             config.bowerDir + '/angular-ui-router/release/angular-ui-router.js',
             config.bowerDir + '/angular-loader/angular-loader.js',
             config.bowerDir + '/angular-bootstrap/ui-bootstrap.js',
+            config.bowerDir + '/angular-bootstrap/ui-bootstrap-tpls.js',
             config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
         ])
         .pipe(plugins.plumber({errorHandler: onError}))
@@ -214,7 +215,7 @@ gulp.task('static-images', function(cb) {
     });
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['default'], function() {
     plugins.livereload.listen();
 
     gulp.watch(config.sassPath + '/**/*.scss', ['sass', 'ng-index']);
@@ -223,7 +224,7 @@ gulp.task('watch', function() {
 });
 
 function clean(relativePath, cb) {
-  // plugins.util.log('Cleaning: ' + plugins.util.colors.blue(relativePath));
+  plugins.util.log('\t Cleaning: ' + plugins.util.colors.blue(relativePath));
 
   del([config.staticOutputDir + relativePath, ]).then(cb || function() {});
 }

@@ -5,16 +5,21 @@
     'autocomplete',
     'ngAnimate',
     'ngCookies',
+    'ui.bootstrap',
     'ui.router',
     'knownlyApp.services.account',
     'knownlyApp.services.authentication',
     'knownlyApp.services.domains',
+    'knownlyApp.services.dropboxsite',
     'knownlyApp.services.vouchers',
     'knownlyApp.controllers.account',
     'knownlyApp.controllers.account.profile',
     'knownlyApp.controllers.account.billing',
     'knownlyApp.controllers.account.vouchers',
+    'knownlyApp.controllers.console',
     'knownlyApp.controllers.domains',
+    'knownlyApp.controllers.deletedropboxsitemodal',
+    'knownlyApp.controllers.dropboxsitelist',
     'knownlyApp.controllers.navbar'
   ]);
 
@@ -86,7 +91,16 @@
             controllerAs: 'viewModel'
           }
         }
+      })
+      .state('console',{
+        url: '/console/',
+        views: {
+          'main': {
+            templateUrl: 'components/console/console.html',
+            controller: 'ConsoleController',
+            controllerAs: 'viewModel',
+          }
+        }
       });
   }]);
-
 })();
