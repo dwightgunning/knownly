@@ -6,7 +6,7 @@ from dropbox.client import DropboxClient
 from dropbox.rest import ErrorResponse
 
 from knownly.console.exceptions import DropboxWebsiteError
-from knownly.console.models import DropboxUser, DropboxWebsite
+from knownly.console.models import DropboxSite, DropboxUser
 from knownly.console.tasks import fetch_website_folder_metadata
 
 logger = logging.getLogger(__name__)
@@ -61,23 +61,23 @@ class DropboxUserService(object):
                                             password=random_password)
 
 
-class DropoboxWebsiteService(object):
+class DropboxSiteService(object):
 
     def create_website(self, dropbox_user, website_data):
         # Check Quota
         website = self._create_dropbox_website(dropbox_user, website_data)
 
         dropbox_client = DropboxClient(dropbox_user.dropbox_token)
-        self._add_template_site_to_dropbox(dropbox_client.
-                                           dropbox_user,
-                                           website)
+        self._upload_template_site(dropbox_client,
+                                   dropbox_user,
+                                   website)
         self._fetch_website_metadata(website)
 
         return website
 
     def _create_dropbox_website(self, dropbox_user, website_data):
-        website = DropboxWebsite(website_data)
-        website.dropbox_user = self.dropbox_user
+        website = DropboxSite(**website_data)
+        website.dropbox_user = dropbox_user
         website.save()
 
         return website
@@ -95,7 +95,7 @@ class DropoboxWebsiteService(object):
         except ErrorResponse as e:
             if e.status == 404:
                 # As expected, no website folder exists
-                self._put_template_files(dropbox_client)
+                self._put_template_files(dropbox_client, website)
             elif e.status == 406:
                 # Dropbox API v1 returns a 406 if the file_limit is exceeded
                 raise DropboxWebsiteError(
@@ -131,7 +131,7 @@ class DropoboxWebsiteService(object):
 
     def _fetch_website_metadata(self, website):
         try:
-            fetch_website_folder_metadata.delay(self.website.id)
+            fetch_website_folder_metadata.delay(website.id)
         except:
             logger.exception('Error creating '
                              'fetch_website_folder_metadata task')

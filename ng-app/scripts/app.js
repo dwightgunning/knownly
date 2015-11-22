@@ -43,7 +43,7 @@
 
     // Use $urlRouterProvider to configure any redirects (when) and invalid urls (otherwise).
     $urlRouterProvider
-      .otherwise('/profile/');
+      .otherwise('/');
 
     $stateProvider
       .state('domains', {
@@ -58,7 +58,7 @@
       })
       .state('account', {
         abstract: true,
-        url: '',
+        url: '/account/',
         views: {
           'main': {
             templateUrl: 'components/account/account.html',
@@ -68,7 +68,7 @@
         }
       })
       .state('account.profile', {
-        url: '/profile/',
+        url: 'profile/',
         views: {
           'account-section': {
             templateUrl: 'components/profile/profile.html',
@@ -78,7 +78,7 @@
         }
       })
       .state('account.billing', {
-        url: '/billing/',
+        url: 'billing/',
         views: {
           'account-section': {
             templateUrl: 'components/billing/billing.html',
@@ -88,7 +88,7 @@
         }
       })
       .state('account.vouchers', {
-        url: '/vouchers/',
+        url: 'vouchers/',
         views: {
           'account-section': {
             templateUrl: 'components/vouchers/vouchers.html',
@@ -98,7 +98,7 @@
         }
       })
       .state('console',{
-        url: '/console/',
+        url: '/',
         views: {
           'main': {
             templateUrl: 'components/console/console.html',

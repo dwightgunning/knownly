@@ -6,24 +6,23 @@ from hashlib import sha256
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpResponse
+from django.views import static
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from django.views.generic.edit import BaseFormView, DeleteView
 from dropbox.client import DropboxClient
 from dropbox.rest import ErrorResponse
+from rest_framework import serializers as rest_serializers
 from rest_framework.generics import (ListCreateAPIView, RetrieveDestroyAPIView,
                                      RetrieveUpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
 
 from knownly.console import serializers
 from knownly.console.exceptions import DropboxWebsiteError
-from knownly.console.forms import WebsiteForm
 from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
                                     DropboxUser)
-from knownly.console.services import DropboxWebsiteService
+from knownly.console.services import DropboxSiteService
 from knownly.console.tasks import process_dropbox_user_activity
-from knownly.plans.models import CustomerSubscription
 
 logger = logging.getLogger(__name__)
 
@@ -58,24 +57,19 @@ class IndexView(TemplateView):
 
                     messages.add_message(request, messages.ERROR, message)
 
-        return super(IndexView, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
-
         if self.dropbox_user:
-            context['dropbox_user'] = self.dropbox_user
-            context['websites'] = DropboxSite.objects.filter(
-                dropbox_user=self.dropbox_user)
-            context['create_website_form'] = WebsiteForm(
-                {'dropboxy_user': self.dropbox_user})
-            context['subscription'] = CustomerSubscription.objects.get(
-                user=self.request.user)
-            self.template_name = 'console/index.html'
+            if settings.DEBUG or hasattr(settings, 'TEST') and settings.TEST:
+                return static.serve(request,
+                                    'index.html',
+                                    document_root=settings.STATIC_ROOT)
+            else:
+                response = HttpResponse(
+                    content_type='text/html; charset=utf-8')
+                response['X-Accel-Redirect'] = '/index.html'
+                return response
         else:
             self.template_name = 'landingpages/public.html'
-
-        return context
+            return super(IndexView, self).get(request, *args, **kwargs)
 
 
 class LogoutDropboxUserView(TemplateView):
@@ -84,112 +78,6 @@ class LogoutDropboxUserView(TemplateView):
     def dispatch(self, *args, **kwargs):
         logout(self.request)
         return super(LogoutDropboxUserView, self).dispatch(*args, **kwargs)
-
-
-class CreateWebsiteView(BaseFormView):
-    success_url = '/'
-    form_class = WebsiteForm
-    http_method_names = ['post', 'put', 'options', 'trace']
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.dropbox_user = \
-                DropboxUser.objects.get(django_user=self.request.user)
-        except DropboxUser.DoesNotExist:
-            return HttpResponse('Unauthorized', status=401)
-
-        if not request.is_ajax():
-            return HttpResponseBadRequest("Only accepts XHR.")
-
-        return super(CreateWebsiteView, self).dispatch(request,
-                                                       *args,
-                                                       **kwargs)
-
-    def form_valid(self, form):
-        try:
-            website = DropboxWebsiteService.create_website(self.dropbox_user,
-                                                           form.cleaned_data)
-
-            message = 'A website folder ' \
-                      '(<em>/Apps/Knownly.net/%s</em>)' \
-                      ' has been created in your Dropbox.' % website.domain
-
-        except DropboxWebsiteError as dwe:
-            message = dwe.message
-        except Exception:
-            logger.exception("Could not create the Dropbox Website")
-            message = "An unexpected error occured. Please try again"
-
-        return self.render_to_json_response(
-            {
-                'domain': form.cleaned_data["domain"].domain,
-                'message': message
-            })
-
-    def form_invalid(self, form):
-        return self.render_to_json_response(form.errors, status=400)
-
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
-
-
-class RemoveWebsiteView(DeleteView):
-    success_url = '/'
-    model = DropboxSite
-    http_method_names = ['post', 'put', 'delete', 'options', 'trace']
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.dropbox_user = \
-                DropboxUser.objects.get(django_user=self.request.user)
-        except DropboxUser.DoesNotExist:
-            return HttpResponse('Unauthorized', status=401)
-
-        if not request.is_ajax():
-            return HttpResponseBadRequest("Only accepts XHR.")
-
-        return super(RemoveWebsiteView, self).dispatch(request,
-                                                       *args,
-                                                       **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        try:
-            dropbox_website = DropboxSite.objects.get(
-                domain__iexact=self.request.POST['domain'])
-        except DropboxSite.DoesNotExist:
-            logger.exception('Attempt to delete site that doesn\'t exist. '
-                             'Domain: %s' % self.request.POST['domain'])
-            context = {'message': 'Website not known at Knonwly.'}
-            return self.render_to_json_response(context, status=400)
-
-        if dropbox_website.dropbox_user != self.dropbox_user:
-            logger.error('Attempt to delete site that doesn\'t belong to '
-                         'user making request')
-            context = {'message': 'Permission denied. Our team are '
-                       'looking into this.'}
-            return self.render_to_json_response(context, status=400)
-
-        archived_site = \
-            ArchivedDropboxSite(dropbox_user=dropbox_website.dropbox_user,
-                                domain=dropbox_website.domain,
-                                date_created=dropbox_website.date_created,
-                                date_activated=dropbox_website.date_activated,
-                                date_modified=dropbox_website.date_modified,
-                                dropbox_hash=dropbox_website.dropbox_hash)
-
-        archived_site.save()
-        dropbox_website.delete()
-
-        context = {'domain': dropbox_website.domain,
-                   'message': 'Website %s removed.' % dropbox_website.domain}
-        return self.render_to_json_response(context, status=200)
-
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
 
 
 @csrf_exempt
@@ -235,13 +123,21 @@ class DropboxSiteListCreateView(ListCreateAPIView):
 
     def get_queryset(self):
         dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
-
         return DropboxSite.objects.filter(dropbox_user=dropbox_user)
 
     def perform_create(self, serializer):
-        serializer.save(
-            dropbox_user=DropboxUser.objects.get(
-                django_user=self.request.user))
+        dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
+
+        try:
+            DropboxWebsiteService.create_website(dropbox_user, serializer.data)
+        except DropboxWebsiteError:
+            pass
+            # TODO: We need to get the message back to the user somehow
+            # raise serializers.ValidationError(dwe.message)
+        except Exception:
+            logger.exception("Could not create the Dropbox Website")
+            raise rest_serializers.ValidationError(
+                "An unexpected error occured. Please try again")
 
 
 class DropboxSiteRetrieveDestroyView(RetrieveDestroyAPIView):

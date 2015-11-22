@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 from django.views.static import serve as serve_static
 
 from knownly.billing.views import stripe_webhook
-from knownly.console.views import dropbox_webhook
+from knownly.console.views import IndexView, dropbox_webhook
 from knownly.sitemaps import SupportPageSitemap
 
 admin.autodiscover()
@@ -29,11 +29,6 @@ urlpatterns = \
              url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
                  name='django.contrib.sitemaps.views.sitemap'),
 
-             url(r'^account/', serve_static,
-                 {'path': 'index.html',
-                  'document_root': settings.STATIC_ROOT},
-                 name='ng-index'),
-
              url(r'^api/', include('knownly.vouchers.urls')),
              url(r'^api/', include('knownly.domains.urls')),
 
@@ -52,3 +47,7 @@ if settings.DEBUG:
                  url(r'static/(?P<path>.*)$', serve_static,
                      {'document_root': settings.STATIC_ROOT},
                      name='custom-statics'), )
+
+urlpatterns += \
+    patterns('',
+             url(r'^', IndexView.as_view(), name='console'), )

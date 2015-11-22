@@ -15,7 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "*",
+    "angular": "~1.4.8",
     "angular-animate": "~1.4.8",
     "angular-bootstrap": "~0.14.3",
     "angular-cookies": "~1.4.8",
@@ -28,5 +28,8 @@
     "jquery": "~2.1.4",
     "requirejs": "~2.1.20",
     "underscore": "~1.8.3"    
+  },
+"resolutions": {
+    "angular": "~1.4.8"
   }
 }
