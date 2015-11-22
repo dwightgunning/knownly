@@ -12,7 +12,9 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import BaseFormView, DeleteView
 from dropbox.client import DropboxClient
 from dropbox.rest import ErrorResponse
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import (ListCreateAPIView, RetrieveDestroyAPIView,
+                                     RetrieveUpdateAPIView)
+from rest_framework.permissions import IsAuthenticated
 
 from knownly.console import serializers
 from knownly.console.exceptions import DropboxWebsiteError
@@ -214,6 +216,7 @@ def dropbox_webhook(request):
 
 
 class ProfileView(RetrieveUpdateAPIView):
+    authentication_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileSerializer
 
     def get_object(self):
@@ -225,3 +228,37 @@ class ProfileView(RetrieveUpdateAPIView):
     def perform_update(self, serializer):
         super(ProfileView, self).perform_update(serializer)
         logger.warn('User profile updated: %s' % serializer.data)
+
+
+class DropboxSiteListCreateView(ListCreateAPIView):
+    serializer_class = serializers.DropboxSiteSerializer
+
+    def get_queryset(self):
+        dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
+
+        return DropboxSite.objects.filter(dropbox_user=dropbox_user)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            dropbox_user=DropboxUser.objects.get(
+                django_user=self.request.user))
+
+
+class DropboxSiteRetrieveDestroyView(RetrieveDestroyAPIView):
+    serializer_class = serializers.DropboxSiteSerializer
+    lookup_field = 'domain'
+
+    def get_queryset(self):
+        return DropboxSite.objects.filter(
+            dropbox_user__django_user=self.request.user)
+
+    def perform_destroy(self, dropbox_website):
+        ArchivedDropboxSite.objects.create(
+            dropbox_user=dropbox_website.dropbox_user,
+            domain=dropbox_website.domain,
+            date_created=dropbox_website.date_created,
+            date_activated=dropbox_website.date_activated,
+            date_modified=dropbox_website.date_modified,
+            dropbox_hash=dropbox_website.dropbox_hash)
+
+        dropbox_website.delete()

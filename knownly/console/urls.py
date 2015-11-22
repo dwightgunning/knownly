@@ -24,5 +24,11 @@ urlpatterns = \
                  name='support'),
              url(r'^api/account/profile/$',
                  console_views.ProfileView.as_view(),
-                 name='profile')
+                 name='profile'),
+             url(r'^api/dropboxsite/$',
+                 console_views.DropboxSiteListCreateView.as_view(),
+                 name='dropboxsitelist'),
+             url(r'^api/dropboxsite/(?P<domain>.+)/$',
+                 console_views.DropboxSiteRetrieveDestroyView.as_view(),
+                 name='dropboxsite')
              )
