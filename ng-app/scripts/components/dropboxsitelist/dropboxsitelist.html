@@ -3,7 +3,7 @@
   <li data-domain="{{ website.domain }}" class="list-group-item" ng-repeat="website in viewModel.dropboxSiteList">
     {{ website.domain }}
     <span class="badge website-link-badge" title="Visit {{ website.domain }}">
-      <a class="visit_website_link" href="http://{{ website.domain }}" target="_blank">
+      <a class="visit_website_link" href="http://{{ website.domain }}" target="_blank" ng-click="viewModel.$mixpanel.track('View Site button clicked')">
         <span class="glyphicon glyphicon-share-alt"></span>
       </a>
     </span>

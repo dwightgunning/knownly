@@ -7,6 +7,7 @@
     'ngCookies',
     'ui.bootstrap',
     'ui.router',
+    'analytics.mixpanel',
     'knownlyApp.services.account',
     'knownlyApp.services.authentication',
     'knownlyApp.services.domains',
@@ -26,8 +27,11 @@
 
   knownlyApp.constant('_', window._);
 
-  knownlyApp.config(['$locationProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider',
-    function($locationProvider, $stateProvider, $urlRouterProvider, $httpProvider) {
+  knownlyApp.config(['$locationProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', '$mixpanelProvider',
+    function($locationProvider, $stateProvider, $urlRouterProvider, $httpProvider, $mixpanelProvider) {
+
+    var mixpanelToken = '/* @echo MIXPANEL_TOKEN */';
+    $mixpanelProvider.apiKey(mixpanelToken);
     
     // Disable hash routing
     $locationProvider.hashPrefix('!');

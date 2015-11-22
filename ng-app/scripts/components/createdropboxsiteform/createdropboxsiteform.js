@@ -9,12 +9,12 @@
     .module('knownlyApp.controllers.createdropboxsiteform', [])
     .controller('CreateDropboxSiteFormController', CreateDropboxSiteFormController);
 
-  CreateDropboxSiteFormController.$inject = ['$timeout', 'DropboxSiteService'];
+  CreateDropboxSiteFormController.$inject = ['$timeout', 'DropboxSiteService', '$mixpanel'];
 
   /**
   * @namespace CreateDropboxSiteFormController
   */
-  function CreateDropboxSiteFormController($timeout, DropboxSiteService) {
+  function CreateDropboxSiteFormController($timeout, DropboxSiteService, $mixpanel) {
     var viewModel = this;
 
     viewModel.createDropboxSiteForm = {};
@@ -43,6 +43,7 @@
           $timeout(function() {
             viewModel.showSuccess = false;
           }, 3000);
+          $mixpanel.track('Create Site button clicked');
         })
         .catch(function(formerrors) {
           _.each(formerrors, function(fielderrors, field) {

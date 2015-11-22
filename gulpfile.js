@@ -5,8 +5,10 @@ var gulp    = require('gulp'),
     path    = require('path'),
     plugins = require('gulp-load-plugins')({
         lazy: false}),
-    // gulpSequence = require('gulpSequence'),
-    del     = require('del');
+    del     = require('del'),
+    dotenv = require('dotenv');
+
+dotenv.config();
 
 var config = {
     errorPagesDir: './static-src/error-pages',
@@ -112,7 +114,9 @@ gulp.task('js-ng-vendor', function(cb) {
             config.bowerDir + '/angular-loader/angular-loader.js',
             config.bowerDir + '/angular-bootstrap/ui-bootstrap.js',
             config.bowerDir + '/angular-bootstrap/ui-bootstrap-tpls.js',
-            config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
+            config.bowerDir + '/jquery.easing/js/jquery.easing.js',
+            config.bowerDir + '/mixpanel/mixpanel-jslib-snippet.js',
+            config.bowerDir + '/angular-mixpanel/src/angular-mixpanel.js',
         ])
         .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.concat('vendor.js'))
@@ -139,6 +143,7 @@ gulp.task('js-ng-app', function(cb) {
         .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.sourcemaps.init())
         .pipe(plugins.concat('app.js'))
+        .pipe(plugins.preprocess({context: { MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN }}))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .pipe(plugins.uglify())
         .pipe(plugins.streamify(plugins.rev()))
