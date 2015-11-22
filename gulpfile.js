@@ -134,6 +134,7 @@ gulp.task('js-ng-app', function(cb) {
             config.ngAppPath + '/scripts/services/**/*.js',
             config.ngAppPath + '/scripts/components/**/*.js',
             config.ngAppPath + '/scripts/app.js',
+            config.jsDir + '/*.js',
         ])
         .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.sourcemaps.init())
