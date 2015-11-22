@@ -9,12 +9,12 @@
     .module('knownlyApp.controllers.dropboxsitelist', [])
     .controller('DropboxSiteListController', DropboxSiteListController);
 
-  DropboxSiteListController.$inject = ['DropboxSiteService', '$uibModal', '$log', '$templateCache'];
+  DropboxSiteListController.$inject = ['DropboxSiteService', '$uibModal', '$log'];
 
   /**
   * @namespace DropboxSiteListController
   */
-  function DropboxSiteListController(DropboxSiteService, $uibModal, $log, $templateCache) {
+  function DropboxSiteListController(DropboxSiteService, $uibModal, $log) {
     var viewModel = this;
 
     viewModel.dropboxSiteList = {};

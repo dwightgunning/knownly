@@ -24,6 +24,7 @@
       'dropboxSiteList': [],
       'getDropboxSiteList': getDropboxSiteList,
       'deleteDropboxSite': deleteDropboxSite,
+      'createDropboxSite': createDropboxSite
     };
 
     return service;
@@ -53,9 +54,37 @@
       }
     }
 
-    function deleteDropboxSite(website) {
+    function createDropboxSite(domain) {
+      var requestData = {
+        'domain': domain,
+      };
+
       return $http({
-                    url: '/api/dropboxsite/' + website + '/', 
+                    url: '/api/dropboxsite/', 
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    data: requestData
+                  })
+        .then(createDropboxSiteComplete)
+        .catch(createDropboxSiteFailed);
+
+      function createDropboxSiteComplete(data, status, headers, config) {
+        service.dropboxSiteList.push(data.data);
+      }
+
+      function createDropboxSiteFailed(error) {
+        $log.error('XHR Failed for createDropboxSite.');
+        if (error.data) {
+          return $q.reject(error.data);
+        } else {
+          return $q.reject('An unexpected error occurred.');
+        }
+      }      
+    }
+
+    function deleteDropboxSite(domain) {
+      return $http({
+                    url: '/api/dropboxsite/' + domain + '/', 
                     method: 'delete'
                   })
         .then(deleteDropboxSiteComplete)
@@ -66,7 +95,7 @@
         // involves creating a new list (based on filter) and deep
         // copying it back into place
         var updatedList = service.dropboxSiteList.filter(function(obj) {
-          return website != obj.domain;
+          return domain != obj.domain;
         });
         angular.copy(updatedList, service.dropboxSiteList);
       }

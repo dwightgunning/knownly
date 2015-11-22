@@ -1,26 +1,26 @@
 <div id="console">
   <div class="container">
-    <h1>My websites</h1>
     <div class="row">
       <div class="col-md-8">
-        <ng-include src="'components/dropboxsitelist/dropboxsitelist.html'" ng-controller="DropboxSiteListController as viewModel"></ng-include>  
-        <div id="create_website">
-            <h3>Create a website</h3>
-            <p>To create a website simply type a domain name into the form below. Choose either: </p>
+        <ng-include src="'components/dropboxsitelist/dropboxsitelist.html'" ng-controller="DropboxSiteListController as viewModel"></ng-include>
+        <ng-include src="'components/createdropboxsiteform/createdropboxsiteform.html'" ng-controller="CreateDropboxSiteFormController as viewModel"></ng-include>
+       </div>
+      <div class="col-md-4 right-side-bar">
+        <div class="panel panel-default">
+          <div class="panel-heading">Coming soon</div>
+          <div class="panel-body">
+            <p><strong>We're hard at work on the following...</strong></p>
             <ul>
-              <li>a Knownly sub-domain (e.g. mysite.knownly.net)</li>
-              <li>a personal domain that you own (e.g. launchsteps.com)</li>
+              <li>HTML5/CSS3 site templates.</li>
+              <li>Plugins for interactive functionality (forms, e-commerce, comments, feedback etc.)</li>
+              <li>Visitor metrics</li>
             </ul>
-            <div class="row">
-            <div class="col-md-4"></div>
           </div>
-          </div>
-            <p>Knownly sub-domains work immediately. Personal domains need some additional <a href="{% url 'support' %}#custom-domain-dns">DNS setup</a>.</p>
-          </div>
-          <div id="status-bar"></div>
+        </div>
+        <div class="text-center" style="margin-bottom:10px">
+            <div class="fb-share-button" data-href="http://www.knownly.net" data-layout="button" style="margin-right:10px"></div><a href="https://twitter.com/Knownly_net" class="twitter-follow-button" data-show-count="false">Follow @Knownly_net</a>
         </div>
       </div>
-      <div class="col-md-4"></div>
     </div>
-  </div> <!-- /container -->
+  </div>
 </div>

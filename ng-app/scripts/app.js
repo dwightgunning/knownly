@@ -17,6 +17,7 @@
     'knownlyApp.controllers.account.billing',
     'knownlyApp.controllers.account.vouchers',
     'knownlyApp.controllers.console',
+    'knownlyApp.controllers.createdropboxsiteform',
     'knownlyApp.controllers.domains',
     'knownlyApp.controllers.deletedropboxsitemodal',
     'knownlyApp.controllers.dropboxsitelist',
