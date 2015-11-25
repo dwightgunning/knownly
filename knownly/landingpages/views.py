@@ -4,14 +4,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.core.urlresolvers import reverse
-from django.views.generic import View, TemplateView, RedirectView
-
+from django.views.generic import RedirectView, TemplateView, View
 from dropbox.client import DropboxClient, DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
 
 from knownly.console import haiku
 from knownly.console.forms import WebsiteForm
-from knownly.console.models import DropboxUser, DropboxSite, ArchivedDropboxSite
+from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
+                                    DropboxUser)
 from knownly.console.services import DropboxUserService
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ MESSAGE_APP_NOT_APPROVED = 'Dropbox indicated that the request ' \
 MESSAGE_ACCOUNT_AUTH_ERROR = 'Account authentication error.'
 
 def get_dropbox_auth_redirect(request):
-    if not settings.DEBUG and request.is_secure():
+    if request.is_secure() or not settings.DEBUG:
         protocol = 'https://'
     else:
         protocol = 'http://'
