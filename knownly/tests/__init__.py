@@ -154,11 +154,8 @@ class LitePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
-        self.selenium.implicitly_wait(5)
+        self.selenium.implicitly_wait(10)
         self.selenium.find_element_by_id('console')
-
-        print CustomerSubscription.objects.all()[0].user
-        print CustomerSubscription.objects.all()[0].current_plan
 
         CustomerSubscription.objects.get(
             user=User.objects.get(username='test@knownly.net'),

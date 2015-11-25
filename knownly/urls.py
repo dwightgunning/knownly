@@ -35,7 +35,13 @@ urlpatterns = \
                  name='ng-index'),
 
              url(r'^api/', include('knownly.vouchers.urls')),
-             url(r'^api/', include('knownly.domains.urls')), )
+             url(r'^api/', include('knownly.domains.urls')),
+
+             #  The favicon will typically be served by nginx in product
+             #  so this just helps silence some dev-time log errors
+             url(r'^(?P<path>favicon.ico)$', serve_static,
+                 {'document_root': settings.STATIC_ROOT},
+                 name='favicon'), )
 
 if settings.DEBUG:
     urlpatterns += \

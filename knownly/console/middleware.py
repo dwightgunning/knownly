@@ -42,7 +42,7 @@ class SubdomainToDropboxMiddleware(object):
                 dropbox_resource = r_server.get(
                     'knownly-django-%s' % resource_path)
             except redis.ConnectionError:
-                logger.exception('Error connecting to redis-cache')
+                logger.error('Error connecting to redis-cache')
 
             if dropbox_resource:
                 # logger.debug("Redis dropbox resource cache HIT!!!")
