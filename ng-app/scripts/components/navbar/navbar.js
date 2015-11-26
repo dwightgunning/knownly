@@ -17,18 +17,18 @@
   function NavbarController(AuthenticationService) {
     var viewModel = this;
 
-    viewModel.logout = logout;
+    viewModel.userProfile = {};
 
-    AuthenticationService.getAuthenticatedUserProfile().then(
-      function(userProfile) {
-        viewModel.userProfile = userProfile;
-      }, function() {
-        // Handle authentication error
-        window.location = '/';
-      });
+    activate();
 
-    function logout() {
-      AuthenticationService.logout();
+    function activate() {
+        return AuthenticationService.getUserProfile().then(function() {
+          viewModel.userProfile = AuthenticationService.userProfile;
+        });
     }
+
+    viewModel.logout = function() {
+      AuthenticationService.logout();
+    };
   }
 })();

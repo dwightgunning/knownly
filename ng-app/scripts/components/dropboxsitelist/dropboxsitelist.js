@@ -9,16 +9,19 @@
     .module('knownlyApp.controllers.dropboxsitelist', [])
     .controller('DropboxSiteListController', DropboxSiteListController);
 
-  DropboxSiteListController.$inject = ['DropboxSiteService', '$uibModal', '$mixpanel', '$log'];
+  DropboxSiteListController.$inject = ['DropboxSiteService',
+    'AuthenticationService', '$uibModal', '$mixpanel', '$log'];
 
   /**
   * @namespace DropboxSiteListController
   */
-  function DropboxSiteListController(DropboxSiteService, $uibModal, $mixpanel, $log) {
+  function DropboxSiteListController(DropboxSiteService, AuthenticationService,
+      $uibModal, $mixpanel, $log) {
     var viewModel = this;
 
     viewModel.dropboxSiteList = {};
     viewModel.$mixpanel = $mixpanel;
+    viewModel.userProfile = AuthenticationService.userProfile;
     
     activate();
 
@@ -30,6 +33,7 @@
 
     viewModel._deleteWebsite = function(websiteToDelete) {
       DropboxSiteService.deleteDropboxSite(websiteToDelete);
+      AuthenticationService.getUserProfile();
       $mixpanel.track("Delete Site button clicked");
     };
 
