@@ -11,16 +11,17 @@
           </ul>
           Knownly will create a folder in your Dropbox and website is immediately live.
         </div>
-        <div class="input-group" ng-class="{'has-error': !viewModel.createDropboxSiteForm.domain.$pristine && viewModel.createDropboxSiteForm.domain.$invalid}">
+        <div class="input-group" ng-class="{'has-error': !viewModel.createDropboxSiteForm.domain.$pristine && viewModel.createDropboxSiteForm.$invalid}">
           <input type="text" name="domain" class="form-control" ng-model="viewModel.dropboxSite.domain" placeholder="mysite.knownly.net" ng-change="viewModel.clearFieldServerErrors('domain')" required>
           <span class="input-group-btn"><button id="create_website_form_btn" class="btn btn-default" type="button" ng-click="viewModel.submitCreateDropboxSiteForm()" ng-disabled="viewModel.createDropboxSiteForm.$invalid">Go!</button></span>
         </div>
-        <div class="create-domain-form-errors" ng-class="{'has-error': !viewModel.createDropboxSiteForm.domain.$pristine && viewModel.createDropboxSiteForm.domain.$invalid}">
+        <div class="create-domain-form-errors" ng-class="{'has-error': viewModel.createDropboxSiteForm.$invalid}">
           <span class="text-success form-success animate-show" role="alert" ng-show="viewModel.showSuccess">Saved.</span>
           <div ng-messages="viewModel.createDropboxSiteForm.domain.$error" class="help-block">
             <div ng-message="server" ng-repeat="serverError in viewModel.createDropboxSiteForm.domain.serverErrors">
               {{ serverError }}
             </div>
+          <div ng-repeat="serverError in viewModel.createDropboxSiteForm.serverErrors">{{ serverError }}</div>
           </div>
         </div>
       </form>

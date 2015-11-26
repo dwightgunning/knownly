@@ -77,7 +77,7 @@
         if (error.data) {
           return $q.reject(error.data);
         } else {
-          return $q.reject('An unexpected error occurred.');
+          return $q.reject({'form': 'An unexpected error occurred.'});
         }
       }      
     }
