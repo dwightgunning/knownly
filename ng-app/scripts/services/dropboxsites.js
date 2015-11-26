@@ -68,8 +68,8 @@
         .then(createDropboxSiteComplete)
         .catch(createDropboxSiteFailed);
 
-      function createDropboxSiteComplete(data, status, headers, config) {
-        service.dropboxSiteList.push(data.data);
+      function createDropboxSiteComplete(response, status, headers, config) {
+        service.dropboxSiteList.push(response.data.dropbox_site);
       }
 
       function createDropboxSiteFailed(error) {
