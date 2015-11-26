@@ -13,9 +13,11 @@ from django.views.generic import TemplateView
 from dropbox.client import DropboxClient
 from dropbox.rest import ErrorResponse
 from rest_framework import serializers as rest_serializers
+from rest_framework import status
 from rest_framework.generics import (ListCreateAPIView, RetrieveDestroyAPIView,
                                      RetrieveUpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from knownly.console import serializers
 from knownly.console.exceptions import DropboxWebsiteError
@@ -125,19 +127,39 @@ class DropboxSiteListCreateView(ListCreateAPIView):
         dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
         return DropboxSite.objects.filter(dropbox_user=dropbox_user)
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.messages = []
+        self._perform_create(serializer)
+
+        response_data = {
+            'dropbox_site': serializer.data
+        }
+        if self.messages:
+            response_data['messages'] = self.messages
+
+        headers = self.get_success_headers(response_data)
+        return Response(response_data,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+    def _perform_create(self, serializer):
         dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
 
         try:
-            DropboxWebsiteService.create_website(dropbox_user, serializer.data)
-        except DropboxWebsiteError:
-            pass
-            # TODO: We need to get the message back to the user somehow
-            # raise serializers.ValidationError(dwe.message)
+            db_site_service = DropboxSiteService(dropbox_user)
+            site = db_site_service.create(serializer.validated_data)
         except Exception:
             logger.exception("Could not create the Dropbox Website")
             raise rest_serializers.ValidationError(
-                "An unexpected error occured. Please try again")
+                {'error': ['An unexpected error occured. Please try again.']})
+
+        try:
+            db_site_service.upload_template(site)
+        except DropboxWebsiteError as dwe:
+            self.messages.append(dwe.message)
 
 
 class DropboxSiteRetrieveDestroyView(RetrieveDestroyAPIView):

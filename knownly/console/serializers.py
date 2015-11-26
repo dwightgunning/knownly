@@ -1,7 +1,7 @@
 import re
 
 from django.contrib.auth.models import User
-from rest_framework import serializers
+from rest_framework import serializers, validators
 
 from knownly.console.models import DropboxSite
 
@@ -17,6 +17,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class DropboxSiteSerializer(serializers.ModelSerializer):
+    # Explicitly define domain field with a custom uniqueness validator
+    # that returns a user friendly error message
+    domain = serializers.CharField(
+        validators=[validators.UniqueValidator(
+            queryset=DropboxSite.objects.all(),
+            message='This domain has already been claimed,'
+                    ' please choose another.')]
+    )
 
     class Meta:
         model = DropboxSite
@@ -24,7 +32,9 @@ class DropboxSiteSerializer(serializers.ModelSerializer):
 
     def validate_domain(self, domain):
         if domain.endswith("knownly.com"):
-            domain = self.cleaned_data['domain'] = domain[:-3] + "net"
+            raise serializers.ValidationError(
+                'Please use \'.net\' (unfortunately we don\'t own '
+                'the .com yet).')
 
         if DropboxSite.objects.filter(domain__iexact=domain).exists():
             raise serializers.ValidationError(
@@ -38,6 +48,6 @@ class DropboxSiteSerializer(serializers.ModelSerializer):
                 'This domain is invalid. Please try another.')
 
         if domain == 'knownly.net':
-            raise serializers.ValidationError("Sorry, that one's ours.")
+            raise serializers.ValidationError('Sorry, that one is ours.')
 
         return domain
