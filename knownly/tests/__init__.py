@@ -63,6 +63,7 @@ class LandingPageTests(LiveServerTestCase):
 
 
 @override_settings(SESSION_COOKIE_SECURE=False)
+@override_settings(TEST=True)
 class FreePlanSelectionTests(LiveServerTestCase):
     fixtures = ['knownly/fixtures/users.json']
 
@@ -103,6 +104,7 @@ class FreePlanSelectionTests(LiveServerTestCase):
 
 
 @override_settings(SESSION_COOKIE_SECURE=False)
+@override_settings(TEST=True)
 class LitePlanSelectionTests(LiveServerTestCase):
     fixtures = ['knownly/fixtures/users.json']
 
@@ -154,7 +156,7 @@ class LitePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
-        self.selenium.implicitly_wait(10)
+        self.selenium.implicitly_wait(8)
         self.selenium.find_element_by_id('console')
 
         CustomerSubscription.objects.get(

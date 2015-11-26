@@ -5,8 +5,10 @@ var gulp    = require('gulp'),
     path    = require('path'),
     plugins = require('gulp-load-plugins')({
         lazy: false}),
-    // gulpSequence = require('gulpSequence'),
-    del     = require('del');
+    del     = require('del'),
+    dotenv = require('dotenv');
+
+dotenv.config();
 
 var config = {
     errorPagesDir: './static-src/error-pages',
@@ -111,7 +113,10 @@ gulp.task('js-ng-vendor', function(cb) {
             config.bowerDir + '/angular-ui-router/release/angular-ui-router.js',
             config.bowerDir + '/angular-loader/angular-loader.js',
             config.bowerDir + '/angular-bootstrap/ui-bootstrap.js',
-            config.bowerDir + '/jquery.easing/js/jquery.easing.min.js',
+            config.bowerDir + '/angular-bootstrap/ui-bootstrap-tpls.js',
+            config.bowerDir + '/jquery.easing/js/jquery.easing.js',
+            config.bowerDir + '/mixpanel/mixpanel-jslib-snippet.js',
+            config.bowerDir + '/angular-mixpanel/src/angular-mixpanel.js',
         ])
         .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.concat('vendor.js'))
@@ -133,10 +138,12 @@ gulp.task('js-ng-app', function(cb) {
             config.ngAppPath + '/scripts/services/**/*.js',
             config.ngAppPath + '/scripts/components/**/*.js',
             config.ngAppPath + '/scripts/app.js',
+            config.jsDir + '/*.js',
         ])
         .pipe(plugins.plumber({errorHandler: onError}))
         .pipe(plugins.sourcemaps.init())
         .pipe(plugins.concat('app.js'))
+        .pipe(plugins.preprocess({context: { MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN }}))
         .pipe(gulp.dest(config.staticOutputDir + '/js/'))
         .pipe(plugins.uglify())
         .pipe(plugins.streamify(plugins.rev()))
@@ -214,7 +221,7 @@ gulp.task('static-images', function(cb) {
     });
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['default'], function() {
     plugins.livereload.listen();
 
     gulp.watch(config.sassPath + '/**/*.scss', ['sass', 'ng-index']);
@@ -223,7 +230,7 @@ gulp.task('watch', function() {
 });
 
 function clean(relativePath, cb) {
-  // plugins.util.log('Cleaning: ' + plugins.util.colors.blue(relativePath));
+  plugins.util.log('\t Cleaning: ' + plugins.util.colors.blue(relativePath));
 
   del([config.staticOutputDir + relativePath, ]).then(cb || function() {});
 }

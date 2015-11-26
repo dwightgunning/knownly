@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="viewModel.cancel()" aria-hidden="true">&times;</button>
+  <h4 class="modal-title">Remove website. Are you sure?</h4>
+</div>
+<div class="modal-body">
+  <p>The following website will no longer be accessible or linked to this account.</p>
+  <p style='text-indent:10%'><strong>{{ viewModel.websiteToDelete }}</strong></p>
+  <p>No website files will be removed from your Dropbox. You're free to leave them there or delete them as you desire.</p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="viewModel.cancel()">Cancel</button>
+  <button type="button" class="btn btn-danger" ng-click="viewModel.ok()">Remove website</button>
+</div>

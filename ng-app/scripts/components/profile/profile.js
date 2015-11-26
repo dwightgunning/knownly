@@ -34,8 +34,6 @@
         return;
       }
 
-      viewModel.saving = true;
-
       AccountService.updateProfile(viewModel.profile)
         .then(function success() {
           viewModel.profile = angular.copy(AccountService.profile);
@@ -54,9 +52,6 @@
                 viewModel.profileForm[field].$setValidity(fielderror, false);
               });
             });
-        })
-        .finally(function () {
-          viewModel.saving = false;
         });
 
       return true;

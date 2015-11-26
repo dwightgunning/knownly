@@ -4,14 +4,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.core.urlresolvers import reverse
-from django.views.generic import RedirectView, TemplateView, View
-from dropbox.client import DropboxClient, DropboxOAuth2Flow
+from django.views.generic import RedirectView, TemplateView
+from dropbox.client import DropboxOAuth2Flow
 from dropbox.rest import ErrorResponse
 
-from knownly.console import haiku
-from knownly.console.forms import WebsiteForm
-from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
-                                    DropboxUser)
 from knownly.console.services import DropboxUserService
 
 logger = logging.getLogger(__name__)
@@ -27,6 +23,7 @@ MESSAGE_APP_NOT_APPROVED = 'Dropbox indicated that the request ' \
 
 MESSAGE_ACCOUNT_AUTH_ERROR = 'Account authentication error.'
 
+
 def get_dropbox_auth_redirect(request):
     if request.is_secure() or not settings.DEBUG:
         protocol = 'https://'
@@ -39,15 +36,15 @@ def get_dropbox_auth_redirect(request):
 
 
 class DropboxAuthStartView(RedirectView):
-    
+
     def get_redirect_url(self, *args, **kwargs):
         post_dropbox_auth_redirect = get_dropbox_auth_redirect(self.request)
 
         flow = DropboxOAuth2Flow(
-            settings.DROPBOX_APP_KEY, 
-            settings.DROPBOX_APP_SECRET, 
+            settings.DROPBOX_APP_KEY,
+            settings.DROPBOX_APP_SECRET,
             post_dropbox_auth_redirect,
-            self.request.session, 
+            self.request.session,
             'dropbox-auth-csrf-token')
 
         return flow.start()
@@ -61,26 +58,26 @@ class DropboxAuthCompleteView(RedirectView):
         try:
             # Complete the Dropbox OAuth2 Flow
             flow = DropboxOAuth2Flow(
-                settings.DROPBOX_APP_KEY, 
-                settings.DROPBOX_APP_SECRET, 
+                settings.DROPBOX_APP_KEY,
+                settings.DROPBOX_APP_SECRET,
                 post_dropbox_auth_redirect,
-                self.request.session, 
-                'dropbox-auth-csrf-token') 
-            
+                self.request.session,
+                'dropbox-auth-csrf-token')
+
             dropbox_token, user_id, url_state = flow.finish(self.request.GET)
-        except DropboxOAuth2Flow.NotApprovedException, e:
+        except DropboxOAuth2Flow.NotApprovedException:
             logger.warn("Dropbox OAuth error: app not approved")
             messages.add_message(self.request,
                                  messages.WARNING,
                                  MESSAGE_APP_NOT_APPROVED)
-        except ErrorResponse, e:
+        except ErrorResponse:
             # Present a useful error to the user
             logger.exception("Dropbox API error")
             messages.add_message(self.request,
                                  messages.ERROR,
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
             logout(self.request)
-        except Exception, e:
+        except Exception:
             logger.exception("Unexpected error occured during Dropbox auth")
             messages.add_message(self.request,
                                  messages.ERROR,
@@ -89,7 +86,8 @@ class DropboxAuthCompleteView(RedirectView):
         else:
             # Create DropboxUser
             user_service = DropboxUserService()
-            dropbox_user, created = user_service.get_or_create(user_id, dropbox_token)
+            dropbox_user, created = user_service.get_or_create(user_id,
+                                                               dropbox_token)
 
             # Login the dropbox user and setup session token
             dropbox_user.django_user.backend = \
@@ -107,10 +105,11 @@ class DropboxAuthCompleteView(RedirectView):
 
 
 class DropboxAuthSuccessView(TemplateView):
-    template_name="billing/auth_return.html"
+    template_name = "billing/auth_return.html"
     new_customer = False
 
     def get_context_data(self, **kwargs):
-        context = super(DropboxAuthSuccessView, self).get_context_data(**kwargs)
+        context = super(DropboxAuthSuccessView, self) \
+            .get_context_data(**kwargs)
         context['new_customer'] = self.new_customer
         return context

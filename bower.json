@@ -15,17 +15,21 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.4.6",
-    "angular-animate": "~1.4.6",
-    "angular-bootstrap": "~0.13.4",
-    "angular-cookies": "~1.4.6",
-    "angular-loader": "~1.4.6",
+    "angular": "~1.4.8",
+    "angular-animate": "~1.4.8",
+    "angular-bootstrap": "~0.14.3",
+    "angular-cookies": "~1.4.8",
+    "angular-loader": "~1.4.8",
+    "angular-mixpanel": "~1.1.2",
     "angular-ui-router": "~0.2.15",
     "bootstrap-sass-official": "~3.3.4",
     "fontawesome": "~4.4.0",
     "hover": "~2.0.2",
     "jquery": "~2.1.4",
     "requirejs": "~2.1.20",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3"    
+  },
+"resolutions": {
+    "angular": "~1.4.8"
   }
 }

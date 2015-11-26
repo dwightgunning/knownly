@@ -1,0 +1,30 @@
+<div id="create_website">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Create a new website</h2>
+      <form class="form-inline" name="viewModel.createDropboxSiteForm" novalidate>
+        <div class="help-block">
+          You can claim either:
+          <ul>
+            <li>A Knownly domain, like <em><a href="http://swftreats.knownly.net" target="blank">swftreats.knownly.net</a></em></li>
+            <li>A Custom domain you own, such as <em><a href="http://www.launchsteps.com" target="blank">www.launchsteps.com</a></em></li>
+          </ul>
+          Knownly will create a folder in your Dropbox and website is immediately live.
+        </div>
+        <div class="input-group" ng-class="{'has-error': !viewModel.createDropboxSiteForm.domain.$pristine && viewModel.createDropboxSiteForm.$invalid}">
+          <input type="text" name="domain" class="form-control" ng-model="viewModel.dropboxSite.domain" placeholder="mysite.knownly.net" ng-change="viewModel.clearFieldServerErrors('domain')" required>
+          <span class="input-group-btn"><button id="create_website_form_btn" class="btn btn-default" type="button" ng-click="viewModel.submitCreateDropboxSiteForm()" ng-disabled="viewModel.createDropboxSiteForm.$invalid">Go!</button></span>
+        </div>
+        <div class="create-domain-form-errors" ng-class="{'has-error': viewModel.createDropboxSiteForm.$invalid}">
+          <span class="text-success form-success animate-show" role="alert" ng-show="viewModel.showSuccess">Saved.</span>
+          <div ng-messages="viewModel.createDropboxSiteForm.domain.$error" class="help-block">
+            <div ng-message="server" ng-repeat="serverError in viewModel.createDropboxSiteForm.domain.serverErrors">
+              {{ serverError }}
+            </div>
+          <div ng-repeat="serverError in viewModel.createDropboxSiteForm.serverErrors">{{ serverError }}</div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

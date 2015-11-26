@@ -1,0 +1,2 @@
+class DropboxWebsiteError(Exception):
+    pass

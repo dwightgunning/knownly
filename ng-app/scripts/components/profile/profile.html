@@ -7,17 +7,17 @@
           <div class="col-md-6">
             <div class="form-group" ng-class="{'has-error': !viewModel.profileForm.first_name.$pristine && viewModel.profileForm.first_name.$invalid}">
               <label for="first_name">First name</label>
-              <input type="text" name="first_name" class="form-control" ng-model="viewModel.profile.first_name" ng-attr-placeholder="First name" ng-disabled="saving" required>
+              <input type="text" name="first_name" class="form-control" ng-model="viewModel.profile.first_name" ng-attr-placeholder="First name" required>
               <div ng-if="!viewModel.profileForm.first_name.$pristine" ng-repeat="(error, validity) in viewModel.profileForm.first_name.$error" class="help-block" ng-switch="error">
                 <span ng-switch-when="required">This field is required.</span>
-                <span ng-switch-default="required">{{ error }}</span>
+                <span ng-switch-default>{{ error }}</span>
               </div>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group" ng-class="{'has-error': !viewModel.profileForm.last_name.$pristine && viewModel.profileForm.last_name.$invalid}">
               <label for="last_name">Last name</label>
-              <input type="text" name="last_name" class="form-control" ng-model="viewModel.profile.last_name" ng-attr-placeholder="Last name" ng-disabled="saving" required>
+              <input type="text" name="last_name" class="form-control" ng-model="viewModel.profile.last_name" ng-attr-placeholder="Last name" required>
               <div ng-if="!viewModel.profileForm.last_name.$pristine" ng-repeat="(error, validity) in viewModel.profileForm.last_name.$error" class="help-block" ng-switch="error">
                 <span ng-switch-when="required">This field is required.</span>
                 <span ng-switch-default>{{ error }}</span>
@@ -27,7 +27,7 @@
         </div>
         <div class="form-group" ng-class="{'has-error': !viewModel.profileForm.email.$pristine && viewModel.profileForm.email.$invalid}">
           <label for="email">Email</label>
-          <input type="email" name="email" class="form-control" ng-model="viewModel.profile.email" ng-attr-placeholder="Email" ng-disabled="saving" required>
+          <input type="email" name="email" class="form-control" ng-model="viewModel.profile.email" ng-attr-placeholder="Email" required>
           <div ng-if="!viewModel.profileForm.email.$pristine" ng-repeat="(error, validity) in viewModel.profileForm.email.$error" class="help-block" ng-switch="error">
             <span ng-switch-when="required">This field is required.</span>
             <span ng-switch-when="email">This email address is invalid</span>

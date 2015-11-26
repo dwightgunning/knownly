@@ -40,6 +40,7 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'level': 'WARNING',
         },
+        #  Django framework logging
         'django.db.backends': {
             'handlers': ['console', 'sentry'],
             'level': 'WARNING',
@@ -54,6 +55,11 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'level': 'WARNING',
         },
+        'django.db': {
+            'handlers': ['console', 'sentry'],
+            'level': 'WARNING',
+        },
+        #  Ops related logging
         'raven': {
             'level': 'DEBUG',
             'handlers': ['console', 'sentry'],
@@ -64,6 +70,12 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'propagate': False,
         },
+        #  Test related logging
+        'selenium.webdriver.remote.remote_connection': {
+            'level': 'WARNING',
+            'handlers': ['console'],
+            'propagate': False,
+        }
     },
 }
 

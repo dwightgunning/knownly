@@ -5,23 +5,33 @@
     'autocomplete',
     'ngAnimate',
     'ngCookies',
+    'ui.bootstrap',
     'ui.router',
+    'analytics.mixpanel',
     'knownlyApp.services.account',
     'knownlyApp.services.authentication',
     'knownlyApp.services.domains',
+    'knownlyApp.services.dropboxsite',
     'knownlyApp.services.vouchers',
     'knownlyApp.controllers.account',
     'knownlyApp.controllers.account.profile',
     'knownlyApp.controllers.account.billing',
     'knownlyApp.controllers.account.vouchers',
+    'knownlyApp.controllers.console',
+    'knownlyApp.controllers.createdropboxsiteform',
     'knownlyApp.controllers.domains',
+    'knownlyApp.controllers.deletedropboxsitemodal',
+    'knownlyApp.controllers.dropboxsitelist',
     'knownlyApp.controllers.navbar'
   ]);
 
   knownlyApp.constant('_', window._);
 
-  knownlyApp.config(['$locationProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider',
-    function($locationProvider, $stateProvider, $urlRouterProvider, $httpProvider) {
+  knownlyApp.config(['$locationProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', '$mixpanelProvider',
+    function($locationProvider, $stateProvider, $urlRouterProvider, $httpProvider, $mixpanelProvider) {
+
+    var mixpanelToken = '/* @echo MIXPANEL_TOKEN */';
+    $mixpanelProvider.apiKey(mixpanelToken);
     
     // Disable hash routing
     $locationProvider.hashPrefix('!');
@@ -33,7 +43,7 @@
 
     // Use $urlRouterProvider to configure any redirects (when) and invalid urls (otherwise).
     $urlRouterProvider
-      .otherwise('/profile/');
+      .otherwise('/');
 
     $stateProvider
       .state('domains', {
@@ -48,7 +58,7 @@
       })
       .state('account', {
         abstract: true,
-        url: '',
+        url: '/account/',
         views: {
           'main': {
             templateUrl: 'components/account/account.html',
@@ -58,7 +68,7 @@
         }
       })
       .state('account.profile', {
-        url: '/profile/',
+        url: 'profile/',
         views: {
           'account-section': {
             templateUrl: 'components/profile/profile.html',
@@ -68,7 +78,7 @@
         }
       })
       .state('account.billing', {
-        url: '/billing/',
+        url: 'billing/',
         views: {
           'account-section': {
             templateUrl: 'components/billing/billing.html',
@@ -78,7 +88,7 @@
         }
       })
       .state('account.vouchers', {
-        url: '/vouchers/',
+        url: 'vouchers/',
         views: {
           'account-section': {
             templateUrl: 'components/vouchers/vouchers.html',
@@ -86,7 +96,16 @@
             controllerAs: 'viewModel'
           }
         }
+      })
+      .state('console',{
+        url: '/',
+        views: {
+          'main': {
+            templateUrl: 'components/console/console.html',
+            controller: 'ConsoleController',
+            controllerAs: 'viewModel',
+          }
+        }
       });
   }]);
-
 })();
