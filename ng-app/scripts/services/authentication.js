@@ -22,8 +22,8 @@
     */
     var _AuthenticationService = {
       logout: logout,
-      getAuthenticatedUserAccount: getAuthenticatedUserAccount,
-      setAuthenticatedUserAccount: setAuthenticatedUserAccount,
+      'getAuthenticatedUserProfile': getAuthenticatedUserProfile,
+      'setAuthenticatedUserProfile': setAuthenticatedUserProfile,
       unauthenticate: unauthenticate
     };
 
@@ -62,20 +62,20 @@
     }
 
     /**
-     * @name getAuthenticatedUserAccount
+     * @name getAuthenticatedUserProfile
      * @desc Return the currently authenticated User
      * @returns {object|undefined} User if authenticated, else `undefined`
      * @memberOf knownlyApp.services.AuthenticationService
      */
-    function getAuthenticatedUserAccount() {
-      if (!$cookies.authenticatedUserAccount) {
+    function getAuthenticatedUserProfile() {
+      if (!$cookies.authenticatedUserProfile) {
         console.log("no available user account, fetching from server.");
         var deferred = $q.defer();
 
-        $http.get('/api/user/')
+        $http.get('/api/account/profile/')
           .then(function(data, status, headers, config) {
-            _AuthenticationService.setAuthenticatedUserAccount(data.data);
-            deferred.resolve(JSON.parse($cookies.authenticatedUserAccount));
+            _AuthenticationService.setAuthenticatedUserProfile(data.data);
+            deferred.resolve(JSON.parse($cookies.authenticatedUserProfile));
           }, function(data, status, headers, config) {
             AuthenticationService.unauthenticate();
             deferred.reject(undefined);
@@ -84,18 +84,18 @@
           return deferred.promise;
       }
 
-      return JSON.parse($cookies.authenticatedUserAccount);
+      return JSON.parse($cookies.authenticatedUserProfile);
     }
 
     /**
-     * @name setAuthenticatedUser
+     * @name setAuthenticatedUserProfile
      * @desc Stringify the User object and store it in a cookie
      * @param {Object} user The User object to be stored
      * @returns {undefined}
      * @memberOf knownlyApp.services.AuthenticationService
      */
-    function setAuthenticatedUserAccount(userAccount) {
-      $cookies.authenticatedUserAccount = JSON.stringify(userAccount);
+    function setAuthenticatedUserProfile(userProfile) {
+      $cookies.authenticatedUserProfile = JSON.stringify(userProfile);
     }
 
     /**
@@ -105,7 +105,7 @@
      * @memberOf knownlyApp.services.AuthenticationService
      */
     function unauthenticate() {
-      delete $cookies.authenticatedUserAccount;
+      delete $cookies.authenticatedUserProfile;
     }
 
   }

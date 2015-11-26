@@ -19,9 +19,9 @@
 
     viewModel.logout = logout;
 
-    AuthenticationService.getAuthenticatedUserAccount().then(
-      function(userAccount) {
-        viewModel.userAccount = userAccount;
+    AuthenticationService.getAuthenticatedUserProfile().then(
+      function(userProfile) {
+        viewModel.userProfile = userProfile;
       }, function() {
         // Handle authentication error
         window.location = '/';
