@@ -8,6 +8,7 @@ from dropbox.rest import ErrorResponse
 from knownly.console.exceptions import DropboxWebsiteError
 from knownly.console.models import DropboxSite, DropboxUser
 from knownly.console.tasks import fetch_website_folder_metadata
+from knownly.plans.services import QuotaService
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +68,13 @@ class DropboxSiteService(object):
         self.dropbox_user = dropbox_user
 
     def create(self, website_data):
-        # TODO: Check Quota
+        if not website_data['domain'].endswith('.knownly.net'):
+            quota_service = QuotaService(self.dropbox_user.django_user)
+            if quota_service.at_or_over_custom_domain_quota():
+                raise DropboxWebsiteError(
+                    'The limit on custom domains for this '
+                    'account has been reached.')
+
         website_data['dropbox_user'] = self.dropbox_user
         return DropboxSite.objects.create(**website_data)
 

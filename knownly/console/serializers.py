@@ -4,16 +4,23 @@ from django.contrib.auth.models import User
 from rest_framework import serializers, validators
 
 from knownly.console.models import DropboxSite
+from knownly.plans.models import CustomerSubscription
+from knownly.plans.serializers import CustomerSubscriptionSerializer
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True, allow_blank=False)
     last_name = serializers.CharField(required=True, allow_blank=False)
     email = serializers.EmailField(required=True, allow_blank=False)
+    subscription = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email', 'subscription')
+
+    def get_subscription(self, obj):
+        subscription = CustomerSubscription.objects.get(user=obj)
+        return CustomerSubscriptionSerializer(subscription).data
 
 
 class DropboxSiteSerializer(serializers.ModelSerializer):
@@ -31,6 +38,8 @@ class DropboxSiteSerializer(serializers.ModelSerializer):
         fields = ('domain', 'date_created', 'date_activated', 'date_modified')
 
     def validate_domain(self, domain):
+        domain = domain.lower()
+
         if domain.endswith("knownly.com"):
             raise serializers.ValidationError(
                 'Please use \'.net\' (unfortunately we don\'t own '
@@ -47,7 +56,7 @@ class DropboxSiteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'This domain is invalid. Please try another.')
 
-        if domain == 'knownly.net':
+        if domain in ['knownly.net', 'www.knownly.net']:
             raise serializers.ValidationError('Sorry, that one is ours.')
 
         return domain
