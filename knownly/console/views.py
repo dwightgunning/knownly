@@ -67,7 +67,7 @@ class IndexView(TemplateView):
             else:
                 response = HttpResponse(
                     content_type='text/html; charset=utf-8')
-                response['X-Accel-Redirect'] = '/index.html'
+                response['X-Accel-Redirect'] = '/ng-index.html'
                 return response
         else:
             self.template_name = 'landingpages/public.html'
