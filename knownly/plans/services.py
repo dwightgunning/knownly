@@ -65,6 +65,9 @@ class QuotaService(object):
     def __init__(self, user):
         self.user = user
 
+    def at_or_over_custom_domain_quota(self):
+        return self.custom_domains_claimed() >= self.custom_domain_limit()
+
     def custom_domain_limit(self):
         subscription_service = CustomerSubscriptionService(self.user)
         subscription = subscription_service.get_current_subscription()
@@ -73,4 +76,5 @@ class QuotaService(object):
 
     def custom_domains_claimed(self):
         dropbox_user = DropboxUser.objects.get(django_user=self.user)
-        return DropboxSite.objects.filter(dropbox_user=dropbox_user).count()
+        return DropboxSite.objects.filter(dropbox_user=dropbox_user) \
+            .exclude(domain__iendswith='.knownly.net').count()

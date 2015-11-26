@@ -7,14 +7,18 @@
 
   angular
     .module('knownlyApp.controllers.createdropboxsiteform', [])
-    .controller('CreateDropboxSiteFormController', CreateDropboxSiteFormController);
+    .controller('CreateDropboxSiteFormController',
+      CreateDropboxSiteFormController);
 
-  CreateDropboxSiteFormController.$inject = ['$timeout', 'DropboxSiteService', '$mixpanel'];
+  CreateDropboxSiteFormController.$inject = ['$timeout',
+    'AuthenticationService', 'DropboxSiteService', '$mixpanel'];
 
   /**
   * @namespace CreateDropboxSiteFormController
   */
-  function CreateDropboxSiteFormController($timeout, DropboxSiteService, $mixpanel) {
+  function CreateDropboxSiteFormController($timeout, AuthenticationService,
+      DropboxSiteService, $mixpanel) {
+
     var viewModel = this;
 
     viewModel.createDropboxSiteForm = {};
@@ -23,7 +27,8 @@
 
     viewModel.clearFieldServerErrors = function(field) {
       if (viewModel.createDropboxSiteForm[field].serverErrors) {
-        viewModel.createDropboxSiteForm[field].$setValidity('server-field', true);
+        viewModel.createDropboxSiteForm[field].$setValidity(
+          'server-field', true);
         viewModel.createDropboxSiteForm[field].serverErrors.length = 0;
       }
       if (viewModel.createDropboxSiteForm.serverErrors) {
@@ -48,13 +53,15 @@
             viewModel.showSuccess = false;
           }, 3000);
           $mixpanel.track('Create Site button clicked');
+          AuthenticationService.getUserProfile();
         })
         .catch(function(formerrors) {
           _.each(formerrors, function(errors, field) {
             if (field in viewModel.createDropboxSiteForm) {
               viewModel.createDropboxSiteForm[field].serverErrors = errors;
               viewModel.createDropboxSiteForm[field].$dirty = true;
-              viewModel.createDropboxSiteForm[field].$setValidity('server-field', false);
+              viewModel.createDropboxSiteForm[field].$setValidity(
+                'server-field', false);
             } else {
               viewModel.createDropboxSiteForm.serverErrors = errors;
               viewModel.createDropboxSiteForm.$dirty = true;

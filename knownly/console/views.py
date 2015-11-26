@@ -14,6 +14,8 @@ from dropbox.client import DropboxClient
 from dropbox.rest import ErrorResponse
 from rest_framework import serializers as rest_serializers
 from rest_framework import status
+from rest_framework.authentication import (BasicAuthentication,
+                                           SessionAuthentication)
 from rest_framework.generics import (ListCreateAPIView, RetrieveDestroyAPIView,
                                      RetrieveUpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
@@ -106,7 +108,8 @@ def dropbox_webhook(request):
 
 
 class ProfileView(RetrieveUpdateAPIView):
-    authentication_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ProfileSerializer
 
     def get_object(self):
@@ -121,6 +124,8 @@ class ProfileView(RetrieveUpdateAPIView):
 
 
 class DropboxSiteListCreateView(ListCreateAPIView):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated, )
     serializer_class = serializers.DropboxSiteSerializer
 
     def get_queryset(self):
@@ -151,15 +156,17 @@ class DropboxSiteListCreateView(ListCreateAPIView):
         try:
             db_site_service = DropboxSiteService(dropbox_user)
             site = db_site_service.create(serializer.validated_data)
+        except DropboxWebsiteError as dwe:
+            raise rest_serializers.ValidationError(
+                {'error': [dwe.message]})
+
+            db_site_service.upload_template(site)
+        except DropboxWebsiteError as dwe:
+            self.messages.append(dwe.message)
         except Exception:
             logger.exception("Could not create the Dropbox Website")
             raise rest_serializers.ValidationError(
                 {'error': ['An unexpected error occured. Please try again.']})
-
-        try:
-            db_site_service.upload_template(site)
-        except DropboxWebsiteError as dwe:
-            self.messages.append(dwe.message)
 
 
 class DropboxSiteRetrieveDestroyView(RetrieveDestroyAPIView):

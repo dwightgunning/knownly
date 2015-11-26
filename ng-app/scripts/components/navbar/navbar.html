@@ -15,9 +15,9 @@
           <a href="#page-top"></a> <!-- removes .active on first li when scrolling -->
         </li>
         <li>
-            <span ng-show='viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.first_name }} {{ viewModel.userAccount.last_name }}</a></span>
-            <span ng-show='!viewModel.userAccount.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userAccount.email }}</a></span>
-            <span ng-show='!viewModel.userAccount.first_name && !viewModel.userAccount.email'><a ui-sref="account.profile" ui-sref-active="active">Account</a></span>
+            <span ng-show='viewModel.userProfile.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userProfile.first_name }} {{ viewModel.userProfile.last_name }}</a></span>
+            <span ng-show='!viewModel.userProfile.first_name'><a ui-sref="account.profile" ui-sref-active="active">{{ viewModel.userProfile.email }}</a></span>
+            <span ng-show='!viewModel.userProfile.first_name && !viewModel.userProfile.email'><a ui-sref="account.profile" ui-sref-active="active">Account</a></span>
         </li>
         <li>
             <a id='support-link' href="/support/" target="_self">Support</a>

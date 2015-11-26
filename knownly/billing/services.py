@@ -1,21 +1,19 @@
 import logging
 from datetime import datetime, timedelta
 
+import stripe
 from django.conf import settings
 from django.utils import timezone
 
-import stripe
-
 from knownly.billing.errors import PaymentProviderError
-from knownly.billing.models import \
-    CustomerBillingDetails, StripeCustomer, StripeEvent
-
-from knownly import plans
+from knownly.billing.models import (CustomerBillingDetails, StripeCustomer,
+                                    StripeEvent)
 
 logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 TRIAL_DAYS_ON_FIRST_PAID_PLAN = 14
+
 
 class CustomerBillingService(object):
 
@@ -23,7 +21,7 @@ class CustomerBillingService(object):
         self.user = user
 
     def has_billing_details(self):
-        return CustomerBillingDetails.objects.filter(user=user).exists()
+        return CustomerBillingDetails.objects.filter(user=self.user).exists()
 
     def get_billing_details(self):
         billing_details = CustomerBillingDetails.objects.filter(user=self.user)
@@ -55,7 +53,7 @@ class CustomerBillingService(object):
         return billing_details
 
     def update_subscription(self, selected_plan, period):
-        # Delegates straight to StripeCustomerService as 
+        # Delegates straight to StripeCustomerService as
         # we don't need to do anything with the billing periods
         billing_details = self.get_billing_details()
 
@@ -71,7 +69,7 @@ class StripeCustomerService(object):
 
     def create_or_update_customer(self, currency, stripe_token):
         try:
-            customer = StripeCustomer.objects.get( \
+            customer = StripeCustomer.objects.get(
                 user=self.user, currency=currency)
         except StripeCustomer.DoesNotExist:
             customer = StripeCustomer(user=self.user, currency=currency)
@@ -84,14 +82,15 @@ class StripeCustomerService(object):
                 stripe_customer.source = stripe_token
                 stripe_customer.save()
             else:
-                stripe_customer = stripe.Customer.create( \
+                stripe_customer = stripe.Customer.create(
                     source=stripe_token, email=self.user.email)
-                customer.stripe_customer_id=stripe_customer['id']
+                customer.stripe_customer_id = stripe_customer['id']
                 customer.save()
 
         except stripe.error.StripeError as se:
             logger.exception('Could not create stripe customer', se)
-            raise PaymentProviderError('Error registering customer with payment provider', se)
+            raise PaymentProviderError('Error registering customer '
+                                       'with payment provider', se)
 
         return stripe_customer
 
@@ -103,8 +102,7 @@ class StripeCustomerService(object):
         customer = stripe.Customer.retrieve(stripe_customer.stripe_customer_id)
         if customer['subscriptions']['data']:
             current_subscription = customer['subscriptions']['data'][0]
-            current_plan
-            if current_plan != plan_id:
+            if current_subscription != plan_id:
                 try:
                     subscription = customer.subscriptions.retrieve(
                         current_subscription['id'])
@@ -125,7 +123,7 @@ class StripeCustomerService(object):
                 trial_end = timezone.now() + \
                     timedelta(days=TRIAL_DAYS_ON_FIRST_PAID_PLAN)
                 customer.subscriptions.create(
-                    plan=plan_id,trial_end=trial_end.strftime('%s'))
+                    plan=plan_id, trial_end=trial_end.strftime('%s'))
             except stripe.error.StripeError as se:
                 logger.exception('Stripe API Error while creating stripe '
                                  'customer (%s) subscription to: %s',
@@ -144,6 +142,6 @@ class StripeEventHandler(object):
             event.event_type = resp['type']
             event.timestamp = datetime.utcfromtimestamp(resp['created'])
             event.data = resp
-        except stripe.error.StripeError as se:
+        except stripe.error.StripeError:
             logger.exception("Stripe API Error")
         event.save()
