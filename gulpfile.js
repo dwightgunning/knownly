@@ -132,6 +132,7 @@ gulp.task('js-ng-vendor', function(cb) {
 });
 
 gulp.task('js-ng-app', function(cb) {
+
     return clean('/js/app-*+(.js|.map)', function() {
         gulp.src([
             config.ngAppPath + '/scripts/directives/**/*.js',
@@ -176,24 +177,28 @@ gulp.task('js-app', function(cb) {
 });
 
 gulp.task('sass', function(cb) {
-    return clean('/css/*.css', function() {
+    clean('/css/*.css', function() {
         gulp.src(config.sassPath + '/import.scss')
-        .pipe(plugins.plumber({errorHandler: onError}))
-        .pipe(plugins.sass({ 
-                includePaths: [
-                    config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
-                    config.bowerDir + '/fontawesome/scss',
-                    config.bowerDir + '/hover/scss'],
-                outputStyle: 'compressed'
-            }))
-        .pipe(plugins.minifyCss())
-        .pipe(plugins.rename('knownly.css'))
-        .pipe(gulp.dest(config.staticOutputDir + '/css')) // Emit non-revision-tagged version for Django templated views
-        .pipe(plugins.streamify(plugins.rev()))
-        .pipe(plugins.size({title: '\t File size [CSS]:',  showFiles: true }))
-        .pipe(gulp.dest(config.staticOutputDir + '/css'))
-        .pipe(plugins.livereload())
-        .on('end', cb || function() {});
+          .pipe(plugins.plumber({errorHandler: onError}))
+          .pipe(plugins.sourcemaps.init())
+          .pipe(plugins.sass({
+              includePaths: [
+                config.bowerDir + '/bootstrap-sass-official/assets/stylesheets',
+                config.bowerDir + '/fontawesome/scss',
+                config.bowerDir + '/hover/scss'],
+              outputStyle: 'expanded'
+           }))
+          .pipe(plugins.rename('knownly.css'))
+          .pipe(gulp.dest(config.staticOutputDir + '/css'))
+          .pipe(plugins.minifyCss())
+          .pipe(plugins.rename('knownly.min.css'))
+          .pipe(gulp.dest(config.staticOutputDir + '/css')) // Emit non-revision-tagged version for Django templated views
+          .pipe(plugins.streamify(plugins.rev()))
+          .pipe(plugins.size({title: '\t File size [CSS]:',  showFiles: true }))
+          .pipe(plugins.sourcemaps.write('./'))
+          .pipe(gulp.dest(config.staticOutputDir + '/css'))
+          .pipe(plugins.livereload())
+          .on('end', cb || function() {});
     });
 });
 
