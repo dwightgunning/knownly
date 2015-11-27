@@ -1,8 +1,9 @@
 import logging
-import StringIO
 
 from django.contrib.auth import get_user_model
+from dropbox import Dropbox
 from dropbox.client import DropboxClient
+from dropbox.exceptions import ApiError, DropboxException
 from dropbox.rest import ErrorResponse
 
 from knownly.console.exceptions import DropboxWebsiteError
@@ -79,64 +80,51 @@ class DropboxSiteService(object):
         return DropboxSite.objects.create(**website_data)
 
     def upload_template(self, website):
-        dropbox_client = DropboxClient(self.dropbox_user.dropbox_token)
+        dropbox = Dropbox(self.dropbox_user.dropbox_token)
 
         try:
-            # Request metadata for the planned website folder. We expect
-            # the deleted flag is set or an error response to indicate that
-            # the folder has never existed.
-            #
-            # A file_limit of 2 is used to keep the request quick
-            metadata = dropbox_client.metadata(website.domain, file_limit=2)
-            if metadata['is_deleted']:
+            # Request metadata for the planned website folder. An error
+            # response is expected indicating that the folder does not exist
+            db_path = '/%s' % website.domain
+            metadata = dropbox.files_get_metadata(db_path)
+            # If an ApiError is not raised then the folder exists
+            logger.warning('Unexpected metadata - likely the folder exists: %s'
+                           % metadata)
+            raise DropboxWebsiteError('A website folder with the same '
+                                      'name already exists in your Dropbox '
+                                      'so we\'ve left that alone.')
+        except ApiError as e:
+            if e.error.get_path().is_not_found():
                 # As expected, no website folder exists
-                self._put_template_files(dropbox_client, website)
-            else:
-                logger.warning('Unexpected metadata when attempting to upload '
-                               'website template website folder creation: %s'
-                               % metadata)
-                raise DropboxWebsiteError('A website folder with the same '
-                                          'name already exists in your '
-                                          'Dropbox so we\'ve left that alone.')
-        except ErrorResponse as e:
-            if e.status == 404:
-                # As expected, no website folder exists
-                self._put_template_files(dropbox_client, website)
-            elif e.status == 406:
-                # Dropbox API v1 returns a 406 if the file_limit is exceeded
-                raise DropboxWebsiteError(
-                    'A website folder with the same name already '
-                    'exists in your Dropbox. We\'ve left it unchanged '
-                    'and it will now be linked to your chosen domain.')
-            else:
-                logger.exception('Unexpected response from Dropbox '
-                                 'when retrieving folder metadata prior to '
-                                 'website folder creation.')
-                raise DropboxWebsiteError(
-                    'An error occurred and we could not create a '
-                    'website folder in your Dropbox. Please try '
-                    'creating it manually.')
+                self._put_template_files(dropbox, website)
+                # Fetch site metadata so we can track activation
+                self._fetch_site_metadata(website)
+        except DropboxWebsiteError as dwe:
+            raise dwe
+        except Exception:
+            logger.exception('Unexpected error when retrieving folder '
+                             'metadata prior to website folder creation.')
+            raise DropboxWebsiteError(
+                'An unexpected error occurred and we could not create a '
+                'website folder in your Dropbox. Please create it '
+                'manually at: %s' % db_path)
 
-        # Fetch site metadata so we can actively track website activation
-        self._fetch_site_metadata(website)
-
-    def _put_template_files(self, dropbox_client, website):
-        # setup the file
-        output = StringIO.StringIO()
-        output.write('<html>\n<head>\n  <title>Hello world</title>\n'
-                     '</head>\n<body>\n  <h1>Hello world...</h1>\n'
-                     '</body>\n</html>\n')
+    def _put_template_files(self, dropbox, website):
+        output = '<html>\n<head>\n  <title>Hello world</title>\n' \
+                 + '</head>\n<body>\n  <h1>Hello world...</h1>\n' \
+                 + '</body>\n</html>\n'
 
         # Upload the file to dropbox
+        db_path = '/%s/index.html' % website.domain
         try:
-            dropbox_client.put_file('%s/index.html' % website.domain, output)
-        except Exception:
+            dropbox.files_upload(output, db_path)
+        except DropboxException:
             logger.exception('Unexpected response from Dropbox '
                              'when putting website template files')
             raise DropboxWebsiteError(
-                'An error occurred and we could not create a '
+                'An unexpected error occurred and we could not create a '
                 'website folder in your Dropbox. Please try '
-                'creating it manually.')
+                'creating it manually at: %s' % db_path)
 
     def _fetch_site_metadata(self, website):
         try:

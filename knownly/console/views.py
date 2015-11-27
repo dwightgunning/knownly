@@ -158,6 +158,7 @@ class DropboxSiteListCreateView(ListCreateAPIView):
             db_site_service = DropboxSiteService(dropbox_user)
             site = db_site_service.create(serializer.validated_data)
         except DropboxWebsiteError as dwe:
+            logger.exception("Unable to create website")
             raise rest_serializers.ValidationError(
                 {'error': [dwe.message]})
 
@@ -165,12 +166,15 @@ class DropboxSiteListCreateView(ListCreateAPIView):
         try:
             db_site_service.upload_template(site)
         except DropboxWebsiteError as dwe:
-            logger.warning("Unable to upload ")
+            logger.exception("Unable to upload")
             self.messages.append(dwe.message)
-        except Exception:
-            logger.exception("Could not create the Dropbox Website")
-            raise rest_serializers.ValidationError(
-                {'error': ['An unexpected error occured. Please try again.']})
+        except:
+            # Catch and ignore so the user still receives a 201 Created
+            logger.exception("Unable to upload")
+            self.messages.append('There was an unexpected error while '
+                                 'uploading your website folder to Dropbox. '
+                                 'Please create it manually at /Apps/%s/%s'
+                                 % (settings.DROPBOX_APP, site.domain))
 
 
 class DropboxSiteRetrieveDestroyView(RetrieveDestroyAPIView):
