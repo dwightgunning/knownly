@@ -2,9 +2,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from dropbox import Dropbox
-from dropbox.client import DropboxClient
 from dropbox.exceptions import ApiError, DropboxException
-from dropbox.rest import ErrorResponse
 
 from knownly.console.exceptions import DropboxWebsiteError
 from knownly.console.models import DropboxSite, DropboxUser
@@ -18,49 +16,48 @@ User = get_user_model()
 
 class DropboxUserService(object):
 
-    def get_or_create(self, user_id, dropbox_token):
-        dropbox_user, created = DropboxUser.objects.get_or_create(
-            user_id=user_id, defaults={'dropbox_token': dropbox_token})
+    def get_or_create(self, db_account_id, dropbox_token):
+        db_user, created = \
+            DropboxUser.objects.get_or_create(
+                user_id=db_account_id,
+                defaults={'dropbox_token': dropbox_token})
 
-        if created or not dropbox_user.django_user:
-            # Fetch the Dropbox user's account info
-            try:
-                client = DropboxClient(dropbox_user.dropbox_token)
-                account_info = client.account_info()
-            except ErrorResponse as e:
-                logger.exception('Dropbox API Error', e)
-            else:
-                dropbox_user.django_user = self._create_user(account_info)
-                dropbox_user.save()
-        else:
-            dropbox_user.dropbox_token = dropbox_token
-            dropbox_user.save()
+        # Fetch the Dropbox user's account info
+        try:
+            db_client = Dropbox(db_user.dropbox_token)
+            db_account = db_client.users_get_current_account()
+        except ApiError:
+            logger.exception('Dropbox API Error')
+            # Remove the dead user_access token
+            db_user.access_token = ''
+            db_user.save()
+            raise Exception("Dropbox authentication error")
 
-        return dropbox_user, created
+        if not db_user.django_user:
+            db_user.django_user = self._create_user(db_account)
+            db_user.save()
 
-    def _create_user(self, account_info):
-        email = account_info['email']
-        if 'name_details' in account_info:
-            first_name = account_info['name_details'].get('given_name')
-            last_name = account_info['name_details'].get('surname')
-        else:
-            first_name = ''
-            last_name = ''
+        return db_user, created
+
+    def _create_user(self, db_account):
         random_password = User.objects.make_random_password()
 
-        if User.objects.filter(username=email).exists():
-            user = User.objects.get(username=email)
-            user.username = account_info['uid'],
-            user.first_name = first_name,
-            user.last_name = last_name,
+        try:
+            user = User.objects.get(username=db_account.email)
+            user.username = db_account.id
+            user.first_name = db_account.name.given_name
+            user.last_name = db_account.name.surname
             user.password = random_password
             user.save()
-        else:
-            return User.objects.create_user(username=account_info['uid'],
-                                            email=email,
-                                            first_name=first_name,
-                                            last_name=last_name,
-                                            password=random_password)
+        except User.DoesNotExist:
+            user = User.objects.create_user(
+                username=db_account.account_id,
+                email=db_account.email,
+                first_name=db_account.name.given_name,
+                last_name=db_account.name.surname,
+                password=random_password)
+
+        return user
 
 
 class DropboxSiteService(object):

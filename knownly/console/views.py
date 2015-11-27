@@ -10,8 +10,6 @@ from django.http import Http404, HttpResponse
 from django.views import static
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from dropbox.client import DropboxClient
-from dropbox.rest import ErrorResponse
 from rest_framework import serializers as rest_serializers
 from rest_framework import status
 from rest_framework.authentication import (BasicAuthentication,
@@ -25,55 +23,42 @@ from knownly.console import serializers
 from knownly.console.exceptions import DropboxWebsiteError
 from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
                                     DropboxUser)
-from knownly.console.services import DropboxSiteService
+from knownly.console.services import DropboxSiteService, DropboxUserService
 from knownly.console.tasks import process_dropbox_user_activity
 
 logger = logging.getLogger(__name__)
 
 
 class IndexView(TemplateView):
-    dropbox_user = None
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated():
-            self.dropbox_user = DropboxUser.objects.get(
-                django_user=request.user)
+            try:
+                db_user = DropboxUser.objects.get(django_user=request.user)
+                DropboxUserService().get_or_create(db_user.user_id,
+                                                   db_user.dropbox_token)
+                return self._serve_app(request)
+            except:
+                logout(self.request)
+                message = 'Account authentication error.'
+                messages.add_message(request, messages.ERROR, message)
+                logger.exception(message)
 
-            if self.dropbox_user.dropbox_token:
-                client = DropboxClient(self.dropbox_user.dropbox_token)
-                try:
-                    client.account_info()
-                except ErrorResponse as e:
-                    logger.exception("Account authentication problem.")
-                    # Remove the dead user_access token
-                    self.dropbox_user.access_token = ''
-                    self.dropbox_user.save()
-                    self.dropbox_user = None
+        return self._serve_public_index(request)
 
-                    logout(self.request)
-                    # Present a useful error to the user
-                    message = 'Account authentication error.'
-                    try:
-                        message = '%s %s' % (messages, e.user_error_message)
-                    except AttributeError as e:
-                        logger.exception(e)
-                        pass
+    def _serve_public_index(self, request, *args, **kwargs):
+        self.template_name = 'landingpages/public.html'
+        return super(IndexView, self).get(request, *args, **kwargs)
 
-                    messages.add_message(request, messages.ERROR, message)
-
-        if self.dropbox_user:
-            if settings.DEBUG or hasattr(settings, 'TEST') and settings.TEST:
-                return static.serve(request,
-                                    'index.html',
-                                    document_root=settings.STATIC_ROOT)
-            else:
-                response = HttpResponse(
-                    content_type='text/html; charset=utf-8')
-                response['X-Accel-Redirect'] = '/ng-index.html'
-                return response
+    def _serve_app(self, request, *args, **kwargs):
+        if settings.DEBUG or hasattr(settings, 'TEST') and settings.TEST:
+            logger.warning("Django serving the static angular index")
+            return static.serve(request, 'index.html',
+                                document_root=settings.STATIC_ROOT)
         else:
-            self.template_name = 'landingpages/public.html'
-            return super(IndexView, self).get(request, *args, **kwargs)
+            response = HttpResponse(content_type='text/html; charset=utf-8')
+            response['X-Accel-Redirect'] = '/ng-index.html'
+            return response
 
 
 class LogoutDropboxUserView(TemplateView):
