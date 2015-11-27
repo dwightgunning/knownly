@@ -13,5 +13,6 @@
       </a>
     </span>
   </li>
+  <li ng-show="!viewModel.dropboxSiteList.length" class="list-group-item" >Go ahead and create your first site with the form below...</li>
 </ul>
-<div ng-show="viewModel.userProfile.subscription.at_or_over_custom_domain_quota" class="alert alert-warning" role="alert">You have reached your limit for custom domains on the {{ viewModel.userProfile.subscription.current_plan}} plan. <a class="alert-link" href="/plans/" target="_self">Upgrade now.</a></div>
+<div ng-show="viewModel.userProfile.subscription.current_plan != 'free' && viewModel.userProfile.subscription.at_or_over_custom_domain_quota" class="alert alert-warning" role="alert">You have reached your limit for custom domains on the {{ viewModel.userProfile.subscription.current_plan}} plan. <a class="alert-link" href="/plans/" target="_self">Upgrade now.</a></div>
