@@ -41,9 +41,11 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h2>Getting started</h2>
+        <h2>Getting started is quick and easy</h2>
       </div>
     </div>
+  </div>
+  <div class="container">
     <div class="row">
       <div class="col-md-4">
         <h3>1: Link your dropbox</h3>
@@ -59,6 +61,7 @@
         <p>Now it's time to create your site. Work with one of our templates, get advice from our community, or craft something of your very own.</p>
       </div>
       <div class="col-md-12 text-center section-footer">
+        <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Make it happen</a>
         <p>If you need any assistance along the way, we're <a href="{% url 'support' %}">happy to help</a>.</p>
       </div>
     </div>
@@ -68,8 +71,14 @@
 <section id="pricing" class="content-section">
   <div class="container">
     <div class="row">
+      <div class="col-md-12">
+        <h2>Our pricing starts with free</h2>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
       <div class="col-lg-8 col-lg-offset-2">
-        <h2>Pricing</h2>
           {% include 'billing/partials/pricing.html' %}
       </div>
     </div>
@@ -87,8 +96,14 @@
 <section id="about" class="content-section">
   <div class="container">
     <div class="row">
-      <div class="col-lg-8 col-lg-offset-2">
+      <div class="col-md-12">
         <h2>About the site</h2>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 col-lg-offset-1">
         <div class="text-justify about-content">
           <p>Hi,</p>
           <p>My name is Dwight and Knownly is my little creation.</p>
