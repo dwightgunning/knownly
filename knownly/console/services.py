@@ -82,17 +82,22 @@ class DropboxSiteService(object):
         dropbox_client = DropboxClient(self.dropbox_user.dropbox_token)
 
         try:
-            # Request metadata for the planned website folder. An error
-            # response is expected indicating that the folder does not exist
+            # Request metadata for the planned website folder. We expect
+            # the deleted flag is set or an error response to indicate that
+            # the folder has never existed.
             #
             # A file_limit of 2 is used to keep the request quick
             metadata = dropbox_client.metadata(website.domain, file_limit=2)
-            logger.warning('Unexpected metadata when attempting to upload '
-                           'website template website folder creation: %s'
-                           % metadata)
-            raise DropboxWebsiteError('A website folder with the same '
-                                      'name already exists in your Dropbox '
-                                      'so we\'ve left that alone.')
+            if metadata['is_deleted']:
+                # As expected, no website folder exists
+                self._put_template_files(dropbox_client, website)
+            else:
+                logger.warning('Unexpected metadata when attempting to upload '
+                               'website template website folder creation: %s'
+                               % metadata)
+                raise DropboxWebsiteError('A website folder with the same '
+                                          'name already exists in your '
+                                          'Dropbox so we\'ve left that alone.')
         except ErrorResponse as e:
             if e.status == 404:
                 # As expected, no website folder exists

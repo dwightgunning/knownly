@@ -153,6 +153,7 @@ class DropboxSiteListCreateView(ListCreateAPIView):
     def _perform_create(self, serializer):
         dropbox_user = DropboxUser.objects.get(django_user=self.request.user)
 
+        # First persist the site model
         try:
             db_site_service = DropboxSiteService(dropbox_user)
             site = db_site_service.create(serializer.validated_data)
@@ -160,8 +161,11 @@ class DropboxSiteListCreateView(ListCreateAPIView):
             raise rest_serializers.ValidationError(
                 {'error': [dwe.message]})
 
+        # After the site model is stored, upload the template
+        try:
             db_site_service.upload_template(site)
         except DropboxWebsiteError as dwe:
+            logger.warning("Unable to upload ")
             self.messages.append(dwe.message)
         except Exception:
             logger.exception("Could not create the Dropbox Website")
