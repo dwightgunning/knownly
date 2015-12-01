@@ -113,6 +113,7 @@ except:
     STRIPE_SECRET_KEY = os.environ['STRIPE_SECRET_KEY']
     STRIPE_PUBLISHABLE_KEY = os.environ['STRIPE_PUBLISHABLE_KEY']
     MASHAPE_API_KEY = os.environ['MASHAPE_API_KEY']
+    GA_TRACKING_ID = os.environ['GA_TRACKING_ID']
 try:
     from settings_logging import *  # NOQA
 except:
