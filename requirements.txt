@@ -12,7 +12,7 @@ django-countries==3.3
 django-currencies==0.3.3
 django-ipware==1.1.0
 django-jsonfield==0.9.15
-django-nose==1.4.1
+django-nose==1.4.2
 djangorestframework==3.2.3
 dropbox==3.42
 ecdsa==0.13
@@ -38,12 +38,12 @@ python-stdnum==1.1
 pytz==2015.7
 raven==5.8.1
 redis==2.10.3
-requests==2.7.0
+requests==2.8.1
 selenium==2.45.0
-six==1.9.0
+six==1.10.0
 sqlparse==0.1.10
 stripe==1.27.1
-urllib3==1.10.4
+urllib3==1.12
 vat-moss==0.11.0
 vatnumber==1.2
 wsgiref==0.1.2
