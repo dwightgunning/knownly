@@ -5,6 +5,8 @@ import redis
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 
+from knownly.console.models import DropboxSite
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,8 +40,6 @@ class SubdomainToDropboxMiddleware(object):
             logger.error('Error connecting to redis-cache')
 
         if not db_api_auth_header:
-            from knownly.console.models import DropboxSite
-
             try:
                 website = DropboxSite.objects.get(domain__iexact=domain)
             except DropboxSite.DoesNotExist:
@@ -47,8 +47,10 @@ class SubdomainToDropboxMiddleware(object):
                 # but is no longer available"
                 return HttpResponseRedirect('https://www.knownly.net')
 
+            db_api_auth_header = 'Bearer %s' % \
+                website.dropbox_user.dropbox_token
+
         # Generate DB headers
-        db_api_auth_header = 'Bearer %s' % website.dropbox_user.dropbox_token
         db_api_arg_header = json.dumps({'path': full_path})
 
         # Cache the auth header for the domain
@@ -67,6 +69,10 @@ class SubdomainToDropboxMiddleware(object):
         # Dropbox API 'download' headers
         r['Authorization'] = db_api_auth_header
         r['Dropbox-API-Arg'] = db_api_arg_header
+        # Include the full path so that a custom LUA block can be used
+        # to sense the MIME type. NGINX can only sense based on the request
+        # uri (which is general purpose in Dropbox API v2)
+        r['Original-URI'] = full_path
         # Other useful headers
         r['Accept-Language'] = request.META.get('HTTP_ACCEPT_LANGUAGE')
         r['User-Agent'] = request.META.get('HTTP_USER_AGENT')
