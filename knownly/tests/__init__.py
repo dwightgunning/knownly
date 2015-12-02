@@ -1,8 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-import datetime
-import unittest
-
 from django.test import Client, LiveServerTestCase, override_settings
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -47,17 +42,20 @@ class LandingPageTests(LiveServerTestCase):
         super(LandingPageTests, cls).tearDownClass()
 
     def test_developers(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/welcome/developers'))
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    '/welcome/developers'))
         # Expect to see the primary cta
         self.selenium.find_element_by_id('primary-cta')
 
     def test_designers(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/welcome/designers'))
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    '/welcome/designers'))
         # Expect to see the primary cta
         self.selenium.find_element_by_id('primary-cta')
 
     def test_creatives(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/welcome/learning-to-code'))
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    '/welcome/learning-to-code'))
         # Expect to see the primary cta
         self.selenium.find_element_by_id('primary-cta')
 
@@ -80,22 +78,24 @@ class FreePlanSelectionTests(LiveServerTestCase):
     def setUp(self):
         client = Client()
         client.get(self.live_server_url)
-        self.assertTrue(client.login(username='test@knownly.net', password='test'))
+        self.assertTrue(client.login(username='test@knownly.net',
+                                     password='test'))
         cookie = client.cookies[settings.SESSION_COOKIE_NAME]
         self.selenium.get(self.live_server_url + '/admin/')
-        self.selenium.add_cookie({'name': 'sessionid', 
-                                 'value': cookie.value,
-                                 'secure': False,
-                                 'path': '/'})
+        self.selenium.add_cookie({'name': 'sessionid',
+                                  'value': cookie.value,
+                                  'secure': False,
+                                  'path': '/'})
         self.selenium.refresh()
 
     def test_free_plan(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
+        self.selenium.implicitly_wait(5)
         # Expect to see the primary cta
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
-        self.selenium.implicitly_wait(2)
+        self.selenium.implicitly_wait(5)
         self.selenium.find_element_by_id('console')
 
         CustomerSubscription.objects.get(
@@ -121,27 +121,31 @@ class LitePlanSelectionTests(LiveServerTestCase):
     def setUp(self):
         client = Client()
         client.get(self.live_server_url)
-        self.assertTrue(client.login(username='test@knownly.net', password='test'))
+        self.assertTrue(client.login(username='test@knownly.net',
+                                     password='test'))
         cookie = client.cookies[settings.SESSION_COOKIE_NAME]
         self.selenium.get(self.live_server_url + '/admin/')
-        self.selenium.add_cookie({'name': 'sessionid', 
-                                 'value': cookie.value,
-                                 'secure': False,
-                                 'path': '/'})
+        self.selenium.add_cookie({'name': 'sessionid',
+                                  'value': cookie.value,
+                                  'secure': False,
+                                  'path': '/'})
         self.selenium.refresh()
 
     def test_lite_plan(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
-        self.selenium.implicitly_wait(2)
-        self.selenium.find_element_by_xpath("//input[@type='radio' and @value='lite']").click()
+        self.selenium.implicitly_wait(5)
+        self.selenium.find_element_by_xpath(
+            "//input[@type='radio' and @value='lite']").click()
         self.selenium.find_element_by_id("lite-plan-btn").click()
-        self.selenium.implicitly_wait(2)
+        self.selenium.implicitly_wait(5)
 
         # Find and populate the billing details form
         payment_details = self.selenium.find_element_by_id('payment-details')
-        self.assertNotEqual(payment_details.value_of_css_property('display'), 'none')
+        self.assertNotEqual(payment_details.value_of_css_property('display'),
+                            'none')
 
-        self.selenium.find_element_by_id('id_card_number').send_keys('5555555555554444')
+        self.selenium.find_element_by_id(
+            'id_card_number').send_keys('5555555555554444')
         self.selenium.find_element_by_id('id_expiry_month').send_keys('11')
         self.selenium.find_element_by_id('id_expiry_year').send_keys('2020')
         self.selenium.find_element_by_id('id_cvc').send_keys('111')
@@ -150,9 +154,11 @@ class LitePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('id_street_address').send_keys('111')
         self.selenium.find_element_by_id('id_city').send_keys('111')
         self.selenium.find_element_by_id('id_post_code').send_keys('111')
-        Select(self.selenium.find_element_by_id('id_country')).select_by_value('NL')
+        Select(self.selenium.find_element_by_id('id_country')) \
+            .select_by_value('NL')
 
         # Expect to see the primary cta
+        self.selenium.implicitly_wait(5)
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
