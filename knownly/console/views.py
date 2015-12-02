@@ -77,17 +77,13 @@ def dropbox_webhook(request):
     elif request.method == 'POST':
         signature = request.META.get('HTTP_X_DROPBOX_SIGNATURE')
         if signature != hmac.new(settings.DROPBOX_APP_SECRET,
-                                 request.body, sha256).hexdigest():
+                                 request.data, sha256).hexdigest():
             logger.error("Invalid HEX code provided.")
-            return HttpResponse(status=403)
         else:
             logger.debug("Dropbox updates received...")
-            for uid in json.loads(request.body)['delta']['users']:
-                if DropboxUser.objects.filter(user_id=uid).exists():
-                    logger.debug('Dropbox webhook - updated user: %s', uid)
-                    process_dropbox_user_activity.delay(uid)
-                else:
-                    logger.warn('Unrecognised dropbox user: %s', uid)
+            for dropbox_token in \
+                    json.loads(request.data)['list_folder']['accounts']:
+                process_dropbox_user_activity.delay(dropbox_token)
 
         return HttpResponse(status=200)
 
@@ -176,7 +172,6 @@ class DropboxSiteRetrieveDestroyView(RetrieveDestroyAPIView):
             domain=dropbox_website.domain,
             date_created=dropbox_website.date_created,
             date_activated=dropbox_website.date_activated,
-            date_modified=dropbox_website.date_modified,
-            dropbox_hash=dropbox_website.dropbox_hash)
+            date_modified=dropbox_website.date_modified)
 
         dropbox_website.delete()

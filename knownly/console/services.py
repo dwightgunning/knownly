@@ -6,7 +6,7 @@ from dropbox.exceptions import ApiError, DropboxException
 
 from knownly.console.exceptions import DropboxWebsiteError
 from knownly.console.models import DropboxSite, DropboxUser
-from knownly.console.tasks import fetch_website_folder_metadata
+from knownly.console.tasks import fetch_website_folder_cursor
 from knownly.plans.services import QuotaService
 
 logger = logging.getLogger(__name__)
@@ -125,6 +125,6 @@ class DropboxSiteService(object):
 
     def _fetch_site_metadata(self, website):
         try:
-            fetch_website_folder_metadata.delay(website.id)
+            fetch_website_folder_cursor.delay(website.id)
         except:
-            logger.error('Error creating fetch_website_folder_metadata task')
+            logger.error('Error creating fetch_website_folder_cursor task')

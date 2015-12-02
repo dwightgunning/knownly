@@ -21,7 +21,7 @@ class DropboxSite(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     date_activated = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(blank=True, null=True)
-    dropbox_hash = models.CharField(max_length=64, blank=True)
+    cursor = models.CharField(max_length=64, blank=True)
 
     def __unicode__(self):
         return u'%s' % self.domain
@@ -33,5 +33,4 @@ class ArchivedDropboxSite(models.Model):
     date_created = models.DateTimeField()
     date_activated = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(blank=True, null=True)
-    dropbox_hash = models.CharField(max_length=64, blank=True)
     date_archived = models.DateTimeField(default=timezone.now)
