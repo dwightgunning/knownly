@@ -22,7 +22,7 @@ class DropboxSiteAdmin(ModelAdmin):
     list_display = ('domain', 'get_django_user_email', 'date_created',
                     'get_date_activated', 'visit_site')
     list_filter = ('dropbox_user',)
-    readonly_fields = ('date_created', 'date_activated', 'dropbox_hash')
+    readonly_fields = ('date_created', 'date_activated')
 
     def get_date_activated(self, obj):
         return obj.date_activated or ''

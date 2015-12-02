@@ -24,7 +24,7 @@ server {
         proxy_pass http://127.0.0.1:8201;
     }
 
-    location ~* ^/dropbox_redirect/(?<dropbox_path>.*) {
+    location ~* ^/dropbox_redirect {
         internal;
         resolver 8.8.8.8; # DNS must be specified to resolve external URLs
         access_log  /sites/knownly/logs/nginx_access.log upstreamlog;
@@ -52,9 +52,9 @@ server {
         proxy_hide_header content-security-policy;
         proxy_hide_header content-security-policy-report-only;
         proxy_hide_header x-content-security-policy;
+        proxy_hide_header dropbox-api-result;
         proxy_hide_header x-server-response-time;
         proxy_hide_header x-dropbox-request-id;
-        proxy_hide_header X-RequestId;
         proxy_hide_header x-dropbox-metadata;
         proxy_hide_header x-robots-tag;
         proxy_hide_header x-webkit-csp;
@@ -67,12 +67,17 @@ server {
         add_header Vary Accept-Encoding;
         set $download_url http://ledge.knownly.net:8280/$dropbox_path;
         # set $download_url https://dl.dropboxusercontent.com/$dropbox_path;
+        set $download_url https://content.dropboxapi.com/2/files/download;
         proxy_pass $download_url;
         proxy_intercept_errors on;
 
         error_page 302 @404;
         error_page 404 @404;
         error_page 429 503 =307 @307;
+    }
+
+    location /ng-index.html {
+        alias /sites/knownly/static/index.html;
     }
 
     location @307 {

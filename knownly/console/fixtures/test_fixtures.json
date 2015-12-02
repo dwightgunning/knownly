@@ -116,5 +116,35 @@
     },
     "model": "console.dropboxsite",
     "pk": 7
+},
+{
+    "fields": {
+        "dropbox_user": 48,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "customsite1.com",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 8
+},
+{
+    "fields": {
+        "dropbox_user": 48,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "customsite2.com",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 9
+},
+{
+    "fields": {
+        "dropbox_user": 48,
+        "date_created": "2015-07-07T04:32:41.794Z",
+        "domain": "customsite3.com",
+        "date_activated": null
+    },
+    "model": "console.dropboxsite",
+    "pk": 10
 }
 ]

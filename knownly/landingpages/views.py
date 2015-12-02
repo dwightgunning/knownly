@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.core.urlresolvers import reverse
 from django.views.generic import RedirectView, TemplateView
-from dropbox.client import DropboxOAuth2Flow
-from dropbox.rest import ErrorResponse
+from dropbox.oauth import (BadRequestException, BadStateException,
+                           CsrfException, DropboxOAuth2Flow,
+                           NotApprovedException, ProviderException)
 
 from knownly.console.services import DropboxUserService
 
@@ -40,14 +41,14 @@ class DropboxAuthStartView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         post_dropbox_auth_redirect = get_dropbox_auth_redirect(self.request)
 
-        flow = DropboxOAuth2Flow(
+        authorize_url = DropboxOAuth2Flow(
             settings.DROPBOX_APP_KEY,
             settings.DROPBOX_APP_SECRET,
             post_dropbox_auth_redirect,
             self.request.session,
-            'dropbox-auth-csrf-token')
+            'dropbox-auth-csrf-token').start()
 
-        return flow.start()
+        return authorize_url
 
 
 class DropboxAuthCompleteView(RedirectView):
@@ -57,51 +58,60 @@ class DropboxAuthCompleteView(RedirectView):
 
         try:
             # Complete the Dropbox OAuth2 Flow
-            flow = DropboxOAuth2Flow(
-                settings.DROPBOX_APP_KEY,
-                settings.DROPBOX_APP_SECRET,
-                post_dropbox_auth_redirect,
-                self.request.session,
-                'dropbox-auth-csrf-token')
-
-            dropbox_token, user_id, url_state = flow.finish(self.request.GET)
-        except DropboxOAuth2Flow.NotApprovedException:
-            logger.warn("Dropbox OAuth error: app not approved")
-            messages.add_message(self.request,
-                                 messages.WARNING,
-                                 MESSAGE_APP_NOT_APPROVED)
-        except ErrorResponse:
-            # Present a useful error to the user
+            dropbox_token, user_id, url_state = \
+                DropboxOAuth2Flow(
+                    settings.DROPBOX_APP_KEY,
+                    settings.DROPBOX_APP_SECRET,
+                    post_dropbox_auth_redirect,
+                    self.request.session,
+                    'dropbox-auth-csrf-token').finish(self.request.GET)
+        except BadRequestException:
             logger.exception("Dropbox API error")
             messages.add_message(self.request,
                                  messages.ERROR,
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
             logout(self.request)
-        except Exception:
-            logger.exception("Unexpected error occured during Dropbox auth")
+        except BadStateException:
+            logger.exception("Dropbox OAuth error")
             messages.add_message(self.request,
                                  messages.ERROR,
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
-            logout(self.request)
+            return reverse('post_auth_new_customer')
+        except CsrfException:
+            logger.exception("Dropbox OAuth error")
+            messages.add_message(self.request,
+                                 messages.ERROR,
+                                 MESSAGE_ACCOUNT_AUTH_ERROR)
+            return reverse('post_auth_new_customer')
+        except NotApprovedException:
+            logger.exception("Dropbox OAuth error")
+            messages.add_message(self.request,
+                                 messages.WARNING,
+                                 MESSAGE_APP_NOT_APPROVED)
+            return reverse('post_auth_new_customer')
+        except ProviderException:
+            logger.exception("Dropbox OAuth error")
+            messages.add_message(self.request,
+                                 messages.ERROR,
+                                 MESSAGE_ACCOUNT_AUTH_ERROR)
+            return reverse('post_auth_new_customer')
+
+        # Create DropboxUser
+        user_service = DropboxUserService()
+        dropbox_user, created = user_service.get_or_create(user_id,
+                                                           dropbox_token)
+
+        # Login the dropbox user and setup session token
+        dropbox_user.django_user.backend = \
+            'django.contrib.auth.backends.ModelBackend'
+        login(self.request, dropbox_user.django_user)
+
+        if created:
+            messages.add_message(self.request,
+                                 messages.SUCCESS,
+                                 MESSAGE_SUCCESSFUL_AUTHORISATION)
         else:
-            # Create DropboxUser
-            user_service = DropboxUserService()
-            dropbox_user, created = user_service.get_or_create(user_id,
-                                                               dropbox_token)
-
-            # Login the dropbox user and setup session token
-            dropbox_user.django_user.backend = \
-                'django.contrib.auth.backends.ModelBackend'
-            login(self.request, dropbox_user.django_user)
-
-            if created:
-                messages.add_message(self.request,
-                                     messages.SUCCESS,
-                                     MESSAGE_SUCCESSFUL_AUTHORISATION)
-            else:
-                return reverse('post_auth_existing_customer')
-
-        return reverse('post_auth_new_customer')
+            return reverse('post_auth_existing_customer')
 
 
 class DropboxAuthSuccessView(TemplateView):
