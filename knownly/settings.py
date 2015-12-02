@@ -98,6 +98,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=knownly',
+]
+
 try:
     from settings_local import *  # NOQA
 except:
