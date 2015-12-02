@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 
+import redis
 from django.conf import settings
 from django.utils import timezone
 from dropbox import Dropbox
@@ -70,3 +71,33 @@ def fetch_website_folder_cursor(dropbox_site_id):
         dropbox_site.save()
     except:
         logger.exception("Error fetching cursor for %s", dropbox_site.domain)
+
+
+@app.task
+def refresh_website_bearer_tokens_for_user(dropbox_user_id):
+    logger.debug("Refreshing bearer tokens")
+
+    try:
+        r_server = redis.Redis('localhost', port=6380)
+    except redis.ConnectionError:
+        logger.exception('Error connecting to redis-cache to flush bearer'
+                         'tokens for dropbox_user_id: ' % dropbox_user_id)
+        return
+
+    try:
+        dropbox_user = DropboxUser.objects.get(id=dropbox_user_id)
+    except DropboxUser.DoesNotExist:
+        logger.exception('Could not identify Dropbox User to flush bearer'
+                         'tokens for dropbox_user_id: ' % dropbox_user_id)
+        return
+
+    sites = DropboxSite.objects.filter(dropbox_user=dropbox_user_id)
+    for site in sites:
+        db_auth_header_redis_key = 'db-bearer--%s' % site.domain
+        if dropbox_user.dropbox_token:
+            db_api_auth_header = 'Bearer %s' % dropbox_user.dropbox_token
+            r_server.setex(name=db_auth_header_redis_key,
+                           time=86400,
+                           value=db_api_auth_header)
+        else:
+            r_server.delete(name=db_auth_header_redis_key)

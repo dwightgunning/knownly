@@ -6,7 +6,8 @@ from dropbox.exceptions import ApiError, DropboxException
 
 from knownly.console.exceptions import DropboxWebsiteError
 from knownly.console.models import DropboxSite, DropboxUser
-from knownly.console.tasks import fetch_website_folder_cursor
+from knownly.console.tasks import (fetch_website_folder_cursor,
+                                   refresh_website_bearer_tokens_for_user)
 from knownly.plans.services import QuotaService
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,12 @@ class DropboxUserService(object):
                 user_id=db_account_id,
                 defaults={'dropbox_token': dropbox_token})
 
+        if not created and dropbox_token != db_user.dropbox_token:
+            logger.info('Updating db token for db_user.id: %s' % db_user.id)
+            db_user.dropbox_token = dropbox_token
+            db_user.save()
+            refresh_website_bearer_tokens_for_user.delay(db_user.id)
+
         # Fetch the Dropbox user's account info
         try:
             db_client = Dropbox(db_user.dropbox_token)
@@ -31,7 +38,8 @@ class DropboxUserService(object):
             # Remove the dead user_access token
             db_user.access_token = ''
             db_user.save()
-            raise Exception("Dropbox authentication error")
+            refresh_website_bearer_tokens_for_user.delay(db_user.id)
+            raise Exception('Dropbox authentication error')
 
         if not db_user.django_user:
             db_user.django_user = self._create_user(db_account)
