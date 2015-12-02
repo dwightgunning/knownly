@@ -31,7 +31,7 @@ INSTALLED_APPS = (
     'knownly.vouchers',
 )
 
-INTERNAL_REDIRECT_DIRECTORY = 'dropbox_redirect'
+INTERNAL_REDIRECT_DIRECTORY = '/dropbox_redirect'  # Leading slash req'd
 
 MIDDLEWARE_CLASSES = (
     'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',

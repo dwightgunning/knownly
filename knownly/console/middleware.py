@@ -1,102 +1,75 @@
 import json
 import logging
-import urlparse
 
 import redis
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from dropbox import client
-
-from knownly.console.models import DropboxSite
 
 logger = logging.getLogger(__name__)
 
 
 class SubdomainToDropboxMiddleware(object):
-    """Middleware class that routes non "www" subdomain requests.
-    """
 
     def process_request(self, request):
-        """Returns an HTTP redirect response for requests including non-"www"
-        subdomains.
-        """
-        domain = request.META.get('HTTP_HOST') or \
-            request.META.get('SERVER_NAME')
-        domain_to_match = domain.split(':')[0].lower()
+        host = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME')
+        domain = host.split(':')[0].lower()
 
-        if domain_to_match in ('www.knownly.net', '127.0.0.1', 'localhost'):
-            logger.info('Serving: %s' % request.path)
+        if domain == 'www.knownly.net' or \
+                (domain != request.META.get('SERVER_NAME') and
+                    domain in ('127.0.0.1', 'localhost')):
+            logger.debug('Serving knownly site.')
             return None
         else:
-            logger.info('Redirecting to dropbox: %s via website: %s'
-                        % (request.path, domain_to_match))
+            logger.debug('Serving hosted site: %s/%s' % (domain, request.path))
+            return self._x_accel_redirect(request, domain)
 
-            resource_path = '/%s/%s' % \
-                (domain_to_match, request.path.lstrip("/"))
-            if resource_path == domain or resource_path.endswith('/'):
-                resource_path = '%sindex.html' % resource_path
+    def _x_accel_redirect(self, request, domain):
+        full_path = '/%s/%s' % (domain, request.path.lstrip("/"))
+        if full_path == domain or full_path.endswith('/'):
+            # default to serving index.html
+            full_path = '%sindex.html' % full_path
 
-            dropbox_resource = None
+        db_auth_header_redis_key = 'db-bearer--%s' % domain
+        db_api_auth_header = None
+        try:
+            r_server = redis.Redis('localhost', port=6380)
+            db_api_auth_header = r_server.get(db_auth_header_redis_key)
+        except redis.ConnectionError:
+            logger.error('Error connecting to redis-cache')
+
+        if not db_api_auth_header:
+            from knownly.console.models import DropboxSite
+
             try:
-                r_server = redis.Redis('localhost', port=6380)
-                dropbox_resource = r_server.get(
-                    'knownly-django-%s' % resource_path)
+                website = DropboxSite.objects.get(domain__iexact=domain)
+            except DropboxSite.DoesNotExist:
+                # TODO: Serve a custom "this domain is linked with Knownly
+                # but is no longer available"
+                return HttpResponseRedirect('https://www.knownly.net')
+
+        # Generate DB headers
+        db_api_auth_header = 'Bearer %s' % website.dropbox_user.dropbox_token
+        db_api_arg_header = json.dumps({'path': full_path})
+
+        # Cache the auth header for the domain
+        if r_server:
+            try:
+                r_server.setex(name=db_auth_header_redis_key,
+                               time=86400,
+                               value=db_api_auth_header)
             except redis.ConnectionError:
                 logger.error('Error connecting to redis-cache')
 
-            if dropbox_resource:
-                # logger.debug("Redis dropbox resource cache HIT!!!")
-                resource = json.loads(dropbox_resource)
-                dropbox_authentication = resource[0]
-                dropbox_redirect_path = resource[1]
-            else:
-                # logger.debug("Redis dropbox resource cache MISS!!!")
-
-                # Find the dropbox user that owns the domain
-                try:
-                    website = DropboxSite.objects.get(
-                        domain__iexact=domain_to_match)
-                except DropboxSite.DoesNotExist:
-                    return HttpResponseRedirect('https://www.knownly.net')
-
-                # logger.debug('website recognised as from user: %s'
-                #     % website.dropbox_user)
-
-                dropbox_client = client.DropboxClient(
-                    website.dropbox_user.dropbox_token)
-                dropbox_path = "/files/%s%s" \
-                    % (dropbox_client.session.root,
-                       client.format_path(resource_path))
-                dropbox_url, dropbox_params, dropbox_headers = \
-                    dropbox_client.request(dropbox_path,
-                                           method='GET',
-                                           content_server=True)
-
-                # logger.debug('Dropbox url to file: %s' % dropbox_url)
-                split_url = urlparse.urlsplit(dropbox_url)
-                dropbox_redirect_path = split_url.path
-
-                dropbox_authentication = dropbox_headers['Authorization']
-                r_server.setex(name='knownly-django-%s' % resource_path,
-                               time=60,
-                               value=json.dumps((dropbox_authentication,
-                                                 dropbox_redirect_path)))
-
-            # logger.debug('redirect full path: %s' % dropbox_redirect_path)
-            response = HttpResponse()
-            response['Authorization'] = dropbox_authentication
-            response['Accept-Language'] = \
-                request.META.get('HTTP_ACCEPT_LANGUAGE')
-            response['X-Forwarded-For'] = \
-                request.META.get('HTTP_X_FORWARDED_FOR')
-            response['User-Agent'] = request.META.get('HTTP_USER_AGENT')
-            response['Accept'] = request.META.get('HTTP_ACCEPT')
-            response['Accept-Encoding'] = \
-                request.META.get('HTTP_ACCEPT_ENCODING')
-            response['X-Accel-Redirect'] = '/%s%s' \
-                % (settings.INTERNAL_REDIRECT_DIRECTORY, dropbox_redirect_path)
-
-            # logger.debug('X-Accel-Redirect: %s' \
-            #    % response['X-Accel-Redirect'])
-
-            return response
+        r = HttpResponse()
+        # Nginx redirect headers
+        r['X-Forwarded-For'] = request.META.get('HTTP_X_FORWARDED_FOR')
+        r['X-Accel-Redirect'] = settings.INTERNAL_REDIRECT_DIRECTORY
+        # Dropbox API 'download' headers
+        r['Authorization'] = db_api_auth_header
+        r['Dropbox-API-Arg'] = db_api_arg_header
+        # Other useful headers
+        r['Accept-Language'] = request.META.get('HTTP_ACCEPT_LANGUAGE')
+        r['User-Agent'] = request.META.get('HTTP_USER_AGENT')
+        r['Accept'] = request.META.get('HTTP_ACCEPT')
+        r['Accept-Encoding'] = request.META.get('HTTP_ACCEPT_ENCODING')
+        return r
