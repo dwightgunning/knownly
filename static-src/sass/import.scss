@@ -24,9 +24,10 @@ $grayscale-headline-font-family: "Montserrat","Helvetica Neue",Helvetica,Arial,s
 
 @import '_base';
 @import '_simple';
+@import 'pages/_account';
+@import 'pages/_console';
+@import 'pages/_domains';
 @import 'pages/_landing_page';
 @import 'pages/_plans';
-@import 'pages/_console';
 @import 'pages/_support';
-@import 'pages/_domains';
-@import 'pages/_account';
+@import 'pages/_website_details';

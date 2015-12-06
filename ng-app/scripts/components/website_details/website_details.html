@@ -1,0 +1,23 @@
+<div id="website-details">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>{{ viewModel.domain }}</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">Options</div>
+          <div class="list-group">
+            <a class="list-group-item" ui-sref="website.directory_listings" ui-sref-active="active">Directory listings</a>
+            <a class="list-group-item">MIME Types</a>
+            <a class="list-group-item">URL Redirects</a>
+            <a class="list-group-item">Password protection</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9" ui-view="website-details-section"></div>
+    </div>
+  </div>
+</div>

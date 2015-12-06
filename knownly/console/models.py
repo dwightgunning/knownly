@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from jsonfield import JSONField
 
 
 class DropboxUser(models.Model):
@@ -21,6 +22,7 @@ class DropboxSite(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     date_activated = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(blank=True, null=True)
+    config = JSONField(default={})
     cursor = models.CharField(max_length=64, blank=True)
 
     def __unicode__(self):
@@ -33,4 +35,5 @@ class ArchivedDropboxSite(models.Model):
     date_created = models.DateTimeField()
     date_activated = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(blank=True, null=True)
+    config = JSONField(default={})
     date_archived = models.DateTimeField(default=timezone.now)

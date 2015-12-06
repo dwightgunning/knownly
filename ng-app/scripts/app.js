@@ -22,7 +22,9 @@
     'knownlyApp.controllers.domains',
     'knownlyApp.controllers.deletedropboxsitemodal',
     'knownlyApp.controllers.dropboxsitelist',
-    'knownlyApp.controllers.navbar'
+    'knownlyApp.controllers.navbar',
+    'knownlyApp.controllers.website_details',
+    'knownlyApp.controllers.website_details.directory_listings',
   ]);
 
   knownlyApp.constant('_', window._);
@@ -103,6 +105,27 @@
           'main': {
             templateUrl: 'components/console/console.html',
             controller: 'ConsoleController',
+            controllerAs: 'viewModel',
+          }
+        }
+      })
+      .state('website', {
+        url: '/websites/:domain/',
+        abstract: true,
+        views: {
+          'main': {
+            templateUrl: 'components/website_details/website_details.html',
+            controller: 'WebsiteDetailsController',
+            controllerAs: 'viewModel',
+          }
+        }
+      })
+      .state('website.directory_listings', {
+        url: 'directory-listings/',
+        views: {
+          'website-details-section': {
+            templateUrl: 'components/website_details/directory_listings/directory_listings.html',
+            controller: 'WebsiteDirectoryListingsController',
             controllerAs: 'viewModel',
           }
         }
