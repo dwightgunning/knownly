@@ -31,20 +31,21 @@ logger = logging.getLogger(__name__)
 
 class IndexView(TemplateView):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             try:
-                db_user = DropboxUser.objects.get(django_user=request.user)
+                db_user = DropboxUser.objects.get(
+                    django_user=self.request.user)
                 DropboxUserService().get_or_create(db_user.user_id,
                                                    db_user.dropbox_token)
-                return self._serve_app(request)
+                return self._serve_app(self.request)
             except:
-                logout(self.request)
                 message = 'Account authentication error.'
-                messages.add_message(request, messages.ERROR, message)
-                logger.exception(message)
+                messages.add_message(self.request, messages.ERROR, message)
+                logger.exception('%s: %s' % (message, self.request.user))
+                logout(self.request)
 
-        return self._serve_public_index(request)
+        return self._serve_public_index(self.request)
 
     def _serve_public_index(self, request, *args, **kwargs):
         self.template_name = 'landingpages/public.html'

@@ -63,7 +63,7 @@ class LandingPageTests(LiveServerTestCase):
 @override_settings(SESSION_COOKIE_SECURE=False)
 @override_settings(TEST=True)
 class FreePlanSelectionTests(LiveServerTestCase):
-    fixtures = ['knownly/fixtures/users.json']
+    fixtures = ['knownly/console/fixtures/test_fixtures.json']
 
     @classmethod
     def setUpClass(cls):
@@ -90,12 +90,12 @@ class FreePlanSelectionTests(LiveServerTestCase):
 
     def test_free_plan(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
-        self.selenium.implicitly_wait(5)
+        self.selenium.implicitly_wait(15)
         # Expect to see the primary cta
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
-        self.selenium.implicitly_wait(5)
+        self.selenium.implicitly_wait(15)
         self.selenium.find_element_by_id('console')
 
         CustomerSubscription.objects.get(
@@ -106,7 +106,7 @@ class FreePlanSelectionTests(LiveServerTestCase):
 @override_settings(SESSION_COOKIE_SECURE=False)
 @override_settings(TEST=True)
 class LitePlanSelectionTests(LiveServerTestCase):
-    fixtures = ['knownly/fixtures/users.json']
+    fixtures = ['knownly/console/fixtures/test_fixtures.json']
 
     @classmethod
     def setUpClass(cls):
@@ -133,11 +133,11 @@ class LitePlanSelectionTests(LiveServerTestCase):
 
     def test_lite_plan(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/signup/'))
-        self.selenium.implicitly_wait(5)
+        self.selenium.implicitly_wait(15)
         self.selenium.find_element_by_xpath(
             "//input[@type='radio' and @value='lite']").click()
         self.selenium.find_element_by_id("lite-plan-btn").click()
-        self.selenium.implicitly_wait(5)
+        self.selenium.implicitly_wait(15)
 
         # Find and populate the billing details form
         payment_details = self.selenium.find_element_by_id('payment-details')
@@ -158,11 +158,11 @@ class LitePlanSelectionTests(LiveServerTestCase):
             .select_by_value('NL')
 
         # Expect to see the primary cta
-        self.selenium.implicitly_wait(5)
+        self.selenium.implicitly_wait(15)
         self.selenium.find_element_by_id('plan-form-submit').click()
 
         # Expect the following view to be the Console page
-        self.selenium.implicitly_wait(8)
+        self.selenium.implicitly_wait(15)
         self.selenium.find_element_by_id('console')
 
         CustomerSubscription.objects.get(

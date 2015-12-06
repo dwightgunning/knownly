@@ -110,6 +110,7 @@ class DropboxAuthCompleteView(RedirectView):
             messages.add_message(self.request,
                                  messages.SUCCESS,
                                  MESSAGE_SUCCESSFUL_AUTHORISATION)
+            return reverse('post_auth_new_customer')
         else:
             return reverse('post_auth_existing_customer')
 
