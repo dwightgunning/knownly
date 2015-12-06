@@ -19,7 +19,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
-    'django_nose',
     'django_countries',
     'rest_framework',
     'knownly.api',
@@ -29,6 +28,7 @@ INSTALLED_APPS = (
     'knownly.people',
     'knownly.plans',
     'knownly.vouchers',
+    'django_nose',  # Intentionally last
 )
 
 INTERNAL_REDIRECT_DIRECTORY = '/dropbox_redirect'  # Leading slash req'd
@@ -97,11 +97,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=knownly',
-]
 
 try:
     from settings_local import *  # NOQA

@@ -1,0 +1,7 @@
+[run]
+source = knownly
+branch = True
+omit =
+   knownly/**/migrations/*
+   knownly/**/tests/*
+   knownly/**/test.py
