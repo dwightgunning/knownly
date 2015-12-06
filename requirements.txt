@@ -5,7 +5,7 @@ anyjson==0.3.3
 argparse==1.4.0
 billiard==3.3.0.20
 celery==3.1.18
-coverage==4.0.2
+coverage==4.0.3
 dateutils==0.6.6
 decorator==4.0.2
 dj-database-url==0.3.0
