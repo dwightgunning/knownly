@@ -1,6 +1,34 @@
 [
 {
   "fields": {
+    "username": "admin@knownly.net",
+    "first_name": "Knownly",
+    "last_name": "Admin",
+    "is_active": true,
+    "is_superuser": true,
+    "is_staff": true,
+    "last_login": "2015-06-29T17:45:46.003Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$24000$tz8AElVzhCYN$9CFRJxlAiZ8kgVKZYUGYaNXRUrGLToR8IwjNGqm03Ds=",
+    "email": "admin@knownly.net",
+    "date_joined": "2015-06-29T17:45:45.847Z"
+  },
+  "model": "auth.user",
+  "pk": 222
+},
+{
+    "fields": {
+        "dropbox_token": "HQ0M_OPGbZAAAAAAAAAAxzd9VkjH3lJHv2RAVcsCAKBaMf8Bra8-aFRDZBtzmTSb",
+        "user_id": "436389723499",
+        "django_user": 222,
+        "account_created": "2015-06-29T19:01:16.874Z"
+    },
+    "model": "console.dropboxuser",
+    "pk": 111
+},
+{
+  "fields": {
     "username": "test@knownly.net",
     "first_name": "Knownly",
     "last_name": "Test",
@@ -170,9 +198,48 @@
         "dropbox_user": 48,
         "date_created": "2015-07-07T04:32:41.794Z",
         "domain": "customsite3.com",
-        "date_activated": null
+        "date_activated": "2015-06-29T17:45:46.003Z"
     },
     "model": "console.dropboxsite",
     "pk": 10
+},
+{
+    "model": "console.archiveddropboxsite",
+    "pk": 133,
+    "fields": {
+        "dropbox_user": 11,
+        "domain": "test3.knownly.net",
+        "date_created": "2015-11-27T19:54:13.540Z",
+        "date_activated": null,
+        "date_modified": null,
+        "config": "{}",
+        "date_archived": "2015-12-02T19:50:46.100Z"
+    }
+},
+{
+    "model": "console.archiveddropboxsite",
+    "pk": 134,
+    "fields": {
+        "dropbox_user": 11,
+        "domain": "test1.knownly.net",
+        "date_created": "2015-12-02T19:51:05.567Z",
+        "date_activated": null,
+        "date_modified": null,
+        "config": "{}",
+        "date_archived": "2015-12-02T19:52:18.087Z"
+    }
+},
+{
+    "model": "console.archiveddropboxsite",
+    "pk": 135,
+    "fields": {
+        "dropbox_user": 11,
+        "domain": "test1.knownly.net",
+        "date_created": "2015-12-02T19:52:23.029Z",
+        "date_activated": null,
+        "date_modified": null,
+        "config": "{}",
+        "date_archived": "2015-12-02T19:53:13.890Z"
+    }
 }
 ]
