@@ -114,6 +114,8 @@ except:
     STRIPE_PUBLISHABLE_KEY = os.environ['STRIPE_PUBLISHABLE_KEY']
     MASHAPE_API_KEY = os.environ['MASHAPE_API_KEY']
     GA_TRACKING_ID = os.environ['GA_TRACKING_ID']
+    CELERY_ALWAYS_EAGER = os.environ['CELERY_ALWAYS_EAGER']
+    EMAIL_BACKEND = os.environ['EMAIL_BACKEND']
 try:
     from settings_logging import *  # NOQA
 except:
