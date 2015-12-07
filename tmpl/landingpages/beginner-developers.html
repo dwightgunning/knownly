@@ -1,0 +1,23 @@
+{% extends 'landingpages/base.html' %}
+{% load static %}
+
+{% block tagline %}<strong>Static websites</strong> straight from your <strong>Dropbox</strong>{% endblock %}
+
+{% block how-it-works-cta %}The simplest way to start building HTML websites.{% endblock %}
+
+{% block how-it-works-content %}
+  <ul>
+    <li>Host multiple websites from one Dropbox account</li>
+    <li>Websites at Knownly sub-domains are free forever</li>
+    <li>Up to 3 websites on custom domains for $4.99 / month</li>
+  </ul>
+{% endblock %}
+
+{% block primary_cta_btn %}Start learning with Knownly{% endblock %}
+
+{% block mixpanel_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    mixpanel.track("Page View", {'template': 'landing_pages/beginner-developers.html'});
+  </script>
+{% endblock %}

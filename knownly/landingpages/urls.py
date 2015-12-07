@@ -11,6 +11,10 @@ urlpatterns = \
                  TemplateView.as_view(
                      template_name="landingpages/developers.html"),
                  name='lp-developers'),
+             url(r'^welcome/beginner-developers/$',
+                 TemplateView.as_view(
+                     template_name="landingpages/beginner-developers.html"),
+                 name='lp-beginner-developers'),
              url(r'^welcome/designers/$',
                  TemplateView.as_view(
                      template_name="landingpages/designers.html"),
