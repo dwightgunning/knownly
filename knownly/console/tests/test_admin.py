@@ -153,16 +153,11 @@ class ArchivedDropboxSiteAdminSeleniumTests(LiveServerTestCase):
         self.selenium.get('%s%s' % (self.live_server_url,
                                     '/admin/console/archiveddropboxsite/'))
 
-        try:
-            for col_name in ('domain', 'dropbox_user',
-                             'date_created', 'date_archived'):
-                self.selenium.find_element_by_xpath(
-                    '//table[@id=\'result_list\']/thead/tr/'
-                    'th[contains(@class, \'column-%s\')]' % col_name)
-        except Exception as e:
-            self.selenium.get_screenshot_as_file(
-                'error_test_archived_dropbox_site_list_view.png')
-            raise e
+        for col_name in ('domain', 'dropbox_user',
+                         'date_created', 'date_archived'):
+            self.selenium.find_element_by_xpath(
+                '//table[@id=\'result_list\']/thead/tr/'
+                'th[contains(@class, \'column-%s\')]' % col_name)
 
         with self.assertRaises(NoSuchElementException):
             self.selenium.find_element_by_class_name('addlink')
