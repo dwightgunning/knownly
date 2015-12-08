@@ -1,19 +1,23 @@
 from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.views.static import serve as serve_static
 
+from knownly.admin import DjangoUserAdmin
 from knownly.billing.views import stripe_webhook
 from knownly.console.views import dropbox_webhook
 from knownly.sitemaps import SupportPageSitemap
 
-admin.autodiscover()
-
 sitemaps = {
     'static': SupportPageSitemap,
 }
+
+# An unconventional but simple way to register site-wide admin views
+admin.site.unregister(User)
+admin.site.register(User, DjangoUserAdmin)
 
 urlpatterns = \
     patterns('',
