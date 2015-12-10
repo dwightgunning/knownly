@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from dropbox import Dropbox
 from dropbox.exceptions import ApiError, DropboxException
 
-from knownly.console.exceptions import DropboxWebsiteError
+from knownly.console.exceptions import DropboxAuthError, DropboxWebsiteError
 from knownly.console.models import DropboxSite, DropboxUser
 from knownly.console.tasks import (fetch_website_folder_cursor,
                                    refresh_website_bearer_tokens_for_user)
@@ -39,32 +39,31 @@ class DropboxUserService(object):
             db_user.access_token = ''
             db_user.save()
             refresh_website_bearer_tokens_for_user.delay(db_user.id)
-            raise Exception('Dropbox authentication error')
+            raise DropboxAuthError('Dropbox authentication error')
 
         if not db_user.django_user:
-            db_user.django_user = self._create_user(db_account)
-            db_user.save()
+            db_user.django_user = self._create_user(db_user, db_account)
 
         return db_user, created
 
-    def _create_user(self, db_account):
+    def _create_user(self, db_user, db_account):
         random_password = User.objects.make_random_password()
 
         try:
-            user = User.objects.get(username=db_account.email)
-            user.username = db_account.id
+            user = User.objects.get(email=db_account.email)
+            user.username = 'db:%s' % db_user.pk
             user.first_name = db_account.name.given_name
             user.last_name = db_account.name.surname
             user.password = random_password
-            user.save()
         except User.DoesNotExist:
             user = User.objects.create_user(
-                username=db_account.account_id,
+                username='db:%s' % db_user.pk,
                 email=db_account.email,
                 first_name=db_account.name.given_name,
                 last_name=db_account.name.surname,
                 password=random_password)
 
+        user.save()
         return user
 
 

@@ -25,7 +25,7 @@ class DjangoUserAdminUnitTests(TestCase):
 
     def test_list_view_fields(self):
         self.assertEqual(self.admin.list_display,
-                         ('username', 'email', 'first_name', 'last_name',
+                         ('email', 'first_name', 'last_name',
                           'is_staff', 'date_joined'))
 
 
@@ -47,7 +47,7 @@ class DjangoUserAdminSeleniumTests(LiveServerTestCase):
     def setUp(self):
         client = Client()
         client.get(self.live_server_url)
-        self.assertTrue(client.login(username='admin@knownly.net',
+        self.assertTrue(client.login(username='111',
                                      password='test'))
         cookie = client.cookies[settings.SESSION_COOKIE_NAME]
         self.selenium.get(self.live_server_url + '/admin/')
@@ -60,7 +60,7 @@ class DjangoUserAdminSeleniumTests(LiveServerTestCase):
     def test_auth_user_list_view(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/admin/auth/user/'))
 
-        for col_name in ('username', 'email', 'first_name', 'last_name',
+        for col_name in ('email', 'first_name', 'last_name',
                          'is_staff', 'date_joined'):
             self.selenium.find_element_by_xpath(
                 '//table[@id=\'result_list\']/thead/tr/'

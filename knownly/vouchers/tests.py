@@ -56,10 +56,10 @@ class VoucherRedemptionFormTest(TestCase):
             end_date=timezone.now() - timedelta(1))
 
         user_model = get_user_model()
-        self.user1 = user_model.objects.create(username='user1',
+        self.user1 = user_model.objects.create(username='1',
                                                email='email1@email.com',
                                                password='password')
-        self.user2 = user_model.objects.create(username='user2',
+        self.user2 = user_model.objects.create(username='2',
                                                email='email2@email.com',
                                                password='password')
 

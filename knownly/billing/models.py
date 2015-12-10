@@ -2,11 +2,11 @@
 
 from decimal import Decimal
 
-from django.core.validators import *
 from django.conf import settings
+from django.core.validators import (MaxValueValidator, MinLengthValidator,
+                                    MinValueValidator)
 from django.db import models
 from django.utils import timezone
-
 from django_countries.fields import CountryField
 
 EUR = 'eur'
@@ -36,16 +36,17 @@ class CustomerBillingDetails(models.Model):
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     cc_bin = models.CharField(
         max_length=6,
-        validators=[MinLengthValidator(6),])
+        validators=[MinLengthValidator(6)])
     vat_country_checked_at = models.DateTimeField(blank=True, null=True)
     vat_country = CountryField(blank=True)
 
     class Meta:
         get_latest_by = 'created_at'
 
+
 class CustomerInvoice(models.Model):
-    # FK to immutable Billing Details ensures we retain customer billing details
-    # at the time of invoicing.
+    # FK to immutable Billing Details ensures we retain customer billing
+    # details at the time of invoicing.
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     billing_details = models.ForeignKey(CustomerBillingDetails)
     created_at = models.DateTimeField(default=timezone.now)
@@ -66,11 +67,11 @@ class InvoiceLineItem(models.Model):
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    amount_local =  models.DecimalField(
+    amount_local = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    total_amount =  models.DecimalField(
+    total_amount = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
@@ -78,11 +79,11 @@ class InvoiceLineItem(models.Model):
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    vat_rate =  models.DecimalField(
+    vat_rate = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.00')), 
-                    MaxValueValidator(Decimal('100.00')),])
+        validators=[MinValueValidator(Decimal('0.00')),
+                    MaxValueValidator(Decimal('100.00'))])
     vat_amount = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -108,7 +109,7 @@ class StripeCustomer(models.Model):
         get_latest_by = 'created_at'
 
     def __unicode__(self):
-        return self.user.username
+        return self.user.email
 
 
 class StripeEvent(models.Model):

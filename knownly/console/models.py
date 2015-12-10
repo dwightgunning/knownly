@@ -13,7 +13,10 @@ class DropboxUser(models.Model):
     date_activated = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
-        return u'%s' % self.user_id
+        if self.django_user:
+            return u'%s' % self.django_user
+        else:
+            return u'[No linked Django user]'
 
 
 class DropboxSite(models.Model):

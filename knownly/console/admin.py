@@ -7,10 +7,13 @@ from knownly.console.models import (ArchivedDropboxSite, DropboxSite,
 
 
 class DropboxUserAdmin(ModelAdmin):
-    list_display = ('user_id', 'get_django_user_email', 'get_date_activated', )
+    list_display = ('get_django_user_email', 'user_id', 'get_date_activated', )
 
     def get_django_user_email(self, obj):
-        return obj.django_user.email or ''
+        if obj.django_user:
+            return obj.django_user.email or ''
+        else:
+            return '[No linked Django user]'
     get_django_user_email.short_description = 'Django user'
 
     def get_date_activated(self, obj):

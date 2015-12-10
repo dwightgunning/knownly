@@ -28,7 +28,7 @@ class FreePlanSelectionTests(LiveServerTestCase):
     def setUp(self):
         client = Client()
         client.get(self.live_server_url)
-        self.assertTrue(client.login(username='test@knownly.net',
+        self.assertTrue(client.login(username='11',
                                      password='test'))
         cookie = client.cookies[settings.SESSION_COOKIE_NAME]
         self.selenium.get(self.live_server_url + '/admin/')
@@ -49,7 +49,7 @@ class FreePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('console')
 
         CustomerSubscription.objects.get(
-            user=User.objects.get(username='test@knownly.net'),
+            user=User.objects.get(username='11'),
             current_plan=plans.FREE)
 
 
@@ -71,7 +71,7 @@ class LitePlanSelectionTests(LiveServerTestCase):
     def setUp(self):
         client = Client()
         client.get(self.live_server_url)
-        self.assertTrue(client.login(username='test@knownly.net',
+        self.assertTrue(client.login(username='11',
                                      password='test'))
         cookie = client.cookies[settings.SESSION_COOKIE_NAME]
         self.selenium.get(self.live_server_url + '/admin/')
@@ -116,5 +116,5 @@ class LitePlanSelectionTests(LiveServerTestCase):
         self.selenium.find_element_by_id('console')
 
         CustomerSubscription.objects.get(
-            user=User.objects.get(username='test@knownly.net'),
+            user=User.objects.get(username='11'),
             current_plan=plans.LITE)

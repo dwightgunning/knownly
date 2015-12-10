@@ -2,7 +2,7 @@ from django.contrib.auth.admin import UserAdmin
 
 
 class DjangoUserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name',
+    list_display = ('email', 'first_name', 'last_name',
                     'is_staff', 'date_joined')
 
     def get_actions(self, request):

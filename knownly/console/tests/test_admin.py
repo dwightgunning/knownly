@@ -139,7 +139,7 @@ class ArchivedDropboxSiteAdminSeleniumTests(LiveServerTestCase):
     def setUp(self):
         client = Client()
         client.get(self.live_server_url)
-        self.assertTrue(client.login(username='admin@knownly.net',
+        self.assertTrue(client.login(username='111',
                                      password='test'))
         cookie = client.cookies[settings.SESSION_COOKIE_NAME]
         self.selenium.get(self.live_server_url + '/admin/')

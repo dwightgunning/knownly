@@ -1,7 +1,7 @@
 [
 {
   "fields": {
-    "username": "admin@knownly.net",
+    "username": "111",
     "first_name": "Knownly",
     "last_name": "Admin",
     "is_active": true,
@@ -29,7 +29,7 @@
 },
 {
   "fields": {
-    "username": "test@knownly.net",
+    "username": "11",
     "first_name": "Knownly",
     "last_name": "Test",
     "is_active": true,
@@ -57,7 +57,7 @@
 },
 {
   "fields": {
-    "username": "activated_website_user@test.com",
+    "username": "39",
     "first_name": "Knownly",
     "last_name": "Test",
     "is_active": true,
@@ -86,7 +86,7 @@
 },
 {
   "fields": {
-    "username": "unactivated_website_user@test.com",
+    "username": "48",
     "first_name": "Knownly",
     "last_name": "Test",
     "is_active": true,
