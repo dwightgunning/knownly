@@ -1,13 +1,9 @@
-import json
 import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import FormView
-
 from ipware.ip import get_ip
 
 from knownly import plans
@@ -24,7 +20,8 @@ class PlansView(FormView):
     template_name = 'billing/plans.html'
     mode = 'plans'
 
-    PAYMENT_SUCCESS_MESSAGE = 'Thank you for your providing your credit card details. You\'ll not be charged until the end of the trial period.'
+    FREE_PLAN_SUCCSS_MESSAGE = 'Thanks for joining Knownly!'
+    PAYMENT_SUCCESS_MESSAGE = 'Thanks for joining Knownly!'
 
     def get_success_url(self):
         return reverse('console')
@@ -41,20 +38,31 @@ class PlansView(FormView):
         if selected_plan in [plans.LITE, plans.PREMIUM]:
             billing_details = form.cleaned_data
             billing_details['ip_address'] = get_ip(self.request)
-            
+
             # Update the customer's billing details
             try:
-                cust_billing_service = CustomerBillingService(self.request.user)
+                cust_billing_service = \
+                    CustomerBillingService(self.request.user)
                 cust_billing_service.update_billing_details(billing_details)
-                cust_billing_service.update_subscription( \
+                cust_billing_service.update_subscription(
                     selected_plan, billing_details['period'])
-            except PaymentProviderError, ppe:
-                logger.exception('Payment Provider error encountered while creating customer: %s', self.request.user)
-                form.add_error('__all__', ValidationError("There was a problem validating your credit card."))
+            except PaymentProviderError:
+                logger.exception('Payment Provider error encountered '
+                                 'while creating customer: %s',
+                                 self.request.user)
+                form.add_error('__all__',
+                               ValidationError('There was a problem '
+                                               'problem validating your '
+                                               'credit card.'))
                 return super(PlansView, self).form_invalid(form)
-            except Exception, e:
-                logger.exception('Payment Provider error encountered while creating customer: %s', self.request.user)
-                form.add_error('__all__', ValidationError("There was a problem updating your subscription. We will look into it and be in contact with you."))
+            except Exception:
+                logger.exception('Payment Provider error encountered while '
+                                 'creating customer: %s', self.request.user)
+                form.add_error('__all__',
+                               ValidationError('There was a problem updating '
+                                               'your subscription. We will '
+                                               'look into it and be in '
+                                               'contact with you.'))
                 return super(PlansView, self).form_invalid(form)
 
         cust_subs_service = CustomerSubscriptionService(self.request.user)
@@ -63,27 +71,45 @@ class PlansView(FormView):
 
             if subscription.current_plan != plans.FREE \
                     and selected_plan != subscription.current_plan:
-                logger.exception('We haven\'t built support for changing a paid plan yet. Attempted by %s', self.request.user)
-                form.add_error('__all__', ValidationError("Please contact us (info@knownly.net) to arrange a change in your plan."))
+                logger.exception('We haven\'t built support for changing a '
+                                 'paid plan yet. Attempted by %s',
+                                 self.request.user)
+                form.add_error('__all__',
+                               ValidationError('Please contact us '
+                                               '(info@knownly.net) to arrange '
+                                               'a change in your plan.'))
                 return super(PlansView, self).form_invalid(form)
 
         try:
-            cust_subs_service.create_or_update_subscription( \
+            cust_subs_service.create_or_update_subscription(
                 plan=selected_plan, reason='Customer selected plan')
-            messages.add_message(self.request, messages.SUCCESS, self.PAYMENT_SUCCESS_MESSAGE)
-        except PaymentProviderError, ppe:
-            logger.exception('Payment Provider error encountered while updating subscription for customer: %s', self.request.user)
-            form.add_error('__all__', ValidationError("There was a problem updating your subscription. We will look into it and be in contact with you."))
+            if selected_plan == plans.FREE:
+                messages.add_message(self.request, messages.SUCCESS,
+                                     self.FREE_PLAN_SUCCSS_MESSAGE)
+            else:
+                messages.add_message(self.request, messages.SUCCESS,
+                                     self.PAYMENT_SUCCESS_MESSAGE)
+        except PaymentProviderError:
+            logger.exception('Payment Provider error encountered while '
+                             'updating subscription for customer: %s',
+                             self.request.user)
+            form.add_error('__all__',
+                           ValidationError('There was a problem updating your '
+                                           'subscription. We will look into '
+                                           'it and be in contact with you.'))
             return super(PlansView, self).form_invalid(form)
-        except Exception, e:
-            logger.exception('Payment Provider error encountered while updating subscription for customer: %s', request.user)
-            form.add_error('__all__', ValidationError("There was a problem updating your subscription. We will look into it and be in contact with you."))
+        except Exception:
+            logger.exception('Payment Provider error encountered while '
+                             'updating subscription for customer: %s',
+                             self.request.user)
+            form.add_error('__all__',
+                           ValidationError('There was a problem updating your '
+                                           'subscription. We will look into '
+                                           'it and be in contact with you.'))
             return super(PlansView, self).form_invalid(form)
 
-        
         return super(PlansView, self).form_valid(form)
 
     def form_invalid(self, form):
         logger.debug(form.errors)
         return super(PlansView, self).form_invalid(form)
-

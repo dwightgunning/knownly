@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from dropbox import Dropbox
 from dropbox.exceptions import ApiError, DropboxException
 
@@ -17,54 +18,49 @@ User = get_user_model()
 
 class DropboxUserService(object):
 
-    def get_or_create(self, db_account_id, dropbox_token):
+    def __init__(self, db_token, dropbox=None):
+        self.db_token = db_token
+
+        if dropbox:
+            self.dropbox = dropbox
+        else:
+            self.dropbox = Dropbox(db_token)
+
+    @transaction.atomic
+    def get_or_create(self, db_account_id):
         db_user, created = \
             DropboxUser.objects.get_or_create(
                 user_id=db_account_id,
-                defaults={'dropbox_token': dropbox_token})
+                defaults={'dropbox_token': self.db_token})
 
-        if not created and dropbox_token != db_user.dropbox_token:
-            logger.info('Updating db token for db_user.id: %s' % db_user.id)
-            db_user.dropbox_token = dropbox_token
-            db_user.save()
-            refresh_website_bearer_tokens_for_user.delay(db_user.id)
+        if created:
+            # Fetch the Dropbox user's account info
+            try:
+                db_account = self.dropbox.users_get_current_account()
+            except ApiError:
+                logger.exception('Dropbox API Error')
+                refresh_website_bearer_tokens_for_user.delay(db_user.id)
+                raise DropboxAuthError('Dropbox authentication error')
 
-        # Fetch the Dropbox user's account info
-        try:
-            db_client = Dropbox(db_user.dropbox_token)
-            db_account = db_client.users_get_current_account()
-        except ApiError:
-            logger.exception('Dropbox API Error')
-            # Remove the dead user_access token
-            db_user.access_token = ''
-            db_user.save()
-            refresh_website_bearer_tokens_for_user.delay(db_user.id)
-            raise DropboxAuthError('Dropbox authentication error')
+            db_user.django_user = \
+                User.objects.create_user(
+                    username='db:%s' % db_user.pk,
+                    email=db_account.email,
+                    first_name=db_account.name.given_name,
+                    last_name=db_account.name.surname,
+                    password=None)
+            db_user.save(update_fields=['django_user'])
 
-        if not db_user.django_user:
-            db_user.django_user = self._create_user(db_user, db_account)
+        elif db_user.dropbox_token != self.db_token:
+            db_user.dropbox_token = self.db_token
+            db_user.save(update_fields=['dropbox_token'])
+            try:
+                refresh_website_bearer_tokens_for_user.delay(db_user.id)
+            except:
+                logger.exception("Could not clear bearer token for: %s"
+                                 % db_user.user_id)
 
         return db_user, created
-
-    def _create_user(self, db_user, db_account):
-        random_password = User.objects.make_random_password()
-
-        try:
-            user = User.objects.get(email=db_account.email)
-            user.username = 'db:%s' % db_user.pk
-            user.first_name = db_account.name.given_name
-            user.last_name = db_account.name.surname
-            user.password = random_password
-        except User.DoesNotExist:
-            user = User.objects.create_user(
-                username='db:%s' % db_user.pk,
-                email=db_account.email,
-                first_name=db_account.name.given_name,
-                last_name=db_account.name.surname,
-                password=random_password)
-
-        user.save()
-        return user
 
 
 class DropboxSiteService(object):

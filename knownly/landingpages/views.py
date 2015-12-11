@@ -58,7 +58,7 @@ class DropboxAuthCompleteView(RedirectView):
 
         try:
             # Complete the Dropbox OAuth2 Flow
-            dropbox_token, user_id, url_state = \
+            db_token, db_user_id, url_state = \
                 DropboxOAuth2Flow(
                     settings.DROPBOX_APP_KEY,
                     settings.DROPBOX_APP_SECRET,
@@ -96,10 +96,8 @@ class DropboxAuthCompleteView(RedirectView):
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
             return reverse('post_auth_new_customer')
 
-        # Create DropboxUser
-        user_service = DropboxUserService()
-        dropbox_user, created = user_service.get_or_create(user_id,
-                                                           dropbox_token)
+        dropbox_user, created = \
+            DropboxUserService(db_token).get_or_create(db_user_id)
 
         # Login the dropbox user and setup session token
         dropbox_user.django_user.backend = \
