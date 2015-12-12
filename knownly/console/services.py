@@ -49,6 +49,7 @@ class DropboxUserService(object):
                     first_name=db_account.name.given_name,
                     last_name=db_account.name.surname,
                     password=None)
+            db_user.account_id = db_account.account_id
             db_user.save(update_fields=['django_user'])
 
         elif db_user.dropbox_token != self.db_token:
