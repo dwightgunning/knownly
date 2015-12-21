@@ -27,10 +27,10 @@ class DropboxUserService(object):
             self.dropbox = Dropbox(db_token)
 
     @transaction.atomic
-    def get_or_create(self, db_account_id):
+    def get_or_create(self, db_user_id):
         db_user, created = \
             DropboxUser.objects.get_or_create(
-                user_id=db_account_id,
+                user_id=db_user_id,
                 defaults={'dropbox_token': self.db_token})
 
         if created:

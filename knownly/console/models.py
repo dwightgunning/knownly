@@ -7,8 +7,9 @@ from jsonfield import JSONField
 
 class DropboxUser(models.Model):
     django_user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True)
-    user_id = models.CharField(_('user id'), max_length=64, unique=True)
-    account_id = models.CharField(_('account id'), max_length=64, unique=True)
+    user_id = models.CharField(_('user id'), max_length=64, unique=True,
+                               blank=False)
+    account_id = models.CharField(_('account id'), max_length=64)
     dropbox_token = models.TextField()
     account_created = models.DateTimeField(default=timezone.now)
     date_activated = models.DateTimeField(blank=True, null=True)

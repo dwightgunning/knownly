@@ -53,6 +53,43 @@ class TestDropboxUserService(TestCase):
         # verify the mock
         mock_db_client.users_get_current_account.assert_called_once_with()
 
+        # Create a 2nd user for good measure
+        test_db_user_id = '1234567'
+        test_db_account_id = 'db:9932342342342342342342342342342342342'
+        test_db_token = '123'
+        test_db_email = 'tester2@knownly.net'
+
+        test_given_name = 'first'
+        test_surname = 'last'
+        test_db_name = Name(given_name=test_given_name, surname=test_surname)
+
+        mock_db_client = Dropbox('arg')
+        mock_db_client.users_get_current_account = \
+            MagicMock(return_value=FullAccount(account_id=test_db_account_id,
+                                               name=test_db_name,
+                                               email=test_db_email))
+
+        db_user_service = DropboxUserService(
+            db_token=test_db_token, dropbox=mock_db_client)
+
+        db_user, created = db_user_service.get_or_create(test_db_user_id)
+
+        # verify the data
+        self.assertTrue(created)
+        self.assertEqual(db_user.user_id, test_db_user_id)
+        self.assertEqual(db_user.account_id, test_db_account_id)
+        self.assertEqual(db_user.dropbox_token, test_db_token)
+        self.assertIsNotNone(db_user.django_user)
+        self.assertFalse(db_user.django_user.has_usable_password())
+        DropboxUser.objects.get(pk=db_user.pk)
+        User.objects.get(username='db:%s' % db_user.pk,
+                         email=test_db_email,
+                         first_name=test_given_name,
+                         last_name=test_surname)
+
+        # verify the mock
+        mock_db_client.users_get_current_account.assert_called_once_with()
+
     def test_get_or_create__existing_db_user_same_token(self):
         test_db_user_id = '1111111111'
         test_db_account_id = 'db:1232342342342342342342342342342342343'
