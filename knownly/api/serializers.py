@@ -39,3 +39,10 @@ class UserSerializer(serializers.ModelSerializer):
             update_session_auth_hash(self.context.get('request'), instance)
 
             return instance
+
+
+class DirectorySerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=256)
+    path_lower = serializers.FilePathField(path='/')
+    client_modified = serializers.DateTimeField(required=False)
+    size = serializers.IntegerField(required=False)

@@ -16,7 +16,8 @@ class SubdomainToDropboxMiddleware(object):
         host = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME')
         domain = host.split(':')[0].lower()
 
-        if domain in ('www.knownly.net', '127.0.0.1', 'localhost'):
+        if domain in ('www.knownly.net', '127.0.0.1', 'localhost',
+                      'testserver'):
             logger.debug('Serving knownly site.')
             return None
         else:
