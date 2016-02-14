@@ -131,7 +131,8 @@
         "dropbox_user": 23423,
         "date_created": "2015-07-07T04:32:41.794Z",
         "domain": "test2.knownly.net",
-        "date_activated": "2015-07-07T05:32:41.794Z"
+        "date_activated": "2015-07-07T05:32:41.794Z",
+        "config": "{\"directory-listings\":[\"/listed_directory\"]}"
     },
     "model": "console.dropboxsite",
     "pk": 3

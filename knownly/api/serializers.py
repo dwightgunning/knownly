@@ -44,5 +44,5 @@ class UserSerializer(serializers.ModelSerializer):
 class DirectorySerializer(serializers.Serializer):
     name = serializers.CharField(max_length=256)
     path_lower = serializers.FilePathField(path='/')
-    client_modified = serializers.DateTimeField()
-    size = serializers.IntegerField()
+    client_modified = serializers.DateTimeField(required=False)
+    size = serializers.IntegerField(required=False)

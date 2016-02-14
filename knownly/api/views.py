@@ -27,16 +27,34 @@ class DirectoryListingView(APIView):
     renderer_classes = (JSONRenderer, )
 
     def get(self, request, *args, **kwargs):
-        path = kwargs["path"]
+        path = kwargs["path"].lower().rstrip('/')
         domain = path.split('/')[0]
+        if path.startswith(domain):
+            directory = path[len(domain):]
+        else:
+            directory = '/'
 
         try:
             site = DropboxSite.objects.get(domain=domain)
         except DropboxSite.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        if 'directory-listings' not in site.config or \
+                directory not in site.config['directory-listings']:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         service = services.DropboxDirectoryListingService(site.dropbox_user)
-        files = service.get_directory_listing(path)
+        try:
+            files = service.get_directory_listing(path)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        for f in files:
+            if f.path_lower.startswith(domain):
+                f.path_lower = f.path_lower[len(domain):]
 
         serializer = DirectorySerializer(files, many=True)
-        return response.Response(serializer.data)
+
+        headers = {'Access-Control-Allow-Origin': '*'}
+
+        return response.Response(serializer.data, headers=headers)
