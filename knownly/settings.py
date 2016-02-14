@@ -104,7 +104,7 @@ except:
     print 'No settings_local.py available.'
     DATABASES = \
         {'default': dj_database_url.config(default=os.environ['DATABASE_URL'])}
-    DEBUG = os.environ['DEBUG']
+    DEBUG = os.environ['DEBUG'] == 'True'
     DROPBOX_APP_KEY = os.environ['DROPBOX_APP_KEY']
     DROPBOX_APP_SECRET = os.environ['DROPBOX_APP_SECRET']
     MIXPANEL_TOKEN = os.environ['MIXPANEL_TOKEN']
@@ -114,8 +114,10 @@ except:
     STRIPE_PUBLISHABLE_KEY = os.environ['STRIPE_PUBLISHABLE_KEY']
     MASHAPE_API_KEY = os.environ['MASHAPE_API_KEY']
     GA_TRACKING_ID = os.environ['GA_TRACKING_ID']
-    CELERY_ALWAYS_EAGER = os.environ['CELERY_ALWAYS_EAGER']
+    CELERY_ALWAYS_EAGER = os.environ['CELERY_ALWAYS_EAGER'] == 'True'
     EMAIL_BACKEND = os.environ['EMAIL_BACKEND']
+    DJANGO_PROXY_KNOWNLY_WEBSITES = \
+        os.environ['DJANGO_PROXY_KNOWNLY_WEBSITES'] == 'True'
 try:
     from settings_logging import *  # NOQA
 except:
