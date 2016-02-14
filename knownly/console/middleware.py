@@ -21,9 +21,9 @@ class SubdomainToDropboxMiddleware(object):
             return None
         else:
             logger.debug('Serving hosted site: %s%s' % (domain, request.path))
-            return self._x_accel_redirect(request, domain)
+            return self.serve_hosted_website(request, domain)
 
-    def _x_accel_redirect(self, request, domain):
+    def serve_hosted_website(self, request, domain):
         full_path = '/%s/%s' % (domain, request.path.lstrip("/"))
         if full_path == domain or full_path.endswith('/'):
             # default to serving index.html
@@ -60,20 +60,62 @@ class SubdomainToDropboxMiddleware(object):
             except redis.ConnectionError:
                 logger.error('Error connecting to redis-cache')
 
+        if settings.DJANGO_PROXY_KNOWNLY_WEBSITES:
+            logger.warn('Django proxying the knownly website.')
+            return self._proxy_request(request,
+                                       full_path,
+                                       db_api_auth_header,
+                                       db_api_arg_header)
+        else:
+            return self._x_accel_redirect(request,
+                                          full_path,
+                                          db_api_auth_header,
+                                          db_api_arg_header)
+
+    def _proxy_request(self, request, full_path, db_api_auth_header,
+                       db_api_arg_header):
+        import mimetypes
+        import requests
+
+        headers = {
+            'Authorization': db_api_auth_header,
+            'Dropbox-API-Arg': db_api_arg_header,
+            'Accept-Language': request.META.get('HTTP_ACCEPT_LANGUAGE'),
+            'User-Agent': request.META.get('HTTP_USER_AGENT'),
+            'Accept': request.META.get('HTTP_ACCEPT'),
+            'Accept-Encoding': request.META.get('HTTP_ACCEPT_ENCODING'),
+        }
+
+        mime_type = mimetypes.MimeTypes().guess_type(full_path)[0]
+
+        r = requests.get('https://content.dropboxapi.com/2/files/download',
+                         headers=headers, stream=True)
+
+        response = HttpResponse(r.raw.read(),
+                                status=r.status_code,
+                                content_type=mime_type)
+
+        return response
+
+    def _x_accel_redirect(self, request, full_path,
+                          db_api_auth_header, db_api_arg_header):
         r = HttpResponse()
-        # Nginx redirect headers
-        r['X-Forwarded-For'] = request.META.get('HTTP_X_FORWARDED_FOR')
-        r['X-Accel-Redirect'] = settings.INTERNAL_REDIRECT_DIRECTORY
+
         # Dropbox API 'download' headers
         r['Authorization'] = db_api_auth_header
         r['Dropbox-API-Arg'] = db_api_arg_header
-        # Include the full path so that a custom LUA block can be used
-        # to sense the MIME type. NGINX can only sense based on the request
-        # uri (which is general purpose in Dropbox API v2)
-        r['Original-URI'] = full_path
         # Other useful headers
         r['Accept-Language'] = request.META.get('HTTP_ACCEPT_LANGUAGE')
         r['User-Agent'] = request.META.get('HTTP_USER_AGENT')
         r['Accept'] = request.META.get('HTTP_ACCEPT')
         r['Accept-Encoding'] = request.META.get('HTTP_ACCEPT_ENCODING')
+
+        # Nginx redirect headers
+        r['X-Forwarded-For'] = request.META.get('HTTP_X_FORWARDED_FOR')
+        r['X-Accel-Redirect'] = settings.INTERNAL_REDIRECT_DIRECTORY
+        # Include the full path so that a custom LUA block can be used
+        # to sense the MIME type. NGINX can only sense based on the request
+        # uri (which is general purpose in Dropbox API v2)
+        r['Original-URI'] = full_path
+
         return r
