@@ -1,4 +1,4 @@
-Django==1.9.2
+Django==1.9.5
 Fabric==1.10.2
 amqp==1.4.6
 anyjson==0.3.3
@@ -14,8 +14,8 @@ django-currencies==0.3.3
 django-ipware==1.1.0
 django-jsonfield==0.9.15
 django-nose==1.4.2
-djangorestframework==3.3.2
-dropbox==3.42
+djangorestframework==3.3.3
+dropbox==6.1
 ecdsa==0.13
 enum34==1.0.4
 gnureadline==6.3.3
@@ -24,7 +24,7 @@ ipaddress==1.0.14
 jsonfield==1.0.3
 kombu==3.0.26
 mccabe==0.3.1
-mixpanel==4.2.0
+mixpanel==4.3.0
 mock==1.3.0
 money==1.2.2
 newrelic==2.52.0.40
@@ -37,15 +37,15 @@ psycopg2==2.5.3
 pycrypto==2.6.1
 python-dateutil==2.4.2
 python-stdnum==1.1
-pytz==2015.7
+pytz==2016.3
 raven==5.8.1
 redis==2.10.3
-requests==2.8.1
+requests==2.9.1
 selenium==2.45.0
 six==1.10.0
 sqlparse==0.1.10
 stripe==1.27.1
-urllib3==1.12
+urllib3==1.14
 vat-moss==0.11.0
 vatnumber==1.2
 wsgiref==0.1.2
