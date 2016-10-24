@@ -7,28 +7,11 @@
 {% block body_attrs %}id="page-top" data-spy="scroll" data-target=".navbar-fixed-top"{% endblock %}
 
 {% block content %}
-  
-  {% if mode = 'signup' %}
-    {% include 'partials/navbar-squeezer.html' %}
-  {% else %}
-    {% include 'partials/navbar.html'%}
-  {% endif %}
-  
+
+  {% include 'partials/navbar.html'%}
+
   <div class="container">
     <div class="row text-center signup-steps">
-      {% if mode = 'signup' %}
-        <div class="col-xs-4 col-md-2 col-md-offset-3 col-lg-2 col-lg-offset-3">
-          <h6 class="{% if request.user.is_authenticated %}text-success{% else %}text-primary{% endif %}">Authorize Knownly<br/>
-          {% if request.user.is_authenticated %}<i class="fa fa-2x fa-check text-success"></i>{% else %}<i class="fa fa-2x fa-dropbox text-primary"></i>{% endif %}</h6>
-        </div>
-        <div class="col-xs-4 col-md-2 col-lg-2">
-          <h6 class="{% if request.user.is_authenticated %}text-primary{% else %}text-default{% endif %}">Choose A Plan<br/>
-          {% if request.user.is_authenticated %}<i class="fa fa-2x fa-sliders text-primary"></i>{% else %}<i class="fa fa-2x fa-sliders text-default"></i>{% endif %}</h6>
-        </div>
-        <div class="col-xs-4 col-md-2 col-lg-2">
-          <h6 class="text-default">Create Your Site<br/><i class="fa fa-2x fa-sign-in text-default"></i></h6>
-        </div>
-      {% endif %}
     </div>
   </div>
 
@@ -250,7 +233,7 @@
     } else {
       $('#begin-auth').show();
       $('#plan-chooser').hide();
-    }   
+    }
 
     $('#img-dropbox-auth').click(function () {
       mixpanel.track('#img-dropbox-auth', "Auth Knownly Clicked", {'src': 'image'});
@@ -406,7 +389,7 @@
           $form.get(0).submit();
         } else {
           cc_bin = $('.card-number').val().substring(0, 6);
-          
+
           e.preventDefault();
           Stripe.setPublishableKey($form.data('stripe-publishable-key'));
           Stripe.createToken({

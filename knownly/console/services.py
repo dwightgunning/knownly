@@ -5,8 +5,9 @@ from django.db import transaction
 from dropbox import Dropbox
 from dropbox.exceptions import ApiError, DropboxException
 
-from knownly.console.exceptions import (DropboxAuthError, DropboxWebsiteError,
-                                        KnownlyAuthAccountInactiveException)
+from knownly.console.exceptions import (DropboxWebsiteError,
+                                        KnownlyAuthAccountInactiveException,
+                                        KnownlyAuthRegistrationsDisabled)
 from knownly.console.models import DropboxSite, DropboxUser
 from knownly.console.tasks import (fetch_website_folder_cursor,
                                    refresh_website_bearer_tokens_for_user)
@@ -28,44 +29,27 @@ class DropboxUserService(object):
             self.dropbox = Dropbox(db_token)
 
     @transaction.atomic
-    def get_or_create(self, db_user_id):
-        db_user, created = \
-            DropboxUser.objects.get_or_create(
+    def get_user(self, db_user_id):
+
+        try:
+            db_user = DropboxUser.objects.get(
                 user_id=db_user_id,
                 defaults={'dropbox_token': self.db_token})
+        except DropboxUser.DoesNotExist:
+            raise KnownlyAuthRegistrationsDisabled
 
-        if created:
-            # Fetch the Dropbox user's account info
-            try:
-                db_account = self.dropbox.users_get_current_account()
-            except ApiError:
-                logger.exception('Dropbox API Error')
-                refresh_website_bearer_tokens_for_user.delay(db_user.id)
-                raise DropboxAuthError('Dropbox authentication error')
+        if not db_user.django_user.is_active:
+            raise KnownlyAuthAccountInactiveException
 
-            db_user.django_user = \
-                User.objects.create_user(
-                    username='db:%s' % db_user.pk,
-                    email=db_account.email,
-                    first_name=db_account.name.given_name,
-                    last_name=db_account.name.surname,
-                    password=None)
-            db_user.account_id = db_account.account_id
-            db_user.save(update_fields=['django_user'])
+        db_user.dropbox_token = self.db_token
+        db_user.save(update_fields=['dropbox_token'])
+        try:
+            refresh_website_bearer_tokens_for_user.delay(db_user.id)
+        except:
+            logger.exception("Could not clear bearer token for: %s"
+                             % db_user.user_id)
 
-        elif db_user.dropbox_token != self.db_token:
-            if not db_user.django_user.is_active:
-                raise KnownlyAuthAccountInactiveException
-
-            db_user.dropbox_token = self.db_token
-            db_user.save(update_fields=['dropbox_token'])
-            try:
-                refresh_website_bearer_tokens_for_user.delay(db_user.id)
-            except:
-                logger.exception("Could not clear bearer token for: %s"
-                                 % db_user.user_id)
-
-        return db_user, created
+        return db_user
 
 
 class DropboxSiteService(object):

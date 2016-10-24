@@ -20,7 +20,7 @@ class PublicPagesTests(LiveServerTestCase):
     def test_homepage(self):
         self.selenium.get(self.live_server_url)
         # Expect to see the primary cta
-        self.selenium.find_element_by_id('primary-cta')
+        self.selenium.find_element_by_id('intro')
 
 
 class LandingPageTests(LiveServerTestCase):
@@ -39,16 +39,16 @@ class LandingPageTests(LiveServerTestCase):
         self.selenium.get('%s%s' % (self.live_server_url,
                                     '/welcome/developers'))
         # Expect to see the primary cta
-        self.selenium.find_element_by_id('primary-cta')
+        self.selenium.find_element_by_id('intro')
 
     def test_designers(self):
         self.selenium.get('%s%s' % (self.live_server_url,
                                     '/welcome/designers'))
         # Expect to see the primary cta
-        self.selenium.find_element_by_id('primary-cta')
+        self.selenium.find_element_by_id('intro')
 
     def test_creatives(self):
         self.selenium.get('%s%s' % (self.live_server_url,
                                     '/welcome/learning-to-code'))
         # Expect to see the primary cta
-        self.selenium.find_element_by_id('primary-cta')
+        self.selenium.find_element_by_id('intro')

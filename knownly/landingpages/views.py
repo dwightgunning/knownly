@@ -9,7 +9,8 @@ from dropbox.oauth import (BadRequestException, BadStateException,
                            CsrfException, DropboxOAuth2Flow,
                            NotApprovedException, ProviderException)
 
-from knownly.console.exceptions import KnownlyAuthAccountInactiveException
+from knownly.console.exceptions import (KnownlyAuthAccountInactiveException,
+                                        KnownlyAuthRegistrationsDisabled)
 from knownly.console.services import DropboxUserService
 
 logger = logging.getLogger(__name__)
@@ -27,6 +28,9 @@ MESSAGE_ACCOUNT_AUTH_ERROR = 'Account authentication error.'
 
 MESSAGE_KNOWNLY_ACCOUNT_INACTIVE_ERROR = 'This account is inactive. ' \
                                          'Please contact support.'
+
+MESSAGE_KNOWNLY_REGISTRATIONS_DISABLED = 'Our apologies, Knownly is no ' \
+                                         'longer open for new registrations.'
 
 
 def get_dropbox_auth_redirect(request):
@@ -102,8 +106,14 @@ class DropboxAuthCompleteView(RedirectView):
             return reverse('post_auth_new_customer')
 
         try:
-            dropbox_user, created = \
-                DropboxUserService(db_token).get_or_create(db_user_id)
+            dropbox_user = \
+                DropboxUserService(db_token).get_user(db_user_id)
+        except KnownlyAuthRegistrationsDisabled:
+            logger.exception("Knownly Auth error - registrations disabled")
+            messages.add_message(self.request,
+                                 messages.ERROR,
+                                 MESSAGE_KNOWNLY_REGISTRATIONS_DISABLED)
+            return reverse('post_auth_new_customer')
         except KnownlyAuthAccountInactiveException:
             logger.exception("Knownly Auth error - invalid account")
             messages.add_message(self.request,
@@ -116,13 +126,7 @@ class DropboxAuthCompleteView(RedirectView):
             'django.contrib.auth.backends.ModelBackend'
         login(self.request, dropbox_user.django_user)
 
-        if created:
-            messages.add_message(self.request,
-                                 messages.SUCCESS,
-                                 MESSAGE_SUCCESSFUL_AUTHORISATION)
-            return reverse('post_auth_new_customer')
-        else:
-            return reverse('post_auth_existing_customer')
+        return reverse('post_auth_existing_customer')
 
 
 class DropboxAuthSuccessView(TemplateView):
