@@ -5,7 +5,8 @@ from django.db import transaction
 from dropbox import Dropbox
 from dropbox.exceptions import ApiError, DropboxException
 
-from knownly.console.exceptions import DropboxAuthError, DropboxWebsiteError
+from knownly.console.exceptions import (DropboxAuthError, DropboxWebsiteError,
+                                        KnownlyAuthAccountInactiveException)
 from knownly.console.models import DropboxSite, DropboxUser
 from knownly.console.tasks import (fetch_website_folder_cursor,
                                    refresh_website_bearer_tokens_for_user)
@@ -32,6 +33,9 @@ class DropboxUserService(object):
             DropboxUser.objects.get_or_create(
                 user_id=db_user_id,
                 defaults={'dropbox_token': self.db_token})
+
+        if not db_user.django_user.is_active:
+            raise KnownlyAuthAccountInactiveException
 
         if created:
             # Fetch the Dropbox user's account info

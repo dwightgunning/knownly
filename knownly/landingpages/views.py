@@ -9,6 +9,7 @@ from dropbox.oauth import (BadRequestException, BadStateException,
                            CsrfException, DropboxOAuth2Flow,
                            NotApprovedException, ProviderException)
 
+from knownly.console.exceptions import KnownlyAuthAccountInactiveException
 from knownly.console.services import DropboxUserService
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,9 @@ MESSAGE_APP_NOT_APPROVED = 'Dropbox indicated that the request ' \
                            'button below to try again.'
 
 MESSAGE_ACCOUNT_AUTH_ERROR = 'Account authentication error.'
+
+MESSAGE_KNOWNLY_ACCOUNT_INACTIVE_ERROR = 'This account is inactive. ' \
+                                         'Please contact support.'
 
 
 def get_dropbox_auth_redirect(request):
@@ -97,8 +101,15 @@ class DropboxAuthCompleteView(RedirectView):
                                  MESSAGE_ACCOUNT_AUTH_ERROR)
             return reverse('post_auth_new_customer')
 
-        dropbox_user, created = \
-            DropboxUserService(db_token).get_or_create(db_user_id)
+        try:
+            dropbox_user, created = \
+                DropboxUserService(db_token).get_or_create(db_user_id)
+        except KnownlyAuthAccountInactiveException:
+            logger.exception("Knownly Auth error - invalid account")
+            messages.add_message(self.request,
+                                 messages.ERROR,
+                                 MESSAGE_KNOWNLY_ACCOUNT_INACTIVE_ERROR)
+            return reverse('post_auth_new_customer')
 
         # Login the dropbox user and setup session token
         dropbox_user.django_user.backend = \

@@ -4,3 +4,7 @@ class DropboxAuthError(Exception):
 
 class DropboxWebsiteError(Exception):
     pass
+
+
+class KnownlyAuthAccountInactiveException(Exception):
+    pass
