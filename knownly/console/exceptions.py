@@ -8,3 +8,7 @@ class DropboxWebsiteError(Exception):
 
 class KnownlyAuthAccountInactiveException(Exception):
     pass
+
+
+class KnownlyAuthRegistrationsDisabled(Exception):
+    pass

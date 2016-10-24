@@ -2,7 +2,6 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
 from knownly.landingpages import views as landingpage_views
-from knownly.plans import views as plans_views
 
 urlpatterns = \
     patterns('',
@@ -43,9 +42,6 @@ urlpatterns = \
                  name='lp-startupweekend-short'),
 
              # Registration flow
-             url(r'^signup/$',
-                 plans_views.PlansView.as_view(mode='signup'),
-                 name='signup'),
              url(r'^signup/begin/$',
                  landingpage_views.DropboxAuthStartView.as_view(),
                  name='dropbox_auth_start'),

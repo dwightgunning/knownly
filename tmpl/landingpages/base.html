@@ -17,7 +17,7 @@
     <div class="row">
       <div class="col-md-12 intro-body">
         <h1>{% block tagline %}{% endblock %}</h1>
-        <a id="primary-cta" class="btn btn-primary btn-lg page-scroll" href="{% url 'signup' %}">{% block primary_cta_btn %}{% endblock %}</a>
+        <div class="col-md-6 col-md-offset-3 alert alert-warning ">Our apologies, Knownly is not currently accepting new users.</div>
       </div>
     </div>
   </div>
@@ -61,7 +61,6 @@
         <p>Now it's time to create your site. Work with one of our templates, get advice from our community, or craft something of your very own.</p>
       </div>
       <div class="col-md-12 text-center section-footer">
-        <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Make it happen</a>
         <p>If you need any assistance along the way, we're <a href="{% url 'support' %}">happy to help</a>.</p>
       </div>
     </div>
@@ -85,7 +84,6 @@
     <div class="row">
       <div class="text-center section-footer">
         <div class="col-md-12 text-center section-footer">
-          <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Get started</a>
           <p>Upgrade/Downgrade your plan any time. Need something special, just email <a href="mailto:info@knownly.net">info@knownly.net</a>.</p>
         </div>
       </div>
