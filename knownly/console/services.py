@@ -34,9 +34,6 @@ class DropboxUserService(object):
                 user_id=db_user_id,
                 defaults={'dropbox_token': self.db_token})
 
-        if not db_user.django_user.is_active:
-            raise KnownlyAuthAccountInactiveException
-
         if created:
             # Fetch the Dropbox user's account info
             try:
@@ -57,6 +54,9 @@ class DropboxUserService(object):
             db_user.save(update_fields=['django_user'])
 
         elif db_user.dropbox_token != self.db_token:
+            if not db_user.django_user.is_active:
+                raise KnownlyAuthAccountInactiveException
+
             db_user.dropbox_token = self.db_token
             db_user.save(update_fields=['dropbox_token'])
             try:
