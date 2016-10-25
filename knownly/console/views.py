@@ -36,7 +36,7 @@ class IndexView(TemplateView):
             try:
                 db_user = DropboxUser.objects.get(
                     django_user=self.request.user)
-                DropboxUserService(db_user.dropbox_token).get_or_create(
+                DropboxUserService(db_user.dropbox_token).get_user(
                     db_user.user_id)
                 return self._serve_app(self.request)
             except:

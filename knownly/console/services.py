@@ -33,21 +33,21 @@ class DropboxUserService(object):
 
         try:
             db_user = DropboxUser.objects.get(
-                user_id=db_user_id,
-                defaults={'dropbox_token': self.db_token})
+                user_id=db_user_id)
         except DropboxUser.DoesNotExist:
             raise KnownlyAuthRegistrationsDisabled
 
         if not db_user.django_user.is_active:
             raise KnownlyAuthAccountInactiveException
 
-        db_user.dropbox_token = self.db_token
-        db_user.save(update_fields=['dropbox_token'])
-        try:
-            refresh_website_bearer_tokens_for_user.delay(db_user.id)
-        except:
-            logger.exception("Could not clear bearer token for: %s"
-                             % db_user.user_id)
+        if db_user.dropbox_token != self.db_token:
+            db_user.dropbox_token = self.db_token
+            db_user.save(update_fields=['dropbox_token'])
+            try:
+                refresh_website_bearer_tokens_for_user.delay(db_user.id)
+            except:
+                logger.exception("Could not clear bearer token for: %s"
+                                 % db_user.user_id)
 
         return db_user
 
