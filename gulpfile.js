@@ -61,7 +61,7 @@ gulp.task('ng-templates', function(cb) {
           .pipe(plugins.sourcemaps.init())
           .pipe(plugins.streamify(plugins.rev()))
           .pipe(plugins.size({title: '\t File size [ng-templates]',  showFiles: true }))
-          .pipe(plugins.sourcemaps.write('./'))
+          .pipe(!prod ? sourcemaps.write('.') : gutil.noop())
           .pipe(gulp.dest(config.staticOutputDir + '/js'))
           .on('error', plugins.util.log)
           .on('end', cb || function() {});
