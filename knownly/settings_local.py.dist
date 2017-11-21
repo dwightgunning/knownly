@@ -4,6 +4,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DEBUG = False
 TEMPLATE_DEBUG = False
 
+DJANGO_PROXY_KNOWNLY_WEBSITES = False
+
 DROPBOX_APP_KEY = ''
 DROPBOX_APP_SECRET = ''
 
@@ -14,6 +16,16 @@ DATABASES = {
     }
 }
 
+MIXPANEL_TOKEN = ''
+GA_TRACKING_ID = ''
+
+STRIPE_SECRET_KEY = ''
+STRIPE_PUBLISHABLE_KEY = ''
+
+BROKER_URL = 'redis://localhost:6379/0'
+
 MASHAPE_API_KEY = ''
 
-DJANGO_PROXY_KNOWNLY_WEBSITES = False
+RAVEN_CONFIG = {
+    'dsn': 'https://40437b3f078940ac89cb8e40559fbfc1:6c153fbb44c7433e8d59855563432223@app.getsentry.com/57458',
+}

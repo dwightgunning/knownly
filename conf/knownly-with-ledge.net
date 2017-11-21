@@ -1,0 +1,223 @@
+server {
+    listen 80;
+    server_name www.knownly.net knownly.net;
+
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    # Placeholder for letsencrypt negotiation
+    #
+    # see: https://gethttpsforfree.com
+    # =======================================
+    #location ~* /.well-known/acme-challenge/... {
+    #   return 200 '...';
+    #}
+
+    location ~* / {
+    return 301 https://www.knownly.net$request_uri;
+    }
+}
+
+server {
+    listen 80 default_server;
+    server_name *.knownly.net "";
+    server_tokens off;
+    more_set_headers 'Server: Knownly.net';
+
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://127.0.0.1:8201;
+    }
+
+    location ~* ^/dropbox_redirect {
+        internal;
+        resolver 8.8.8.8; # DNS must be specified to resolve external URLs
+
+        # Determine mime-type based on file extensions
+        # ============================================
+        header_filter_by_lua '
+          local mimetypes = require("mimetypes")
+          ngx.header.content_type = mimetypes.guess(ngx.var.original_uri)
+        ';
+
+        access_log  /sites/knownly/logs/nginx_access.log upstreamlog;
+        error_log /sites/knownly/logs/nginx_access_error.log;
+
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_pass_request_headers off;
+
+        # Always proxy to GET method; Do not use local disk for storing the request
+        # =========================================================================
+        proxy_method GET;
+        proxy_buffering off;
+        proxy_pass_request_body off;
+        proxy_max_temp_file_size 0;
+
+        # Add auth and cache-control headers
+        # ==================================
+        set $xauth_temp $upstream_http_authorization;
+        proxy_set_header Authorization $xauth_temp;
+        set $cache_control_tmp $upstream_http_cache_control;
+        proxy_set_header Cache-Control $cache_control_tmp;
+        set $dropbox_api_arg $upstream_http_dropbox_api_arg;
+        proxy_set_header Dropbox-API-Arg $dropbox_api_arg;
+        set $original_uri $upstream_http_original_uri;
+
+        # Hide dropbox and other sensitive response headers
+        # =================================================
+        proxy_hide_header content-security-policy;
+        proxy_hide_header content-security-policy-report-only;
+        proxy_hide_header x-content-security-policy;
+        proxy_hide_header x-server-response-time;
+        proxy_hide_header dropbox-api-result;
+        proxy_hide_header x-dropbox-request-id;
+        proxy_hide_header x-dropbox-metadata;
+        proxy_hide_header x-robots-tag;
+        proxy_hide_header x-webkit-csp;
+        proxy_hide_header via;
+        proxy_hide_header content-type;
+        proxy_hide_header content-disposition;
+        proxy_hide_header vary;
+        # proxy_hide_header age;
+        # proxy_hide_header x-cache;
+
+        # Add explicit vary header to improve cacheability
+        # ================================================
+        add_header Vary Accept-Encoding;
+        set $download_url https://content.dropboxapi.com/2/files/download;
+        proxy_pass $download_url;
+        proxy_intercept_errors on;
+
+        error_page 302 @404;
+        error_page 404 @404;
+        error_page 409 @409;
+        error_page 429 503 =307 @307;
+    }
+
+    location @307 {
+        root /;
+        try_files /sites/knownly/static/307_user_website_429_503.html =307;
+        expires 30d;
+        add_header Cache-Control "public";
+    }
+
+    location @404 {
+         root /;
+         try_files /sites/knownly/static/404_user_website.html =404;
+         expires 30d;
+         add_header Cache-Control "public";
+    }
+
+    location @409 {
+         try_files /sites/knownly/static/404_user_website.html =404;
+         expires 30d;
+         add_header Cache-Control "public";
+    }
+}
+
+server {
+    listen 443;
+    server_name knownly.net;
+
+    ssl on;
+    ssl_certificate /sites/knownly/ssl/2017_4/chained.pem;
+    ssl_certificate_key /sites/knownly/ssl/2017_4/domain.key;
+    ssl_session_timeout 5m;
+    ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers             HIGH:!aNULL:!MD5;
+    ssl_session_cache shared:SSL:50m;
+    ssl_dhparam /sites/knownly/ssl/2017_4/dhparam.pem;
+    ssl_prefer_server_ciphers on;
+
+    access_log  /sites/knownly/logs/nginx_access.log sitelog;
+    error_log  /sites/knownly/logs/nginx_error.log;
+
+    return 301 https://www.knownly.net$request_uri;
+}
+
+# Redirect knownly subdomains and custom domains back to HTTP
+#
+# Browers show a warning; better than nothing
+# ===========================================================
+server {
+    listen 443 default_server;
+    server_name "" _;
+
+    ssl on;
+    ssl_certificate /sites/knownly/ssl/2017_4/chained.pem;
+    ssl_certificate_key /sites/knownly/ssl/2017_4/domain.key;
+    ssl_session_timeout 5m;
+    ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers             HIGH:!aNULL:!MD5;
+    ssl_session_cache shared:SSL:50m;
+    ssl_dhparam /sites/knownly/ssl/2017_4/dhparam.pem;
+    ssl_prefer_server_ciphers on;
+
+    rewrite ^(.*) http://$host$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name www.knownly.net;
+    ssl on;
+    ssl_certificate /sites/knownly/ssl/2017_4/chained.pem;
+    ssl_certificate_key /sites/knownly/ssl/2017_4/domain.key;
+    ssl_session_timeout 5m;
+    ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers             HIGH:!aNULL:!MD5;
+    ssl_session_cache shared:SSL:50m;
+    ssl_dhparam /sites/knownly/ssl/2017_4/dhparam.pem;
+    ssl_prefer_server_ciphers on;
+
+    access_log /sites/knownly/logs/nginx_access.log sitelog;
+    error_log /sites/knownly/logs/nginx_error.log;
+
+    error_page 404 /static/404_knownly.html;
+    error_page 500 501 502 503 /static/50x_knownly.html;
+
+    location /community {
+        alias /sites/knownly/community/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8201;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Protocol ssl; # https://gist.github.com/3228782
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Scheme $scheme;
+
+        proxy_intercept_errors on;
+        # Useful for debugging
+        # =======================================
+        # more_set_headers 'Access-Control-Allow-Origin: *';
+        # add_header Access-Control-Allow-Origin *;
+    }
+
+    location /ng-index.html {
+        alias /sites/knownly/static/index.html;
+    }
+
+    location /robots.txt {
+        alias /sites/knownly/static/robots.txt;
+    }
+
+    location /favicon.ico {
+        alias /sites/knownly/static/favicon.ico;
+    }
+
+    location /BingSiteAuth.xml {
+        alias /sites/knownly/static/BingSiteAuth.xml;
+    }
+
+    location /static/ {
+       alias /sites/knownly/static/;
+    }
+}
