@@ -17,7 +17,7 @@ django-ipware==1.1.0
 django-nose==1.4.2
 djangorestframework==3.3.3
 dropbox==6.1
-ecdsa==0.13
+ecdsa==0.13.3
 enum34==1.0.4
 flake8==2.4.1
 funcsigs==0.4
