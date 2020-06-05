@@ -1,4 +1,4 @@
-Django==1.9.5
+Django==1.11.29
 Fabric==1.10.2
 amqp==1.4.6
 anyjson==0.3.3
