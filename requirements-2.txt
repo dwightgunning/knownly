@@ -15,7 +15,7 @@ django-countries==3.3
 django-currencies==0.3.3
 django-ipware==1.1.0
 django-nose==1.4.2
-djangorestframework==3.3.3
+djangorestframework==3.11.2
 dropbox==6.1
 ecdsa==0.13
 enum34==1.0.4
