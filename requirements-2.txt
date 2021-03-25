@@ -1,7 +1,7 @@
 Django==1.9.5
 Fabric==1.10.2
 MarkupSafe==0.23
-PyYAML==3.11
+PyYAML==5.4
 amqp==1.4.6
 anyjson==0.3.3
 argparse==1.4.0
