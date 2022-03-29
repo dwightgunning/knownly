@@ -36,7 +36,7 @@ money==1.2.2
 newrelic==2.52.0.40
 newrelic-plugin-agent==1.3.0
 nose==1.3.7
-paramiko==1.15.2
+paramiko==2.10.1
 pbr==1.8.1
 pep8==1.5.7
 pies==2.6.7
